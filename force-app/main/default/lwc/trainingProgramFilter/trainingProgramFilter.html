@@ -1,0 +1,129 @@
+<template>
+    <lightning-card>
+        <!-- Title Section -->
+        <h2 slot="header">
+            <lightning-icon icon-name="custom:custom83" size="small" alternative-text="Tasks"></lightning-icon>
+            Tasks
+        </h2>
+
+        <!-- Actions Section -->
+        <div slot="actions">
+                <lightning-button-group class="slds-m-bottom_small">
+                    <lightning-button
+                    label="Change Status"
+                    icon-name="utility:tracker"
+                    alternative-text="Change Status"
+                    icon-position="right"
+                    onclick={handleOpenModal}
+                    variant="neutral">
+                </lightning-button>
+                <lightning-button 
+                    label="Change Assignee"
+                    onclick={handleStatusClick}
+                    icon-name="utility:change_owner"
+                    icon-position="right"
+                    variant="neutral">
+                </lightning-button>
+                <lightning-button 
+                    label="Refresh"
+                    onclick={doInit}
+                    icon-name="utility:refresh"
+                    icon-position="right"
+                    variant="neutral">
+                </lightning-button>
+            </lightning-button-group>
+        </div>
+
+        <!-- Filters Section -->
+        <lightning-layout>
+            <lightning-layout-item flexibility="auto" padding="around-small" size="1">
+                <div class="slds-text-heading--label">Filters</div>
+            </lightning-layout-item>
+
+            <!-- Phase Filter -->
+            <lightning-layout-item flexibility="auto" padding="around-small" class="slds-m-bottom_small">
+                <lightning-combobox 
+                    label="Phase" 
+                    value={selectedPhase} 
+                    options={phaseOptions}
+                    onchange={handlePhaseChange}>
+                </lightning-combobox>
+            </lightning-layout-item>
+
+            <!-- Status Filter -->
+            <lightning-layout-item flexibility="auto" padding="around-small" class="slds-m-bottom_small">
+                <lightning-combobox 
+                    label="Status" 
+                    value={selectedStatus} 
+                    options={statusOptions}
+                    onchange={handleStatusChange}>
+                </lightning-combobox>
+            </lightning-layout-item>
+
+            <!-- Assigned To Filter -->
+            <lightning-layout-item flexibility="auto" padding="around-small" class="slds-m-bottom_small">
+                <lightning-combobox 
+                    label="Assigned To" 
+                    value={selectedAssignedTo} 
+                    options={assignedToOptions}
+                    onchange={handleAssignedToChange}>
+                </lightning-combobox>
+            </lightning-layout-item>
+        </lightning-layout>
+    </lightning-card>
+
+    <!-- Task Table -->
+    <lightning-datatable
+        data={tasks}
+        columns={columns}
+        key-field="Id"
+        onrowselection={handleRowSelection}>
+    </lightning-datatable>
+
+
+
+    <!-- Modal for Changing Status -->
+    <template if:true={isModalOpen}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal/Popup Header -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                            title="Close"
+                            onclick={closeModal}>
+                        <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 class="slds-text-heading_medium">Change Status</h2>
+                </header>
+
+                <!-- Modal Body -->
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-combobox
+                        label="Select New Status"
+                        value={newStatus}
+                        options={statusOptions}
+                        onchange={handleStatusChangeInModal}>
+                    </lightning-combobox>
+                </div>
+
+                <!-- Modal Footer -->
+                <footer class="slds-modal__footer">
+                    <lightning-button
+                        variant="neutral"
+                        label="Cancel"
+                        onclick={closeModal}>
+                    </lightning-button>
+                    <lightning-button
+                        variant="brand"
+                        label="Save"
+                        onclick={saveStatus}>
+                    </lightning-button>
+                </footer>
+            </div>
+        </section>
+
+        <!-- Modal Backdrop -->
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>
