@@ -1,4 +1,9 @@
 <template>
+    <!-- Spinner to show while data is loading -->
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+    
     <lightning-card>
         <!-- Title Section -->
         <h2 slot="header">
@@ -26,7 +31,7 @@
                 </lightning-button>
                 <lightning-button 
                     label="Refresh"
-                    onclick={doInit}
+                    onclick={handleRefresh}
                     icon-name="utility:refresh"
                     icon-position="right"
                     variant="neutral">

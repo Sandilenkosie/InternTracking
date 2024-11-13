@@ -14,6 +14,7 @@ export default class TrainingProgramFilter extends LightningElement {
     @track statusOptions = [];
     @track phaseOptions = [];
     @track assignedToOptions = [];
+    @track isLoading = false;
     @track columns = [
         { label: 'Name', fieldName: 'Name' },
         { label: 'Status', fieldName: 'Status__c' },
@@ -65,18 +66,22 @@ export default class TrainingProgramFilter extends LightningElement {
         }
     }
 
-    // Fetch Tasks
     loadTasks() {
-        getTasks({
-            phaseId: this.selectedPhase,
-            status: this.selectedStatus,
-            assignedToId: this.selectedAssignedTo
-        }).then(result => {
-            this.tasks = result;
-        }).catch(error => {
+        getTasks({ 
+            phaseId: this.selectedPhase, 
+            status: this.selectedStatus, 
+            assignedToId: this.selectedAssignedTo 
+        })
+        .then((result) => {
+            this.tasks = result; // Handle the fetched tasks
+            this.isLoading = false; // Stop the loading spinner once tasks are fetched
+        })
+        .catch((error) => {
             console.error(error);
+            this.isLoading = false; 
         });
     }
+    
 
     // Handle Phase, Status, and Assigned To Filters
     handlePhaseChange(event) {
@@ -129,6 +134,7 @@ export default class TrainingProgramFilter extends LightningElement {
             this.showToast('Success', 'Status updated successfully.', 'success');
             this.isModalOpen = false; // Close the modal
             this.loadTasks(); // Refresh task data
+            window.location.reload();
         })
         .catch(error => {
             // Check if error.body exists and has a message property
@@ -161,6 +167,16 @@ export default class TrainingProgramFilter extends LightningElement {
 
     // Initialize Tasks
     connectedCallback() {
+        this.loadTasks();
+    }
+
+    // Handle the Refresh button click
+    handleRefresh() {
+        // Reset the selected filters to default values
+        this.selectedPhase = 'All';
+        this.selectedStatus = 'All';
+        this.selectedAssignedTo = 'All';
+        this.isLoading = true;
         this.loadTasks();
     }
 }

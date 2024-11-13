@@ -1,0 +1,141 @@
+<template>
+  <lightning-card title="Training Program Summary" icon-name="custom:custom19">
+    <!-- Action Buttons with Filter Options -->
+    <div class="action-buttons">
+      <!-- Week Button -->
+      <lightning-button
+        icon-name="utility:calendar"
+        label="By Week"
+        onclick={handleWeekFilter}
+        alternative-text="Filter by Week"
+        class="slds-m-left_small"
+      ></lightning-button>
+
+      <!-- Month Button -->
+      <lightning-button
+        icon-name="utility:date_input"
+        label="By Month"
+        onclick={handleMonthFilter}
+        alternative-text="Filter by Month"
+        class="slds-m-left_small"
+      ></lightning-button>
+
+      <!-- Quarter Button -->
+      <lightning-button
+        icon-name="utility:table"
+        label="By Quarter"
+        onclick={handleQuarterFilter}
+        alternative-text="Filter by Quarter"
+        class="slds-m-left_small"
+      ></lightning-button>
+
+      <!-- Refresh Button -->
+      <lightning-button
+        icon-name="utility:refresh"
+        label="Refresh"
+        onclick={handleRefresh}
+        alternative-text="Refresh"
+        class="slds-m-left_small"
+      ></lightning-button>
+    </div>
+
+    <!-- Render Exam Schedule Details -->
+    <template if:true={examSchedules.length}>
+      <div class="section-header">
+        <lightning-icon icon-name="utility:calendar" size="small"></lightning-icon>
+        <h2>Exam Schedules</h2>
+      </div>
+      <div class="exam-schedules">
+        <ul>
+          <template for:each={examSchedules} for:item="exam">
+            <li key={exam.Id} class="exam-item">
+              <p><strong>{exam.Name}</strong></p>
+              <p>Date: {exam.Scheduled_Date__c}</p>
+              <p>Location: {exam.Location__c}</p>
+              <p>Result: {exam.Exam_Result__c}</p>
+            </li>
+          </template>
+        </ul>
+      </div>
+    </template>
+
+    <!-- Render Training Program Details -->
+    <template if:true={trainingProgram}>
+      <div class="slds-card slds-card_boundary training-program-highlight">
+        <div class="slds-card__header">
+          <h2 class="slds-text-heading_medium">{trainingProgram.Name}</h2>
+        </div>
+        <div class="slds-card__body">
+          <div class="header">
+            <p class="status">Status: {trainingProgram.Status__c}</p>
+            <p>{trainingProgram.Description__c}</p>
+          </div>
+
+          <!-- Training Program Info Layout -->
+          <lightning-layout multiple-rows>
+            <lightning-layout-item size="6">
+              <p><strong>Start Date:</strong> {trainingProgram.Start_Date__c}</p>
+              <p><strong>End Date:</strong> {trainingProgram.End_Date__c}</p>
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+              <p><strong>Duration:</strong> {trainingProgram.Duration__c} days</p>
+              <p><strong>Capacity:</strong> {trainingProgram.Capacity__c}</p>
+            </lightning-layout-item>
+          </lightning-layout>
+
+          <!-- Certification Details -->
+          <div class="certifications">
+            <h4>Certifications</h4>
+            <ul>
+              <template if:true={trainingProgram.Salesforce_Certified_Administrator__c}>
+                <li>Salesforce Certified Administrator</li>
+              </template>
+              <template if:true={trainingProgram.Salesforce_Certified_Platform_App_Builde__c}>
+                <li>Salesforce Certified Platform App Builder</li>
+              </template>
+              <template if:true={trainingProgram.Salesforce_Certified_Platform_Developer__c}>
+                <li>Salesforce Certified Platform Developer</li>
+              </template>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- Render Phases and Tasks DataTable -->
+    <template if:true={phaseData.length}>
+      <div class="section-header">
+        <lightning-icon icon-name="utility:tasks" size="small"></lightning-icon>
+        <h2>Training Phases</h2>
+      </div>
+      <lightning-datatable
+        key-field="Id"
+        data={phaseData}
+        columns={columns}
+        hide-checkbox-column
+      ></lightning-datatable>
+    </template>
+
+    <!-- Render Interns if available -->
+    <template if:true={interns.length}>
+      <div class="section-header">
+        <lightning-icon icon-name="utility:user" size="small"></lightning-icon>
+        <h2>Interns</h2>
+      </div>
+      <div class="interns">
+        <ul>
+          <template for:each={interns} for:item="intern">
+            <li key={intern.Id}>
+              {intern.Name} - Department: {intern.Department__c}, Goals Achieved: {intern.Goals_Achieved__c}
+            </li>
+          </template>
+        </ul>
+      </div>
+    </template>
+
+    <!-- Show an error message if there is an error -->
+    <template if:true={error}>
+      <p class="error">An error occurred while loading data: {error}</p>
+    </template>
+  </lightning-card>
+</template>
