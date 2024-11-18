@@ -1,0 +1,78 @@
+/* The entire path track (container for steps) */
+.slds-grid.slds-path__track {
+    background-color: #f3e5f5; /* Light purple background for the path track */
+    padding: 1rem; /* Add some spacing around the steps */
+    border-radius: 8px; /* Optional: round the edges of the track */
+}
+
+/* Individual path items (steps) */
+.slds-path__item {
+    background-color: #e1bee7; /* Light purple for unselected steps */
+    color: #4a148c; /* Deep purple text for unselected steps */
+    border: 1px solid #d1c4e9; /* Slightly darker purple border */
+    border-radius: 20px; /* Rounded for better aesthetics */
+    text-align: center; /* Center-align the content */
+    padding: 0.5rem 1rem;
+    margin-right: 0.5rem; /* Add spacing between steps */
+    transition: all 0.3s ease-in-out; /* Smooth transitions for hover and focus states */
+}
+
+/* Hover and focus state for individual steps */
+.slds-path__item:hover,
+.slds-path__item:focus {
+    background-color: #d1c4e9; /* Slightly darker purple on hover */
+    color: #4a148c; /* Maintain deep purple text */
+    border-color: #b39ddb; /* Subtle border highlight on hover */
+}
+
+/* Completed steps */
+.slds-path__item.slds-is-complete {
+    background-color: #ba68c8; /* Medium purple for completed steps */
+    color: #ffffff; /* White text for better contrast */
+    border-color: #9c27b0; /* Darker purple border for emphasis */
+    font-weight: bold; /* Highlight completed steps */
+}
+
+/* Active step */
+.slds-path__item.slds-is-current {
+    background-color: #6a1b9a; /* Deep purple for active step */
+    color: #ffffff; /* White text for the active step */
+    font-weight: bold; /* Bold text for active step */
+    border-color: #4a148c; /* Darker border for current step */
+}
+
+/* Path icons inside each step */
+.slds-path__item .slds-path__title {
+    color: #4a148c; /* Deep purple for step titles */
+}
+
+/* Path stage indicators (checkmarks or arrows) */
+.slds-path__item .slds-path__stage {
+    background-color: #e1bee7; /* Light purple for stage icons */
+    border: 1px solid #d1c4e9; /* Slightly darker border for stages */
+    color: #4a148c; /* Deep purple for icons */
+    border-radius: 50%; /* Circular icons */
+    padding: 0.25rem;
+}
+
+/* Completed stage indicators */
+.slds-path__item.slds-is-complete .slds-path__stage {
+    background-color: #6a1b9a; /* Deep purple for completed stages */
+    color: #ffffff; /* White for checkmark/icon */
+    border-color: #4a148c; /* Darker border for completed stages */
+}
+
+/* Path actions button ("Mark Complete" or similar) */
+.slds-path__action {
+    background-color: #6a1b9a; /* Deep purple for actions */
+    border-color: #4a148c; /* Matching border color */
+    color: #ffffff; /* White text */
+    padding: 0.5rem 1rem;
+    border-radius: 4px; /* Slightly rounded button */
+}
+
+/* Hover state for action button */
+.slds-path__action:hover {
+    background-color: #4a148c; /* Darker purple on hover */
+    border-color: #38006b; /* Darker border on hover */
+}

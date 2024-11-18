@@ -1,63 +1,30 @@
-/* Highlight Panel Style for Training Program */
-.training-program-highlight {
-    border: 2px solid #d8dde6; /* Border to mimic Salesforce Highlight Panel */
-    border-radius: 6px;
-    padding: 16px;
-    background-color: #ffffff; /* Clean background */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  }
-  
-  .slds-card__header {
-    background-color: #f4f6f9;
-    padding: 12px;
-    border-radius: 6px 6px 0 0;
-  }
-  
-  .slds-card__header h2 {
-    font-size: 1.25rem;
-    font-weight: 600;
-  }
-  
-  .slds-card__body {
-    padding: 12px;
-  }
-  
-  h2, h3, h4 {
-    color: #0067b8; /* Salesforce Blue */
-  }
-  
-  .status {
-    font-weight: bold;
-    color: #0070d2;
-  }
-  
-  ul {
-    padding-left: 20px;
-  }
-  
-  .certifications ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .certifications li {
-    padding: 5px 0;
-  }
-  
-  .error {
-    color: red;
-    font-weight: bold;
-    margin-top: 20px;
-  }
-  
-  /* Styling the exam items */
-  .exam-item {
-    padding: 10px;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .exam-item p {
-    margin: 5px 0;
-  }
-  
+/* Ensure the buttons container is aligned to the right */
+.action-buttons {
+  display: flex;
+  justify-content: flex-end; /* Align buttons to the right */
+}
+
+/* Style for each button */
+.action-button {
+  padding: 8px 16px;
+  color: #f46666;
+  border:#f46666;
+  border-radius: 1px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Hover effect */
+.action-button:hover {
+  background-color: #f46666; /* Darker blue on hover */
+}
+
+/* Active or clicked effect */
+.action-button:active {
+  background-color: #f46666; /* Even darker on click */
+}
+
+/* Optional: Add focus effect to improve accessibility */
+.action-button:focus {
+  outline: 2px solid #f46666; /* Light border when focused */
+}
