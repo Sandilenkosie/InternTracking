@@ -1,6 +1,5 @@
-import { LightningElement, api, wire } from 'lwc';
+import { LightningElement, api, wire, track } from 'lwc';
 import getTrainingProgramDetails from '@salesforce/apex/TrainingProgramController.getTrainingProgramDetails';
-import { refreshApex } from '@salesforce/apex';
 
 export default class TrainingProgramSummary extends LightningElement {
     @api recordId;
@@ -15,6 +14,10 @@ export default class TrainingProgramSummary extends LightningElement {
     nextPeriodRange = '';
     ongoingPeriodRange = '';
 
+    @track selectedInternId = '';
+    @track selectedInternDetails = {};
+    @track internOptions = [];
+
     // Wire function to fetch data
     @wire(getTrainingProgramDetails, { trainingProgramId: '$recordId' })
     wiredTrainingProgram({ error, data }) {
@@ -25,16 +28,29 @@ export default class TrainingProgramSummary extends LightningElement {
             this.interns = data.interns;
             this.examSchedules = data.examSchedules;
             this.filteredSchedules = data.examSchedules;
-            this.handleWeekFilter(); // Apply Week filter by default
+
+            // Create options for the intern filter combobox
+            this.internOptions = [
+                { label: 'All Interns', value: '' },
+                ...data.interns.map(intern => ({
+                    label: intern.User__r.Name, 
+                    value: intern.User__c
+                })) // Map User__c here
+            ];
+
+            // Apply Week filter by default after fetching data
+            this.handleWeekFilter();
         } else if (error) {
             console.error('Error fetching data:', error);  // Log the error if there's an issue
             this.error = error;
         }
     }
-    
+
+    // Getter to check if there are any interns available
     get hasInterns() {
         return this.interns && this.interns.length > 0;
     }
+
     // Handle filter by Calendar Week
     handleWeekFilter() {
         this.selectedFilter = 'Week';
@@ -65,7 +81,7 @@ export default class TrainingProgramSummary extends LightningElement {
         this.applyFilter(startOfQuarter, endOfQuarter, 'Quarter');
     }
 
-    // Helper method to get the start month of the quarter based on current month
+    // Helper method to get the start month of the quarter based on the current month
     getQuarterStartMonth(month) {
         if (month < 3) return 0;    // Q1
         if (month < 6) return 3;    // Q2
@@ -73,30 +89,59 @@ export default class TrainingProgramSummary extends LightningElement {
         return 9;                   // Q4
     }
 
-    // General function to apply filters to schedules and update ranges
+    // Helper method to get the start of the week (Sunday by default)
+    getStartOfWeek(date) {
+        const day = date.getDay();
+        const diff = date.getDate() - day + (day === 0 ? -6 : 0); // Adjust for Sunday
+        const startOfWeek = new Date(date.setDate(diff));
+        startOfWeek.setHours(0, 0, 0, 0); // Ensure the time is at midnight
+        return startOfWeek;
+    }
+
+    // Helper method to get the end of the week (Saturday)
+    getEndOfWeek(date) {
+        const day = date.getDay();
+        const diff = date.getDate() - day + (day === 0 ? 6 : 6); // Adjust for Saturday
+        const endOfWeek = new Date(date.setDate(diff));
+        endOfWeek.setHours(23, 59, 59, 999); // Ensure the time is at 11:59 PM
+        return endOfWeek;
+    }
+
+    // Apply filters based on intern and selected time period
     applyFilter(startDate, endDate, filterType) {
-        this.filteredSchedules = this.examSchedules.filter(schedule => {
+        let filteredSchedules = this.examSchedules;
+
+        // Filter by intern if selected
+        if (this.selectedInternId) {
+            filteredSchedules = filteredSchedules.filter(schedule => schedule.Assigned_To__c === this.selectedInternId);
+        }
+
+        // Filter by date range (current period)
+        this.filteredSchedules = filteredSchedules.map(schedule => {
             const scheduledDate = new Date(schedule.Scheduled_Date__c);
-            return scheduledDate >= startDate && scheduledDate <= endDate;
+
+            const isInCurrentPeriod = scheduledDate >= startDate && scheduledDate <= endDate;
+            const isOngoing = scheduledDate > endDate;
+
+            return {
+                ...schedule,
+                isInCurrentPeriod,
+                isOngoing,
+                formattedDate: this.formatDate(scheduledDate)  // Format the date for display
+            };
         });
 
         this.updateDateRanges(startDate, endDate, filterType);
     }
 
-    // Function to update the date ranges in the column names
+    // Update date ranges for the current, next, and ongoing periods
     updateDateRanges(startDate, endDate, filterType) {
         const periodString = `${this.formatDate(startDate)} - ${this.formatDate(endDate)}`;
-        if (filterType === 'Week') {
-            this.currentPeriodRange = `(${periodString})`;
-        } else if (filterType === 'Month') {
-            this.currentPeriodRange = `(${periodString})`;
-        } else if (filterType === 'Quarter') {
-            this.currentPeriodRange = `(${periodString})`;
-        }
+        this.currentPeriodRange = `(${periodString})`;
 
-        // For "Next Period", use the next week/month/quarter
+        // Next period
         const nextPeriodStart = new Date(endDate);
-        nextPeriodStart.setDate(endDate.getDate() + 1); // Next day after current period
+        nextPeriodStart.setDate(endDate.getDate() + 1);
         let nextPeriodEnd = new Date(nextPeriodStart);
 
         if (filterType === 'Week') {
@@ -109,99 +154,31 @@ export default class TrainingProgramSummary extends LightningElement {
 
         this.nextPeriodRange = `(${this.formatDate(nextPeriodStart)} - ${this.formatDate(nextPeriodEnd)})`;
 
-        // Ongoing Period (i.e., after the current filter period)
-        const ongoingStart = new Date(nextPeriodEnd);
-        ongoingStart.setDate(nextPeriodEnd.getDate() + 1);
-        this.ongoingPeriodRange = `(${this.formatDate(ongoingStart)})`;
-    }
-
-
-    applyFilter(startDate, endDate, filterType) {
-        // Calculate next period dates based on filter type
-        const nextPeriodStart = new Date(endDate);
-        nextPeriodStart.setDate(endDate.getDate() + 1); // Start the next period right after the current period ends
-        let nextPeriodEnd = new Date(nextPeriodStart);
-    
-        if (filterType === 'Week') {
-            nextPeriodEnd.setDate(nextPeriodStart.getDate() + 6); // Next week (7 days)
-        } else if (filterType === 'Month') {
-            nextPeriodEnd = new Date(nextPeriodStart.getFullYear(), nextPeriodStart.getMonth() + 1, 0); // End of next month
-        } else if (filterType === 'Quarter') {
-            nextPeriodEnd = new Date(nextPeriodStart.getFullYear(), this.getQuarterStartMonth(nextPeriodStart.getMonth()) + 3, 0); // End of next quarter
-        }
-    
-        // Map over the schedules and add flags for the periods
-        this.filteredSchedules = this.examSchedules.map(schedule => {
-            const scheduledDate = new Date(schedule.Scheduled_Date__c);
-            const isInCurrentPeriod = scheduledDate >= startDate && scheduledDate <= endDate;
-            const isInNextPeriod = scheduledDate >= nextPeriodStart && scheduledDate <= nextPeriodEnd;
-            
-            // Ongoing check (schedule is ongoing if its date is after the current period)
-            const isOngoing = scheduledDate > endDate && !isInNextPeriod;
-    
-            // Create a new schedule object with the added flags
-            return {
-                ...schedule,
-                isInCurrentPeriod, 
-                isInNextPeriod,  // Flag for Next Period
-                isOngoing // Flag for Ongoing, ensuring it doesn't overlap with Next Period
-            };
-        });
-    
-        this.updateDateRanges(startDate, endDate, filterType);
-    }
-    
-    updateDateRanges(startDate, endDate, filterType) {
-        const periodString = `${this.formatDate(startDate)} - ${this.formatDate(endDate)}`;
-        this.currentPeriodRange = `(${periodString})`;
-    
-        // Calculate the next period's start and end dates
-        const nextPeriodStart = new Date(endDate);
-        nextPeriodStart.setDate(endDate.getDate() + 1); // Start next period
-        let nextPeriodEnd = new Date(nextPeriodStart);
-    
-        if (filterType === 'Week') {
-            nextPeriodEnd.setDate(nextPeriodStart.getDate() + 6); // End of the next week
-        } else if (filterType === 'Month') {
-            nextPeriodEnd = new Date(nextPeriodStart.getFullYear(), nextPeriodStart.getMonth() + 1, 0); // End of the next month
-        } else if (filterType === 'Quarter') {
-            nextPeriodEnd = new Date(nextPeriodStart.getFullYear(), this.getQuarterStartMonth(nextPeriodStart.getMonth()) + 3, 0); // End of the next quarter
-        }
-    
-        this.nextPeriodRange = `(${this.formatDate(nextPeriodStart)} - ${this.formatDate(nextPeriodEnd)})`;
-    
-        // Ongoing Period starts after the next period
+        // Ongoing period
         const ongoingStart = new Date(nextPeriodEnd);
         ongoingStart.setDate(nextPeriodEnd.getDate() + 1);
         this.ongoingPeriodRange = `(Due Date - ${this.formatDate(ongoingStart)})`;
     }
-    
-    // Helper function to format the date as "Month Day" (e.g., "November 18")
+
+    // Format date for display
     formatDate(date) {
-        const options = { month: 'short', day: 'numeric' }; // Month as full name, day as numeric
-        return new Intl.DateTimeFormat('en-US', options).format(date);
+        const options = { month: 'short', day: 'numeric' };
+        return date.toLocaleDateString('en-US', options);
     }
 
-    // Refresh function to reset the filter and show all data
+    // Handle intern filter change
+    handleInternChange(event) {
+        this.selectedInternId = event.target.value;
+        this.selectedInternDetails = this.interns.find(
+            intern => intern.User__c === this.selectedInternId
+        ) || {};
+        // Re-apply the filter based on selected intern and current period
+        this.applyFilter(this.getStartOfWeek(new Date()), this.getEndOfWeek(new Date()), this.selectedFilter);
+    }
+
+    // Handle reset (refresh)
     handleRefresh() {
-        // Apply the default Week filter
-        const today = new Date();
-        const startOfWeek = this.getStartOfWeek(today); // Custom function to get the start of the week
-        const endOfWeek = this.getEndOfWeek(today); // Custom function to get the end of the week
-
-        // Call applyFilter to reload data for the current week
-        this.applyFilter(startOfWeek, endOfWeek, 'Week');
-
-        // Refresh the wire service
-        refreshApex(this.wiredTrainingProgram);
-    }
-
-    // Helper function to get the start of the week (Sunday by default)
-    getStartOfWeek(date) {
-        const day = date.getDay();
-        const diff = date.getDate() - day + (day === 0 ? -6 : 0); // Adjust for Sunday
-        const startOfWeek = new Date(date.setDate(diff));
-        startOfWeek.setHours(0, 0, 0, 0); // Ensure the time is at midnight
-        return startOfWeek;
+        this.selectedInternId = ''; // Reset the intern filter
+        this.applyFilter(this.getStartOfWeek(new Date()), this.getEndOfWeek(new Date()), this.selectedFilter); // Re-apply filter for the current period
     }
 }
