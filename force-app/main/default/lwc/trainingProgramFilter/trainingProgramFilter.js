@@ -18,11 +18,11 @@ export default class TrainingProgramFilter extends LightningElement {
     @track columns = [
         { label: 'Name', fieldName: 'Name' },
         { label: 'Status', fieldName: 'Status__c' },
-        { label: 'Assigned To', fieldName: 'Owner.Name' },
+        { label: '% Completion', fieldName: 'Completion__c' },
         { label: 'Start Date', fieldName: 'Start_Date__c', type: 'date' },
         { label: 'Due Date', fieldName: 'Due_Date__c', type: 'date' }
     ];
-    
+
     @track isModalOpen = false;  // Controls modal visibility
     @track selectedTasks = [];   // Stores selected task IDs
     @track newStatus = '';       // Stores the new status to apply
@@ -57,9 +57,9 @@ export default class TrainingProgramFilter extends LightningElement {
     @wire(getAssignedTo)
     wiredAssignedTo({ error, data }) {
         if (data) {
-            this.assignedToOptions = [{ label: 'All', value: 'All' }, ...data.map(user => ({
-                label: user.Name,
-                value: user.Id
+            this.assignedToOptions = [{ label: 'All', value: 'All' }, ...data.map(name => ({
+                label: name,
+                value: name // Assuming user.Id is the Assigned_To__c field
             }))];
         } else if (error) {
             console.error(error);
@@ -67,21 +67,24 @@ export default class TrainingProgramFilter extends LightningElement {
     }
 
     loadTasks() {
-        getTasks({ 
-            phaseId: this.selectedPhase, 
-            status: this.selectedStatus, 
-            assignedToId: this.selectedAssignedTo 
+        this.isLoading = true;
+    
+        // Fetch tasks based on the selected filters
+        getTasks({
+            phaseId: this.selectedPhase,
+            status: this.selectedStatus,
+            assignedToId: this.selectedAssignedTo
         })
         .then((result) => {
-            this.tasks = result; // Handle the fetched tasks
-            this.isLoading = false; // Stop the loading spinner once tasks are fetched
+            this.tasks = result;  // Assign the fetched data to tasks
+    
+            this.isLoading = false;  // Stop loading spinner
         })
         .catch((error) => {
             console.error(error);
-            this.isLoading = false; 
+            this.isLoading = false;  // Stop loading spinner on error
         });
     }
-    
 
     // Handle Phase, Status, and Assigned To Filters
     handlePhaseChange(event) {
