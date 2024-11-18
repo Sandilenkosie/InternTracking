@@ -1,4 +1,8 @@
 <template>
+    <!-- Spinner to show while data is loading -->
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="medium" variant="brand"></lightning-spinner>
+    </template>
     <lightning-card title="Training Program Summary" icon-name="custom:custom19">
         <lightning-card>
             <!-- Title Section -->
@@ -9,34 +13,34 @@
     
             <!-- Actions Section -->
             <div slot="actions">
-                    <lightning-button-group class="slds-m-bottom_small">
-                        <lightning-button
+                <lightning-button-group class="slds-m-bottom_small">
+                    <lightning-button
                         label="Week"
                         icon-name="utility:weeklyview"
                         icon-position="right"
                         onclick={handleWeekFilter}
-                        variant="neutral">
+                        variant={weekVariant}> <!-- Dynamically set variant -->
                     </lightning-button>
                     <lightning-button 
                         label="Month"
                         onclick={handleMonthFilter}
                         icon-name="utility:monthlyview"
                         icon-position="right"
-                        variant="neutral">
+                        variant={monthVariant}> <!-- Dynamically set variant -->
                     </lightning-button>
                     <lightning-button 
                         label="Quarter"
                         onclick={handleQuarterFilter}
                         icon-name="utility:event"
                         icon-position="right"
-                        variant="neutral">
+                        variant={quarterVariant}> <!-- Dynamically set variant -->
                     </lightning-button>
                     <lightning-button 
                         label="Refresh"
                         onclick={handleRefresh}
                         icon-name="utility:refresh"
                         icon-position="right"
-                        variant="neutral">
+                        variant="neutral"> <!-- Always neutral -->
                     </lightning-button>
                 </lightning-button-group>
             </div>

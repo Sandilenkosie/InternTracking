@@ -1,7 +1,7 @@
 <template>
     <!-- Spinner to show while data is loading -->
     <template if:true={isLoading}>
-        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        <lightning-spinner alternative-text="Loading" size="medium" variant="brand"></lightning-spinner>
     </template>
     
     <lightning-card>
@@ -13,8 +13,9 @@
 
         <!-- Actions Section -->
         <div slot="actions">
-                <lightning-button-group class="slds-m-bottom_small">
-                    <lightning-button
+            <lightning-button-group class="slds-m-bottom_small">
+                <!-- "Change Status" button with brand styling -->
+                <lightning-button
                     label="Change Status"
                     icon-name="utility:tracker"
                     alternative-text="Change Status"
@@ -22,21 +23,26 @@
                     onclick={handleOpenModal}
                     variant="neutral">
                 </lightning-button>
-                <lightning-button 
+                
+                <!-- "Change Assignee" button -->
+                <lightning-button
                     label="Change Assignee"
                     onclick={handleStatusClick}
                     icon-name="utility:change_owner"
                     icon-position="right"
-                    variant="neutral">
+                    variant="neutral"> <!-- Keep as neutral -->
                 </lightning-button>
-                <lightning-button 
+                
+                <!-- "Refresh" button -->
+                <lightning-button
                     label="Refresh"
                     onclick={handleRefresh}
                     icon-name="utility:refresh"
                     icon-position="right"
-                    variant="neutral">
+                    variant="neutral"> <!-- Keep as neutral -->
                 </lightning-button>
             </lightning-button-group>
+            
         </div>
 
         <!-- Filters Section -->

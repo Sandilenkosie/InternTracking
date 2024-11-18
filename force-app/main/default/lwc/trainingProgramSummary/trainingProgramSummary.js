@@ -17,6 +17,7 @@ export default class TrainingProgramSummary extends LightningElement {
     @track selectedInternId = '';
     @track selectedInternDetails = {};
     @track internOptions = [];
+    @track isLoading = false;
 
     // Wire function to fetch data
     @wire(getTrainingProgramDetails, { trainingProgramId: '$recordId' })
@@ -51,8 +52,22 @@ export default class TrainingProgramSummary extends LightningElement {
         return this.interns && this.interns.length > 0;
     }
 
+    // Getter for dynamic button variants
+    get weekVariant() {
+        return this.selectedFilter === 'Week' ? 'brand' : 'neutral';
+    }
+
+    get monthVariant() {
+        return this.selectedFilter === 'Month' ? 'brand' : 'neutral';
+    }
+
+    get quarterVariant() {
+        return this.selectedFilter === 'Quarter' ? 'brand' : 'neutral';
+    }
+
     // Handle filter by Calendar Week
     handleWeekFilter() {
+        this.isLoading = true;
         this.selectedFilter = 'Week';
         const startOfWeek = this.getStartOfWeek(new Date());
         const endOfWeek = new Date(startOfWeek);
@@ -63,6 +78,7 @@ export default class TrainingProgramSummary extends LightningElement {
 
     // Handle filter by Calendar Month
     handleMonthFilter() {
+        this.isLoading = true;
         this.selectedFilter = 'Month';
         const today = new Date();
         const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1); // First day of the month
@@ -73,6 +89,7 @@ export default class TrainingProgramSummary extends LightningElement {
 
     // Handle filter by Calendar Quarter
     handleQuarterFilter() {
+        this.isLoading = true;
         this.selectedFilter = 'Quarter';
         const today = new Date();
         const startOfQuarter = new Date(today.getFullYear(), this.getQuarterStartMonth(today.getMonth()), 1);
@@ -109,29 +126,35 @@ export default class TrainingProgramSummary extends LightningElement {
 
     // Apply filters based on intern and selected time period
     applyFilter(startDate, endDate, filterType) {
+        this.isLoading = true; // Set loading state to true before processing
+    
         let filteredSchedules = this.examSchedules;
-
+    
         // Filter by intern if selected
         if (this.selectedInternId) {
             filteredSchedules = filteredSchedules.filter(schedule => schedule.Assigned_To__c === this.selectedInternId);
         }
-
+    
         // Filter by date range (current period)
         this.filteredSchedules = filteredSchedules.map(schedule => {
             const scheduledDate = new Date(schedule.Scheduled_Date__c);
-
+    
             const isInCurrentPeriod = scheduledDate >= startDate && scheduledDate <= endDate;
             const isOngoing = scheduledDate > endDate;
-
+    
             return {
                 ...schedule,
                 isInCurrentPeriod,
                 isOngoing,
-                formattedDate: this.formatDate(scheduledDate)  // Format the date for display
+                formattedDate: this.formatDate(scheduledDate)
             };
         });
-
+    
         this.updateDateRanges(startDate, endDate, filterType);
+    
+        setTimeout(() => {
+            this.isLoading = false; // Set loading state to false after processing
+        }, 500);
     }
 
     // Update date ranges for the current, next, and ongoing periods
@@ -157,7 +180,7 @@ export default class TrainingProgramSummary extends LightningElement {
         // Ongoing period
         const ongoingStart = new Date(nextPeriodEnd);
         ongoingStart.setDate(nextPeriodEnd.getDate() + 1);
-        this.ongoingPeriodRange = `(Due Date - ${this.formatDate(ongoingStart)})`;
+        this.ongoingPeriodRange = `(Due After - ${this.formatDate(ongoingStart)})`;
     }
 
     // Format date for display
@@ -179,6 +202,9 @@ export default class TrainingProgramSummary extends LightningElement {
     // Handle reset (refresh)
     handleRefresh() {
         this.selectedInternId = ''; // Reset the intern filter
+        this.handleWeekFilter();
+        this.isLoading = true;
         this.applyFilter(this.getStartOfWeek(new Date()), this.getEndOfWeek(new Date()), this.selectedFilter); // Re-apply filter for the current period
+        
     }
 }
