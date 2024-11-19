@@ -3,20 +3,82 @@
     <template if:true={isLoading}>
         <lightning-spinner alternative-text="Loading" size="medium" variant="brand"></lightning-spinner>
     </template>
-    <lightning-card title="Training Program Summary" icon-name="custom:custom19">
-        <lightning-card>
-            <!-- Title Section -->
-            <h2 slot="header">
-                <lightning-icon icon-name="custom:custom83" size="small" alternative-text="Tasks"></lightning-icon>
-                Tasks
-            </h2>
     
+    <lightning-card>
+        <!-- Title Section -->
+        <h2 slot="header">
+            <lightning-icon icon-name="custom:custom83" size="small" alternative-text="Tasks"></lightning-icon>
+            Tasks
+        </h2>
+
+        <!-- Filters Section -->
+        <lightning-layout>
+            <lightning-layout-item flexibility="auto" padding="around-small" size="1">
+                <div class="slds-text-heading--label">Filters</div>
+            </lightning-layout-item>
+
+            <!-- Intern Filter -->
+            <lightning-layout-item flexibility="auto" padding="around-small" class="slds-m-bottom_small" size="6">
+                <lightning-combobox 
+                    label="Interns" 
+                    value={selectedInternId} 
+                    options={internOptions}
+                    onchange={handleInternChange}>
+                </lightning-combobox>
+            </lightning-layout-item>
+
+        </lightning-layout>
+
+                
+    </lightning-card>
+
+    <template if:true={selectedInternId}>
+        <div class="slds-p-around_medium slds-theme_datualt">
+            <lightning-card padding = 8px title={selectedInternDetails.Full_intern_Name__c} icon-name="custom:custom19">
+                <template if:true={trainingProgram}>
+                    
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-5 slds-p-around_x-small">
+                                <p class="slds-text-title_bold">Training Progress</p>
+                                <lightning-progress-bar value={performanceRatingFormatted} variant="base"></lightning-progress-bar>
+                                <p class="slds-text-body_regular">{performanceRatingFormatted}%</p>
+                            </div>
+                            <div class="slds-col slds-size_1-of-3 slds-p-around_x-small">
+                                <p class="slds-text-title_bold">Located</p>
+                                <p class="slds-text-body_regular">{trainingProgram.Location__c}</p>
+                            </div>
+                        </div>
+                </template>
+                <!-- Intern Details Section with Highlight Panel -->
+                <div class="slds-grid slds-wrap slds-gutters ">
+                    <div class="slds-col slds-size_1-of-8 slds-p-around_x-small">
+                        <p class="slds-text-title_bold">Program Duration</p>
+                        <p class="slds-text-body_regular">{selectedInternDetails.Program_Duration__c}</p>
+                    </div>
+                    <div class="slds-col slds-size_1-of-8 slds-p-around_x-small">
+                        <p class="slds-text-title_bold">Program Name</p>
+                        <p class="slds-text-body_regular">{selectedInternDetails.Program__r.Name}</p>
+                    </div>
+
+                    <div class="slds-col slds-size_1-of-8 slds-p-around_x-small">
+                        <p class="slds-text-title_bold">Goals Achieved?</p>
+                        <p class="slds-text-body_regular">{selectedInternDetails.Goals_Achieved__c}</p>
+                    </div>
+                    <div class="slds-col slds-size_1-of-4 slds-p-around_x-small">
+                        <p class="slds-text-title_bold">Department</p>
+                        <p class="slds-text-body_regular">{selectedInternDetails.Department__c}</p>
+                    </div>
+                </div>
+            </lightning-card>
+        </div>
+    </template>
+    <br>
+<lightning-card>
             <!-- Actions Section -->
             <div slot="actions">
                 <lightning-button-group class="slds-m-bottom_small">
                     <lightning-button
                         label="Week"
-                        icon-name="utility:weeklyview"
                         icon-position="right"
                         onclick={handleWeekFilter}
                         variant={weekVariant}> <!-- Dynamically set variant -->
@@ -24,17 +86,25 @@
                     <lightning-button 
                         label="Month"
                         onclick={handleMonthFilter}
-                        icon-name="utility:monthlyview"
                         icon-position="right"
                         variant={monthVariant}> <!-- Dynamically set variant -->
                     </lightning-button>
+    
                     <lightning-button 
                         label="Quarter"
                         onclick={handleQuarterFilter}
-                        icon-name="utility:event"
                         icon-position="right"
                         variant={quarterVariant}> <!-- Dynamically set variant -->
                     </lightning-button>
+                    <!-- Action Button to Trigger Modal -->
+                    <lightning-button 
+                    label="Milestones List" 
+                    icon-name="utility:meet_content_source"
+                    icon-position="right" 
+                    onclick={handleMilestone} 
+                    variant={milestoneVariant}>
+                </lightning-button>
+                 <!-- Updated method name -->
                     <lightning-button 
                         label="Refresh"
                         onclick={handleRefresh}
@@ -44,54 +114,9 @@
                     </lightning-button>
                 </lightning-button-group>
             </div>
-    
-            <!-- Filters Section -->
-            <lightning-layout>
-                <lightning-layout-item flexibility="auto" padding="around-small" size="1">
-                    <div class="slds-text-heading--label">Filters</div>
-                </lightning-layout-item>
-    
-                <!-- Intern Filter -->
-                <lightning-layout-item flexibility="auto" padding="around-small" class="slds-m-bottom_small">
-                    <lightning-combobox 
-                        label="Interns" 
-                        value={selectedInternId} 
-                        options={internOptions}
-                        onchange={handleInternChange}>
-                    </lightning-combobox>
-                </lightning-layout-item>
-
-            </lightning-layout>
-            <!-- Intern Details Section with Highlight Panel -->
-            <template if:true={selectedInternId}>
-                <lightning-card title="Intern Details" icon-name="standard:user">
-                    <div class="slds-p-around_medium slds-box slds-theme_default">
-                        <div class="slds-grid slds-wrap slds-gutters slds-grid_reverse">
-                            <div class="slds-col slds-size_1-of-3 slds-p-around_x-small">
-                                <p class="slds-text-title_bold">Program Duration</p>
-                                <p class="slds-text-body_regular">{selectedInternDetails.Program_Duration__c}</p>
-                            </div>
-                            <div class="slds-col slds-size_1-of-3 slds-p-around_x-small">
-                                <p class="slds-text-title_bold">Program Name</p>
-                                <p class="slds-text-body_regular">{selectedInternDetails.Program__r.Name}</p>
-                            </div>
-                            <div class="slds-col slds-size_1-of-3 slds-p-around_x-small">
-                                <p class="slds-text-title_bold">Department</p>
-                                <p class="slds-text-body_regular">{selectedInternDetails.Department__c}</p>
-                            </div>
-                            <div class="slds-col slds-size_1-of-3 slds-p-around_x-small">
-                                <p class="slds-text-title_bold">Asset Assigned</p>
-                                <p class="slds-text-body_regular">{selectedInternDetails.Asset_assign__c}</p>
-                            </div>
-                        </div>
-                    </div>
-                </lightning-card>
-            </template>
-                    
-        </lightning-card>
-
+</lightning-card>
         <!-- Exam Schedules Section -->
-        <h3 class="">Exam Schedules</h3>
+        
         <template if:true={filteredSchedules}>
             <table class="slds-table slds-table_cell-buffer slds-table_bordered">
                 <thead>
@@ -107,31 +132,165 @@
                     <template for:each={filteredSchedules} for:item="schedule">
                         <tr key={schedule.Id}>
                             <td>{schedule.Name}</td>
-
+                    
                             <!-- Current Period -->
                             <td>
                                 <template if:true={schedule.isInCurrentPeriod}>
-                                    <p>{schedule.formattedDate}</p>
+                                    <p class="slds-m-bottom_xx-small">
+                                        {schedule.formattedDate}
+                                        <!-- Dynamically change badge color and size -->
+                                        <span class="slds-m-left_small">
+                                            <span class={schedule.badgeClass}>
+                                                {schedule.Exam_Result__c}
+                                            </span>
+                                        </span>
+
+                                    </p>
                                 </template>
                             </td>
-
+                    
                             <!-- Next Period -->
                             <td>
                                 <template if:true={schedule.isInNextPeriod}>
-                                    <p>{schedule.formattedDate}</p>
+                                    <p class="slds-m-bottom_xx-small">
+                                        {schedule.formattedDate}
+                                        <span class="slds-m-left_small">
+                                            <span class={schedule.badgeClass}>
+                                                {schedule.Exam_Result__c}
+                                            </span>
+                                        </span>
+                                    </p>
                                 </template>
                             </td>
-
+                    
                             <!-- Ongoing -->
                             <td>
                                 <template if:true={schedule.isOngoing}>
-                                    <p>{schedule.formattedDate}</p>
+                                    <p class="slds-m-bottom_xx-small">
+                                        {schedule.formattedDate}
+                                        <span class="slds-m-left_small">
+                                            <span class={schedule.badgeClass}>
+                                                {schedule.Exam_Result__c}
+                                            </span>
+                                        </span>
+                                    </p>
                                 </template>
                             </td>
                         </tr>
                     </template>
+                    
                 </tbody>
             </table>
+            <!-- Task Legend -->
+            <div class="slds-grid slds-grid_align-center slds-m-top_medium">
+                <ul class="slds-list_horizontal slds-has-dividers_right slds-p-horizontal_small">
+                    <li>
+                        <p class="slds-text-title_bold">Task Legend:</p>
+                    </li>
+                    <li class="slds-item">
+                        <lightning-icon icon-name="utility:routing_offline" alternative-text="Not Started" size="x-small"></lightning-icon>
+                        Not Started
+                    </li>
+                    <li class="slds-item">
+                        <lightning-icon icon-name="utility:sync" alternative-text="In Progress" size="x-small"></lightning-icon>
+                        In Progress
+                    </li>
+                    <li class="slds-item">
+                        <lightning-icon icon-name="utility:pause" alternative-text="On Hold" size="x-small"></lightning-icon>
+                        On Hold
+                    </li>
+                    <li class="slds-item">
+                        <lightning-icon icon-name="utility:check" alternative-text="Completed" size="x-small"></lightning-icon>
+                        Completed
+                    </li>
+                    <li class="slds-item">
+                        <lightning-icon icon-name="utility:approval" alternative-text="Approved" size="x-small"></lightning-icon>
+                        Approved
+                    </li>
+                    <li class="slds-item">
+                        <lightning-icon icon-name="utility:warning" alternative-text="Late" size="x-small"></lightning-icon>
+                        Late
+                    </li>
+                    <li class="slds-item">
+                        <lightning-icon icon-name="utility:flag" alternative-text="Milestone" size="x-small"></lightning-icon>
+                        <a href="#" class="slds-text-link">Milestone</a>
+                    </li>
+                </ul>
+            </div>
+            
+
         </template>
-    </lightning-card>
+
+
+     <!-- Modal Popup to Display Milestones -->
+     <template if:true={isMilestoneOpen}>
+         <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+             <div class="slds-modal__container">
+                 <header class="slds-modal__header">
+                     <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                             title="Close" onclick={handleCloseModal}>
+                         <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                         <span class="slds-assistive-text">Close</span>
+                     </button>
+                     <h2 class="slds-text-heading_medium">Milestones</h2>
+                 </header>
+                 <table class="slds-table slds-table_bordered slds-table_cell-buffer slds-table_fixed-layout">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col">
+                                <div class="slds-truncate" title="Milestone Name">Milestone Name</div>
+                            </th>
+                            <th scope="col">
+                                <div class="slds-truncate" title="Due Date">Due Date</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={milestones} for:item="milestone">
+                            <tr key={milestone.Id}>
+                                <td>
+                                    <div class="slds-truncate" title={milestone.Name}>
+                                        <strong>{milestone.Name}</strong> (Milestone)
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="slds-truncate" title={milestone.Due_Date__c}>{milestone.Due_Date__c}</div>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+                
+                 <footer class="slds-modal__footer">
+                     <lightning-button variant="neutral" label="Cancel" onclick={handleCloseModal}></lightning-button>
+                 </footer>
+             </div>
+         </section>
+         <div class="slds-backdrop slds-backdrop_open"></div>
+     </template>
+
+             <!-- Modal -->
+             <template if:true={showModal}>
+                <section class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <h2 class="slds-text-heading_medium">Update Goal Achieved</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium">
+                            <lightning-input 
+                                type="checkbox" 
+                                label="Mark Goal Achieved" 
+                                checked={goalAchieved} 
+                                onchange={handleGoalAchievedChange}>
+                            </lightning-input>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <lightning-button label="Cancel" onclick={closeModal}></lightning-button>
+                            <lightning-button label="Save" variant="brand" onclick={updateGoalAchieved}></lightning-button>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+    
 </template>

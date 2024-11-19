@@ -10,10 +10,10 @@ export default class TrainingProgramFilter extends LightningElement {
     @track tasks = [];
     @track selectedPhase = 'All';
     @track selectedStatus = 'All';
-    @track selectedAssignedTo = 'All';
     @track statusOptions = [];
     @track phaseOptions = [];
-    @track assignedToOptions = [];
+    assignedToOptions = [];
+    selectedAssignedTo = 'All';
     @track isLoading = false;
     @track columns = [
         { label: 'Name', fieldName: 'Name' },
@@ -23,7 +23,7 @@ export default class TrainingProgramFilter extends LightningElement {
         { label: 'Due Date', fieldName: 'Due_Date__c', type: 'date' }
     ];
 
-    @track isModalOpen = false;  // Controls modal visibility
+    @track isStatusOpen = false;  // Controls modal visibility
     @track selectedTasks = [];   // Stores selected task IDs
     @track newStatus = '';       // Stores the new status to apply
 
@@ -57,9 +57,9 @@ export default class TrainingProgramFilter extends LightningElement {
     @wire(getAssignedTo)
     wiredAssignedTo({ error, data }) {
         if (data) {
-            this.assignedToOptions = [{ label: 'All', value: 'All' }, ...data.map(name => ({
-                label: name,
-                value: name // Assuming user.Id is the Assigned_To__c field
+            this.assignedToOptions = [{ label: 'All', value: 'All' }, ...data.map(user => ({
+                label: user.User__r.Name,
+                value: user.User__c
             }))];
         } else if (error) {
             console.error(error);
@@ -111,10 +111,10 @@ export default class TrainingProgramFilter extends LightningElement {
     // Open Modal for Status Change
     handleOpenModal() {
         if (this.selectedTasks.length === 0) {
-            alert('Please select tasks to update.');
+            this.showToast('Error', 'Please select tasks to update.', 'Error');
             return;
         }
-        this.isModalOpen = true;  // Open the modal
+        this.isStatusOpen = true;  // Open the modal
     }
 
     // Handle Status Change in Modal
@@ -125,7 +125,7 @@ export default class TrainingProgramFilter extends LightningElement {
     // Save Status Update
     saveStatus() {
         if (!this.newStatus) {
-            alert('Please select a status.');
+            this.showToast('Error', 'Please select a status.', 'Error');
             return;
         }
 
@@ -135,7 +135,7 @@ export default class TrainingProgramFilter extends LightningElement {
         })
         .then(() => {
             this.showToast('Success', 'Status updated successfully.', 'success');
-            this.isModalOpen = false; // Close the modal
+            this.isStatusOpen = false; // Close the modal
             this.loadTasks(); // Refresh task data
             window.location.reload();
         })
@@ -155,7 +155,7 @@ export default class TrainingProgramFilter extends LightningElement {
 
     // Close Modal
     closeModal() {
-        this.isModalOpen = false;
+        this.isStatusOpen = false;
     }
 
     // Show Toast Notification

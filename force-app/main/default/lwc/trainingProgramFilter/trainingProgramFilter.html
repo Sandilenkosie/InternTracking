@@ -27,7 +27,7 @@
                 <!-- "Change Assignee" button -->
                 <lightning-button
                     label="Change Assignee"
-                    onclick={handleStatusClick}
+                    onclick={handleAssignedToChange}
                     icon-name="utility:change_owner"
                     icon-position="right"
                     variant="neutral"> <!-- Keep as neutral -->
@@ -89,12 +89,49 @@
         columns={columns}
         key-field="Id"
         onrowselection={handleRowSelection}>
+        
     </lightning-datatable>
+    <div class="slds-grid slds-grid_align-center slds-m-top_medium">
+        <ul class="slds-list_horizontal slds-has-dividers_right slds-p-horizontal_small">
+            <li>
+                <p class="slds-text-title_bold">Task Legend:</p>
+            </li>
+            <li class="slds-item">
+                <lightning-icon icon-name="utility:dash" alternative-text="Not Started" size="x-small"></lightning-icon>
+                Not Started
+            </li>
+            <li class="slds-item">
+                <lightning-icon icon-name="utility:sync" alternative-text="In Progress" size="x-small"></lightning-icon>
+                In Progress
+            </li>
+            <li class="slds-item">
+                <lightning-icon icon-name="utility:pause" alternative-text="On Hold" size="x-small"></lightning-icon>
+                On Hold
+            </li>
+            <li class="slds-item">
+                <lightning-icon icon-name="utility:check" alternative-text="Completed" size="x-small"></lightning-icon>
+                Completed
+            </li>
+            <li class="slds-item">
+                <lightning-icon icon-name="utility:approval" alternative-text="Approved" size="x-small"></lightning-icon>
+                Approved
+            </li>
+            <li class="slds-item">
+                <lightning-icon icon-name="utility:warning" alternative-text="Late" size="x-small"></lightning-icon>
+                Late
+            </li>
+            <li class="slds-item">
+                <lightning-icon icon-name="utility:flag" alternative-text="Milestone" size="x-small"></lightning-icon>
+                <a href="#" class="slds-text-link">Milestone</a>
+            </li>
+        </ul>
+    </div>
+    
 
 
 
     <!-- Modal for Changing Status -->
-    <template if:true={isModalOpen}>
+    <template if:true={isStatusOpen}>
         <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
             <div class="slds-modal__container">
                 <!-- Modal/Popup Header -->

@@ -1,5 +1,7 @@
 import { LightningElement, api, wire, track } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent'; 
 import getTrainingProgramDetails from '@salesforce/apex/TrainingProgramController.getTrainingProgramDetails';
+import savePerformanceRatingApex from '@salesforce/apex/TrainingProgramController.savePerformanceRatingApex';
 
 export default class TrainingProgramSummary extends LightningElement {
     @api recordId;
@@ -8,6 +10,7 @@ export default class TrainingProgramSummary extends LightningElement {
     interns = [];
     examSchedules = [];
     filteredSchedules = [];
+    milestones = [];
     error;
     selectedFilter = 'Week';
     currentPeriodRange = '';
@@ -16,8 +19,17 @@ export default class TrainingProgramSummary extends LightningElement {
 
     @track selectedInternId = '';
     @track selectedInternDetails = {};
+    @track selectedInternUpdate = {}
     @track internOptions = [];
     @track isLoading = false;
+    isMilestoneOpen = false;
+    
+
+    @track showModal = false; // Modal visibility
+    @track goalAchieved = false; // Checkbox state
+    performanceRatingFormatted = 0;
+    performanceRating = 0;
+    @track RatingIntern = '';
 
     // Wire function to fetch data
     @wire(getTrainingProgramDetails, { trainingProgramId: '$recordId' })
@@ -27,8 +39,10 @@ export default class TrainingProgramSummary extends LightningElement {
             this.trainingProgram = data.trainingProgram;
             this.phases = data.phases;
             this.interns = data.interns;
+            this.milestones = this.extractMilestones(data.phases);
             this.examSchedules = data.examSchedules;
             this.filteredSchedules = data.examSchedules;
+            
 
             // Create options for the intern filter combobox
             this.internOptions = [
@@ -36,8 +50,9 @@ export default class TrainingProgramSummary extends LightningElement {
                 ...data.interns.map(intern => ({
                     label: intern.User__r.Name, 
                     value: intern.User__c
-                })) // Map User__c here
+                }))
             ];
+            
 
             // Apply Week filter by default after fetching data
             this.handleWeekFilter();
@@ -46,7 +61,56 @@ export default class TrainingProgramSummary extends LightningElement {
             this.error = error;
         }
     }
+    
+    calculatePerformanceRating() {
+        let totalRating = 0;
+    
+        // Find the current intern
+        const currentUserIntern = this.interns.find(intern => intern.User__c === this.selectedInternId);
+        if (!currentUserIntern) {
+            this.showToast('warning', 'Intern not found for the current user.', 'warning');
+            return;
+        }
+    
+        // Calculate performance from exams
+        this.examSchedules.forEach(exam => {
+            if (exam.Assigned_To__c === this.selectedInternId && exam.Exam_Result__c === 'Passed') {
+                totalRating += exam.Completion__c;
+            }
+        });
+    
+        // Calculate performance from tasks
+        this.phases.forEach(phase => {
+            phase.Tasks1__r.forEach(task => {
+                if (task.Assigned_To__c === this.selectedInternId && task.Status__c === 'Completed') {
+                    totalRating += task.Completion__c;
+                }
+            });
+        });
+    
+        // Normalize performance rating
+        totalRating = Math.min(totalRating, 100);
+        this.performanceRatingFormatted = Math.round(totalRating);
+    
+    }
 
+    
+    extractMilestones(phases) {
+        let milestones = [];
+        phases.forEach(phase => {
+            phase.Tasks1__r.forEach(task => {
+                // Check if Milestone__c is true
+                if (task.Milestone__c) {
+                    milestones.push({
+                        Id: task.Id,
+                        Name: task.Name,
+                        Due_Date__c: task.Due_Date__c,  
+                    });
+                }
+            });
+        });
+        return milestones;
+    }
     // Getter to check if there are any interns available
     get hasInterns() {
         return this.interns && this.interns.length > 0;
@@ -63,6 +127,17 @@ export default class TrainingProgramSummary extends LightningElement {
 
     get quarterVariant() {
         return this.selectedFilter === 'Quarter' ? 'brand' : 'neutral';
+    }
+    get milestoneVariant(){
+        return this.selectedFilter === 'Milestones' ? 'brand' : 'neutral';
+    }
+
+    handleMilestone() {
+        this.isMilestoneOpen = true; // Updated method name
+    }
+
+    handleCloseModal() {
+        this.isMilestoneOpen = false;
     }
 
     // Handle filter by Calendar Week
@@ -124,38 +199,45 @@ export default class TrainingProgramSummary extends LightningElement {
         return endOfWeek;
     }
 
-    // Apply filters based on intern and selected time period
     applyFilter(startDate, endDate, filterType) {
-        this.isLoading = true; // Set loading state to true before processing
+        this.isLoading = true;
     
         let filteredSchedules = this.examSchedules;
     
-        // Filter by intern if selected
         if (this.selectedInternId) {
             filteredSchedules = filteredSchedules.filter(schedule => schedule.Assigned_To__c === this.selectedInternId);
         }
     
-        // Filter by date range (current period)
         this.filteredSchedules = filteredSchedules.map(schedule => {
             const scheduledDate = new Date(schedule.Scheduled_Date__c);
     
             const isInCurrentPeriod = scheduledDate >= startDate && scheduledDate <= endDate;
             const isOngoing = scheduledDate > endDate;
     
+            // Set the badge class based on the Exam_Result__c
+            let badgeClass = 'slds-badge'; // Default neutral badge class
+            if (schedule.Exam_Result__c === 'Passed') {
+                badgeClass = 'slds-badge slds-theme_success';  // Green for Passed
+            } else if (schedule.Exam_Result__c === 'Failed') {
+                badgeClass = 'slds-badge slds-theme_error';   // Red for Failed
+            }
+    
             return {
                 ...schedule,
                 isInCurrentPeriod,
                 isOngoing,
-                formattedDate: this.formatDate(scheduledDate)
+                formattedDate: this.formatDate(scheduledDate),
+                badgeClass, // Add the computed badgeClass here
             };
         });
     
         this.updateDateRanges(startDate, endDate, filterType);
     
         setTimeout(() => {
-            this.isLoading = false; // Set loading state to false after processing
+            this.isLoading = false;
         }, 500);
     }
+    
 
     // Update date ranges for the current, next, and ongoing periods
     updateDateRanges(startDate, endDate, filterType) {
@@ -194,10 +276,49 @@ export default class TrainingProgramSummary extends LightningElement {
         this.selectedInternId = event.target.value;
         this.selectedInternDetails = this.interns.find(
             intern => intern.User__c === this.selectedInternId
-        ) || {};
+        ) || {}
         // Re-apply the filter based on selected intern and current period
         this.applyFilter(this.getStartOfWeek(new Date()), this.getEndOfWeek(new Date()), this.selectedFilter);
+        this.calculatePerformanceRating();
+        if (this.selectedInternId && !this.goalAchieved) {
+            this.openModal();
+        }
     }
+
+    // Open modal
+    openModal() {
+        this.goalAchieved = false; // Reset state
+        this.showModal = true;
+    }
+
+    // Close modal
+    closeModal() {
+        this.showModal = false;
+    }
+
+    // Handle checkbox change
+    handleGoalAchievedChange(event) {
+        this.goalAchieved = event.target.checked;
+    }
+
+    // Save goal achieved
+    updateGoalAchieved() {
+
+        savePerformanceRatingApex({
+            
+            internId: this.selectedInternDetails.Id,
+            goalsAchieved: this.goalAchieved,
+            trainingProgress: this.performanceRatingFormatted
+        })
+            .then(() => {
+                this.showToast('Success', 'Goal Achieved updated successfully.'+ this.RatingIntern.Id, 'success');
+                this.closeModal();
+            })
+            .catch(error => {
+                this.showToast('Error', 'Error saving goal achieved: ' + this.RatingIntern.Id, 'error');
+            });
+    }
+
 
     // Handle reset (refresh)
     handleRefresh() {
@@ -206,5 +327,14 @@ export default class TrainingProgramSummary extends LightningElement {
         this.isLoading = true;
         this.applyFilter(this.getStartOfWeek(new Date()), this.getEndOfWeek(new Date()), this.selectedFilter); // Re-apply filter for the current period
         
+    }
+    // Show Toast Notification
+    showToast(title, message, variant) {
+        const event = new ShowToastEvent({
+            title: title,
+            message: message,
+            variant: variant
+        });
+        this.dispatchEvent(event);
     }
 }

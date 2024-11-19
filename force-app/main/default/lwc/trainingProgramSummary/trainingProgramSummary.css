@@ -1,0 +1,18 @@
+/* Adjust the badge size */
+.slds-badge {
+    font-size: 0.75rem; /* Smaller font size */
+    padding: 0.125rem 0.25rem; /* Smaller padding */
+    border-radius: 0.25rem; /* Rounded corners */
+    display: inline-block;
+    text-transform: uppercase; /* Make text uppercase */
+    font-weight: bold;
+}
+
+/* Add a small gap between the name and the badge */
+.slds-m-left_small {
+    margin-left: 0.5rem; /* Adjust gap between name and badge */
+}
+
+.custom-gray-background {
+    background-color: #f1f1f1; /* Light gray background */
+}
