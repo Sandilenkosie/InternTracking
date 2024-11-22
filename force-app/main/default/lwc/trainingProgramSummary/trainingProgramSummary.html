@@ -320,7 +320,7 @@
                         <!-- Modal Body -->
                         <div class="slds-modal__content slds-p-around_medium">
                             <!-- Assign To Section -->
-                            <div class="slds-box slds-box_small slds-theme_default slds-m-top_small" size ="4">
+                            <div class="slds-box slds-box_small slds-theme_default slds-m-top_small">
                                 <!-- Assign To Input -->
                                 <lightning-input
                                     label="Assign To"
@@ -338,7 +338,7 @@
                                             <div class="slds-pill_container slds-m-bottom_x-small">
                                                 <template for:each={selectedInterns} for:item="intern">
                                                     <span key={intern.Id} class="slds-pill slds-pill_bare slds-m-right_x-small">
-                                                        <span class="slds-pill__label">{intern.User__r.Name}</span>
+                                                        <span class="slds-pill__label">{intern.Name}</span>
                                                         <button
                                                             class="slds-button slds-button_icon slds-pill__remove"
                                                             title="Remove"
@@ -369,7 +369,7 @@
                                                                 <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
                                                             </span>
                                                             <span class="slds-media__body">
-                                                                <span class="slds-listbox__option-text" data-id={intern.Id}>{intern.User__r.Name}</span>
+                                                                <span class="slds-listbox__option-text" data-id={intern.Id}>{intern.Name}</span>
                                                             </span>
                                                         </div>
                                                     </li>
@@ -432,12 +432,18 @@
                                         label="Milestone"
                                         data-id="mileStone"
                                         class="slds-m-bottom_small"
+                                        type="checkbox"
+                                        onchange={handleCheckboxChange}
                                     ></lightning-input>
-                                    <lightning-combobox
+                                    <lightning-combobox 
+                                        name="signOffStatus"
                                         label="Sign-Off Status"
+                                        placeholder="Select an option"
+                                        options={signOffOptions}
                                         data-id="signOff"
-                                        class="slds-m-bottom_small"
-                                    ></lightning-combobox>
+                                        value={signOffValue}
+                                        onchange={handleSignOffChange}>
+                                    </lightning-combobox>
                                 </div>
                             </div>
                         </div>
@@ -445,7 +451,7 @@
                         <!-- Modal Footer -->
                         <footer class="slds-modal__footer">
                             <lightning-button variant="neutral" label="Cancel" onclick={handleClose}></lightning-button>
-                            <lightning-button variant="brand" label="Save" onclick={handleSave}></lightning-button>
+                            <lightning-button variant="brand" type="submit" label="Save" onclick={createNewTask}></lightning-button>
                         </footer>
                     </div>
                 </section>

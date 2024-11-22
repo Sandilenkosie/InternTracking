@@ -31,6 +31,7 @@ export default class TrainingProgramSummary extends LightningElement {
     @track showResults = false;
     @track allInterns = [];
     selectedInterns = []; 
+    @track assignedTo = [];
     
 
     @track showModal = false; // Modal visibility
@@ -39,6 +40,8 @@ export default class TrainingProgramSummary extends LightningElement {
     performanceRatingFormatted = 0;
     performanceRating = 0;
     @track RatingIntern = '';
+    signOffValue = ''; // Holds the selected value
+
 
     // Wire function to fetch data
     @wire(getTrainingProgramDetails, { trainingProgramId: '$recordId' })
@@ -58,7 +61,7 @@ export default class TrainingProgramSummary extends LightningElement {
             this.internOptions = [
                 { label: 'All Interns', value: '' },
                 ...data.interns.map(intern => ({
-                    label: intern.User__r.Name, 
+                    label: intern.Name, 
                     value: intern.User__c
                 }))
             ];
@@ -94,7 +97,7 @@ export default class TrainingProgramSummary extends LightningElement {
         if (this.searchKey) {
             this.searchResults = this.interns.filter(intern => {
                 // Check if intern.User__r and Name are defined and contain searchKey
-                const nameMatches = intern.User__r && intern.User__r.Name && 
+                const nameMatches = intern.User__r && intern.Name && 
                     intern.User__r.Name.toLowerCase().includes(this.searchKey );
     
                 console.log('Name Match:', intern.User__r.Name, nameMatches); // Debugging to check the filter logic
@@ -110,36 +113,56 @@ export default class TrainingProgramSummary extends LightningElement {
         }
     }
 
+    handleCheckboxChange(event) {
+        const isChecked = event.target.checked;
+    }
+
+    // Define picklist options
+    signOffOptions = [
+        { label: 'Approved', value: 'Approved' },
+        { label: 'Pending', value: 'Pending' },
+        { label: 'Rejected', value: 'Rejected' },
+    ];
+
+    // Handle value change
+    handleSignOffChange(event) {
+        this.signOffValue = event.detail.value;
+    }
+
+    // Create New Task with multiple assigned users
     createNewTask() {
-        const taskName = this.template.querySelector('[data-id="taskName"]').value;
-        const phaseId = this.template.querySelector('[data-id="phaseId"]').value;
-        const assignedTo = this.assignedToId;
-        const dueDate = this.template.querySelector('[data-id="dueDate"]').value;
-        const completion = this.template.querySelector('[data-id="completion"]').value;
-        const startDate = this.template.querySelector('[data-id="startDate"]').value;
-        const onHold = this.template.querySelector('[data-id="onHold"]').value;
-        const mileStone = this.template.querySelector('[data-id="mileStone"]').value;
-        const signOff = this.template.querySelector('[data-id="signOff"]').value;
-    
-        if (!taskName || !phaseId || !assignedTo || !completion || !startDate || !dueDate) {
+        const taskData = {
+            taskName : this.template.querySelector('[data-id="taskName"]').value,
+            phaseId : this.template.querySelector('[data-id="phaseId"]').value,
+            assignedTo : this.selectedInterns.map(intern => intern.Id), // Use the selected intern IDs
+            dueDate : this.template.querySelector('[data-id="dueDate"]').value,
+            completion : this.template.querySelector('[data-id="completion"]').value,
+            startDate : this.template.querySelector('[data-id="startDate"]').value,
+            onHold : this.template.querySelector('[data-id="onHold"]').value,
+            mileStone : this.template.querySelector('[data-id="mileStone"]').value,
+            signOff : this.template.querySelector('[data-id="signOff"]').value,
+        };
+        alert("assignedTo ID: ", this.selectedInterns.map(intern => intern.Id))
+
+        if (!taskData.taskName || !taskData.phaseId || !taskData.assignedTo.length || !taskData.completion || !taskData.startDate || !taskData.dueDate) {
             this.showToast('Error', 'All fields are required.', 'error');
             return;
         }
-    
+
         this.isLoading = true;
-        addNewTask({ name: taskName, phaseId, assignedTo, dueDate, completion, startDate, onHold, mileStone, signOff })
-            .then(() => {
-                this.showToast('Success', 'Task created successfully.', 'success');
-                this.handleRefresh(); // Optionally refresh the data
-                this.handleClose(); // Close the modal
-            })
-            .catch(error => {
-                console.error('Error creating task:', error);
-                this.showToast('Error', 'Failed to create task.', 'error');
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
+        addNewTask({taskData})
+        .then(() => {
+            this.showToast('Success', 'Task created successfully.', 'success');
+            this.handleRefresh(); // Optionally refresh the data
+            this.handleClose(); // Close the modal
+        })
+        .catch(error => {
+            console.error('Error creating task:', error);
+            this.showToast('Error', 'Failed to create task.', 'error');
+        })
+        .finally(() => {
+            this.isLoading = false;
+        });
     }
     
 
@@ -164,11 +187,6 @@ export default class TrainingProgramSummary extends LightningElement {
         this.selectedInterns = this.selectedInterns.filter(intern => intern.Id !== internId);
     }
     
-
-
-    
-    
-
     
     calculatePerformanceRating() {
         let totalRating = 0;
