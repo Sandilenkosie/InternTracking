@@ -98,16 +98,17 @@ export default class TrainingProgramSummary extends LightningElement {
     extractMilestones(phases) {
         let milestones = [];
         phases.forEach(phase => {
-            phase.Tasks1__r.forEach(task => {
-                // Check if Milestone__c is true
-                if (task.Milestone__c) {
-                    milestones.push({
-                        Id: task.Id,
-                        Name: task.Name,
-                        Due_Date__c: task.Due_Date__c,  
-                    });
-                }
-            });
+            if (Array.isArray(phase.Tasks1__r)) {  // Check if Tasks1__r is defined and is an array
+                phase.Tasks1__r.forEach(task => {
+                    if (task.Milestone__c) {
+                        milestones.push({
+                            Id: task.Id,
+                            Name: task.Name,
+                            Due_Date__c: task.Due_Date__c,
+                        });
+                    }
+                });
+            }
         });
         return milestones;
     }
@@ -280,14 +281,13 @@ export default class TrainingProgramSummary extends LightningElement {
         // Re-apply the filter based on selected intern and current period
         this.applyFilter(this.getStartOfWeek(new Date()), this.getEndOfWeek(new Date()), this.selectedFilter);
         this.calculatePerformanceRating();
-        if (this.selectedInternId && !this.goalAchieved) {
+        if (this.performanceRatingFormatted === 40 && !this.goalAchieved) {
             this.openModal();
         }
     }
 
     // Open modal
     openModal() {
-        this.goalAchieved = false; // Reset state
         this.showModal = true;
     }
 
