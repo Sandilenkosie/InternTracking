@@ -84,11 +84,14 @@
 
     <!-- Task Table -->
     <lightning-datatable
-        data={tasks}
-        columns={columns}
-        key-field="Id"
-        onrowselection={handleRowSelection}>
-    </lightning-datatable>
+    key-field="Id"
+    data={tasks}
+    columns={columns}
+    onrowaction={handleRowSelection}
+    onrowselection={handleRowSelection}
+    selected-rows={selectedTasks}>
+</lightning-datatable>
+
 
     <div class="slds-grid slds-grid_align-center slds-m-top_medium">
         <ul class="slds-list_horizontal slds-has-dividers_right slds-p-horizontal_small">
@@ -208,8 +211,6 @@
         <!-- Backdrop to darken the background -->
         <div class="slds-backdrop slds-backdrop_open"></div>
     </template>
-    
-    
 
     <!-- Modal for Edit Task -->
     <template if:true={showTaskModal}>
@@ -253,7 +254,7 @@
                     <lightning-button
                         type="submit"
                         variant="brand"
-                        label="Save">
+                        submit="Save">
                     </lightning-button>
                 </footer>
             </div>
@@ -262,7 +263,6 @@
         <!-- Backdrop -->
         <div class="slds-backdrop slds-backdrop_open"></div>
     </template>
-
 
     <!-- Modal for Delete -->
     <template if:true={showDeleteModal}>

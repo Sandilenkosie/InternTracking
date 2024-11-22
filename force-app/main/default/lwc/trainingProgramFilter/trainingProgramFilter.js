@@ -22,7 +22,7 @@ export default class TrainingProgramFilter extends NavigationMixin(LightningElem
     @track isLoading = false;
     @track columns = [
         { label: '#', fieldName: 'Id' },
-        { label: 'Phase', fieldName: 'Phase__c', type: 'text' },
+        { label: 'Phase', fieldName: 'Phase__r.Name', type: 'text' },
         { label: 'Name', fieldName: 'Name' },
         { label: 'Status', fieldName: 'Status__c' },
         { label: '% Completion', fieldName: 'Completion__c' },
@@ -40,6 +40,7 @@ export default class TrainingProgramFilter extends NavigationMixin(LightningElem
             }
         }
     ];
+
 
     @track isStatusOpen = false;
     @track selectedTasks = [];
@@ -100,32 +101,46 @@ export default class TrainingProgramFilter extends NavigationMixin(LightningElem
     }
 
     handleRowSelection(event) {
-        if (event.detail.action && event.detail.row) {
-            // Safely accessing action and row properties
-            const { action: { name }, row } = event.detail;
-
-            switch (name) {
-                case 'view':
-                    this.navigateToTaskView(row.Id);
-                    break;
-                case 'edit':
-                    this.openEditModal(row.Id);
-                    break;
-                case 'delete':
-                    this.openDeleteModal(row.Id);
-                    break;
-                default:
-                    console.error(`Unknown action: ${name}`);
-            }
-        } else if (event.detail.selectedRows) {
-            // Handling row selection for bulk actions
-            const selectedRows = event.detail.selectedRows;
-            this.selectedTasks = selectedRows.map(row => row.Id);
-        } else {
-            console.error('Event detail does not contain the expected properties.');
+        const detail = event.detail;
+    
+        // Check if it's a row action
+        if (detail.action) {
+            this.handleRowAction(detail.action.name, detail.row);
+        } 
+        // Check if rows are selected
+        else if (detail.selectedRows) {
+            this.handleRowSelectionChange(detail.selectedRows);
+        } 
+        // Log unexpected event details
+        else {
+            console.error('Unexpected event detail:', JSON.stringify(detail, null, 2));
         }
     }
-
+    
+    // Separate function to handle row actions
+    handleRowAction(actionName, row) {
+        
+        switch (actionName) {
+            case 'view':
+                this.navigateToTaskView(row.Id);
+                break;
+            case 'edit':
+                this.openEditModal(row.Id);
+                break;
+            case 'delete':
+                this.openDeleteModal(row.Id);
+                break;
+            default:
+                console.error(`Unknown action: ${actionName}`);
+        }
+    }
+    
+    // Separate function to handle row selection changes
+    handleRowSelectionChange(selectedRows) {
+        this.selectedTasks = selectedRows.map(row => row.Id);
+        console.log('Selected Tasks:', this.selectedTasks);
+    }
+    
     
 
     navigateToTaskView(taskId) {

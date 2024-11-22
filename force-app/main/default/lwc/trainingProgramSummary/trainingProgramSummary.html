@@ -292,5 +292,171 @@
                 </section>
                 <div class="slds-backdrop slds-backdrop_open"></div>
             </template>
-    
+
+            <!-- Action Button to Open the Popup -->
+            <lightning-button
+                label="Open Intern Lookup"
+                onclick={handleOpen}
+                class="slds-m-bottom_medium"
+            ></lightning-button>
+        
+            <!-- Modal Popup -->
+            <template if:true={isTaskOpen}>
+                <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <!-- Modal Header -->
+                        <header class="slds-modal__header slds-theme_shade">
+                            <button
+                                class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                title="Close"
+                                onclick={handleClose}
+                            >
+                                <lightning-icon icon-name="utility:close" alternative-text="Close" size="small"></lightning-icon>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 class="slds-text-heading_medium slds-text-align_center">New Task</h2>
+                        </header>
+            
+                        <!-- Modal Body -->
+                        <div class="slds-modal__content slds-p-around_medium">
+                            <!-- Assign To Section -->
+                            <div class="slds-box slds-box_small slds-theme_default slds-m-top_small">
+                                <!-- Assign To Input -->
+                                <lightning-input
+                                    label="Assign To"
+                                    type="search"
+                                    placeholder="Search"
+                                    onchange={handleSearch}
+                                    class="slds-m-bottom_none"
+                                    value={searchKey}
+                                ></lightning-input>
+                            
+                                <!-- Below Input: Pills and Dropdown -->
+                                <template if:true={searchKey}>
+                                        <!-- Selected Users Pills -->
+                                        <template if:true={selectedInterns}>
+                                            <div class="slds-pill_container slds-m-bottom_x-small">
+                                                <template for:each={selectedInterns} for:item="intern">
+                                                    <span key={intern.Id} class="slds-pill slds-pill_bare slds-m-right_x-small">
+                                                        <span class="slds-pill__label">{intern.Name}</span>
+                                                        <button
+                                                            class="slds-button slds-button_icon slds-pill__remove"
+                                                            title="Remove"
+                                                            onclick={removeSelectedIntern}
+                                                            data-id={intern.Id}
+                                                        >
+                                                            <lightning-icon icon-name="utility:close" size="x-small" alternative-text="Remove"></lightning-icon>
+                                                        </button>
+                                                    </span>
+                                                </template>
+                                            </div>
+                                        </template>
+                            
+                                        <!-- Search Results Dropdown -->
+                                        <template if:true={searchResults}>
+                                            <ul class="slds-listbox slds-listbox_vertical" role="listbox">
+                                                <template for:each={searchResults} for:item="intern">
+                                                    <li
+                                                        key={intern.Id}
+                                                        class="slds-listbox__item slds-p-around_x-small"
+                                                        onclick={selectIntern}
+                                                    >
+                                                        <div
+                                                            class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta"
+                                                            role="option"
+                                                        >
+                                                            <span class="slds-media__figure">
+                                                                <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                            </span>
+                                                            <span class="slds-media__body">
+                                                                <span class="slds-listbox__option-text" data-id={intern.Id}>{intern.Name}</span>
+                                                            </span>
+                                                        </div>
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </template>
+                                </template>
+                            </div>
+                            
+                            
+            
+                            <!-- Task Details Form -->
+                            <div class="slds-grid slds-wrap">
+                                <!-- Left Column -->
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                                    <lightning-input
+                                        label="Start Date"
+                                        type="date"
+                                        required
+                                        data-id="startDate"
+                                        class="slds-m-bottom_small"
+                                    ></lightning-input>
+                                    <lightning-input
+                                        label="Task Name"
+                                        required
+                                        data-id="taskName"
+                                        class="slds-m-bottom_small"
+                                    ></lightning-input>
+                                    <lightning-input
+                                        label="Completion (%)"
+                                        type="number"
+                                        required
+                                        data-id="Completion"
+                                        class="slds-m-bottom_small"
+                                    ></lightning-input>
+                                    <lightning-combobox
+                                        label="Phase"
+                                        options={phaseOptions}
+                                        required
+                                        data-id="phaseId"
+                                        class="slds-m-bottom_small"
+                                    ></lightning-combobox>
+                                </div>
+            
+                                <!-- Right Column -->
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                                    <lightning-input
+                                        label="Due Date"
+                                        type="date"
+                                        required
+                                        data-id="dueDate"
+                                        class="slds-m-bottom_small"
+                                    ></lightning-input>
+                                    <lightning-input
+                                        label="On Hold Reason"
+                                        data-id="onHold"
+                                        class="slds-m-bottom_small"
+                                    ></lightning-input>
+                                    <lightning-input
+                                        label="Milestone"
+                                        data-id="mileStone"
+                                        class="slds-m-bottom_small"
+                                        type="checkbox"
+                                        onchange={handleCheckboxChange}
+                                    ></lightning-input>
+                                    <lightning-combobox 
+                                        name="signOffStatus"
+                                        label="Sign-Off Status"
+                                        placeholder="Select an option"
+                                        options={signOffOptions}
+                                        data-id="signOff"
+                                        value={signOffValue}
+                                        onchange={handleSignOffChange}>
+                                    </lightning-combobox>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <!-- Modal Footer -->
+                        <footer class="slds-modal__footer">
+                            <lightning-button variant="neutral" label="Cancel" onclick={handleClose}></lightning-button>
+                            <lightning-button variant="brand" type="submit" label="Save" onclick={createNewTask}></lightning-button>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+            
+            
 </template>
