@@ -2,6 +2,7 @@ import { LightningElement, api, wire, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent'; 
 import getTrainingProgramDetails from '@salesforce/apex/TrainingProgramController.getTrainingProgramDetails';
 import savePerformanceRatingApex from '@salesforce/apex/TrainingProgramController.savePerformanceRatingApex';
+import addNewTask from '@salesforce/apex/TrainingProgramController.addNewTask';
 
 export default class TrainingProgramSummary extends LightningElement {
     @api recordId;
@@ -12,20 +13,28 @@ export default class TrainingProgramSummary extends LightningElement {
     filteredSchedules = [];
     milestones = [];
     error;
+    @track searchKey = '';
     selectedFilter = 'Week';
     currentPeriodRange = '';
     nextPeriodRange = '';
     ongoingPeriodRange = '';
+    @track assignedToId = '';
 
     @track selectedInternId = '';
     @track selectedInternDetails = {};
     @track selectedInternUpdate = {}
     @track internOptions = [];
+    @track phaseOptions = [];
     @track isLoading = false;
     isMilestoneOpen = false;
+    @track searchResults = [];
+    @track showResults = false;
+    @track allInterns = [];
+    selectedInterns = []; 
     
 
     @track showModal = false; // Modal visibility
+    isTaskOpen = false;
     @track goalAchieved = false; // Checkbox state
     performanceRatingFormatted = 0;
     performanceRating = 0;
@@ -43,6 +52,7 @@ export default class TrainingProgramSummary extends LightningElement {
             this.examSchedules = data.examSchedules;
             this.filteredSchedules = data.examSchedules;
             
+            
 
             // Create options for the intern filter combobox
             this.internOptions = [
@@ -52,6 +62,11 @@ export default class TrainingProgramSummary extends LightningElement {
                     value: intern.User__c
                 }))
             ];
+
+            this.phaseOptions = [{ label: 'None', value: 'None' },
+                                ...data.phases.map(phase => ({ 
+                                    label: phase.Name, value: phase.Id }))
+                                ];
             
 
             // Apply Week filter by default after fetching data
@@ -61,6 +76,99 @@ export default class TrainingProgramSummary extends LightningElement {
             this.error = error;
         }
     }
+
+    // Open the modal
+    handleOpen() {
+        this.isTaskOpen = true;
+    }
+
+    // Close the modal
+    handleClose() {
+        this.isTaskOpen = false;
+    }
+
+    handleSearch(event) {
+        this.searchKey = event.target.value.toLowerCase();  // Normalize the search key
+        console.log('Search Key:', this.searchKey);  // Log search input to ensure it's being captured
+    
+        if (this.searchKey) {
+            this.searchResults = this.interns.filter(intern => {
+                // Check if intern.User__r and Name are defined and contain searchKey
+                const nameMatches = intern.User__r && intern.User__r.Name && 
+                    intern.User__r.Name.toLowerCase().includes(this.searchKey );
+    
+                console.log('Name Match:', intern.User__r.Name, nameMatches); // Debugging to check the filter logic
+    
+                return nameMatches;
+            });
+    
+            console.log('Filtered Results:', this.searchResults); // Debugging: Check the filtered results
+        } else {
+            // Reset to all interns if search key is empty
+            this.searchResults = [...this.interns];
+            console.log('No search, showing all interns:', this.searchResults); // Debugging
+        }
+    }
+
+    createNewTask() {
+        const taskName = this.template.querySelector('[data-id="taskName"]').value;
+        const phaseId = this.template.querySelector('[data-id="phaseId"]').value;
+        const assignedTo = this.assignedToId;
+        const dueDate = this.template.querySelector('[data-id="dueDate"]').value;
+        const completion = this.template.querySelector('[data-id="completion"]').value;
+        const startDate = this.template.querySelector('[data-id="startDate"]').value;
+        const onHold = this.template.querySelector('[data-id="onHold"]').value;
+        const mileStone = this.template.querySelector('[data-id="mileStone"]').value;
+        const signOff = this.template.querySelector('[data-id="signOff"]').value;
+    
+        if (!taskName || !phaseId || !assignedTo || !completion || !startDate || !dueDate) {
+            this.showToast('Error', 'All fields are required.', 'error');
+            return;
+        }
+    
+        this.isLoading = true;
+        addNewTask({ name: taskName, phaseId, assignedTo, dueDate, completion, startDate, onHold, mileStone, signOff })
+            .then(() => {
+                this.showToast('Success', 'Task created successfully.', 'success');
+                this.handleRefresh(); // Optionally refresh the data
+                this.handleClose(); // Close the modal
+            })
+            .catch(error => {
+                console.error('Error creating task:', error);
+                this.showToast('Error', 'Failed to create task.', 'error');
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
+    }
+    
+
+    // Select an intern when clicked in the dropdown
+    selectIntern(event) {
+        this.assignedToId = event.target.getAttribute('data-id');
+
+        console.log('Selected intern ID:', this.assignedToId); // Debugging step
+
+        // Find the intern in the search results by matching the ID
+        const selectedIntern = this.searchResults.find(intern => intern.Id === this.assignedToId);
+
+        // Only add the intern if they are not already selected
+        if (selectedIntern && !this.selectedInterns.some(intern => intern.Id === selectedIntern.Id)) {
+            this.selectedInterns = [...this.selectedInterns, selectedIntern];
+        }
+    }
+
+    // Remove an intern from the selectedInterns array (remove from pills)
+    removeSelectedIntern(event) {
+        const internId = event.target.closest('button').getAttribute('data-id');
+        this.selectedInterns = this.selectedInterns.filter(intern => intern.Id !== internId);
+    }
+    
+
+
+    
+    
+
     
     calculatePerformanceRating() {
         let totalRating = 0;
