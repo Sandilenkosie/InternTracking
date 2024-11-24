@@ -94,13 +94,88 @@
                     data-id="taskName"
                     class="slds-m-bottom_small"
                 ></lightning-input>
-                <lightning-combobox
-                    label="Phase"
-                    options={phaseOptions}
-                    required
-                    data-id="phaseId"
-                    class="slds-m-bottom_small"
-                ></lightning-combobox>
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control">
+                      <div class="slds-combobox_container">
+                        <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
+                          <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                            <template if:false={isshow}>
+                                <lightning-input
+                                    label="Phase"
+                                    type="search"
+                                    placeholder="Search..."
+                                    onchange={handlePhaseSearch}
+                                    required
+                                    value={searchPhase}
+                                ></lightning-input>
+                            </template>
+                          </div>
+                          
+                            <template if:true={searchphase}>
+                                <template if:true={searchResults}>
+                                    <div id="listbox-id-2" class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
+                                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                            <template for:each={searchResults} for:item="phase">
+                                                <li key={phase.Id} onclick={selectPhase} data-id={phase.Id} role="presentation" class="slds-listbox__item">
+                                                    <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
+                                                    <span class="slds-media__figure slds-listbox__option-icon">
+                                                        <span class="slds-icon_container slds-icon-standard-account">
+                                                        <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                                            <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#account"></use>
+                                                        </svg>
+                                                        </span>
+                                                    </span>
+                                                    <span class="slds-media__body">
+                                                        <span class="slds-listbox__option-text slds-listbox__option-text_entity">{phase.Name}</span>
+                                                        <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">Account • Burlington, NC</span>
+                                                    </span>
+                                                    </div>
+                                                </li>
+                                            </template>
+                                        </ul>
+                                    </div>
+                                </template>
+                            </template>
+
+                            <template if:true={isshow}>
+                                <template if:true={selectedPhase}>
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label" for="combobox-id-5" id="combobox-label-id-68">Phase</label>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-combobox_container slds-has-selection">
+                                                <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                                                    <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right" role="none">
+                                                        <span class="slds-icon_container slds-icon-standard-account slds-combobox__input-entity-icon" title="Account">
+                                                            <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                        </span>
+                                                        <div role="combobox" tabindex="0" class="slds-input_faux slds-combobox__input slds-combobox__input-value" aria-labelledby="combobox-label-id-68" id="combobox-id-5-selected-value" aria-controls="listbox-id-5" aria-expanded="false" aria-haspopup="listbox">
+                                                            <span class="slds-truncate" id="combobox-value-id-40">{selectedPhase.Name}</span>
+                                                        </div>
+                                                        <!-- Remove Button -->
+                                                        <button 
+                                                            class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" 
+                                                            data-id={selectedPhase.Id} 
+                                                            onclick={removeSelectedPhase} 
+                                                            title="Remove"
+                                                        >
+                                                            <lightning-icon 
+                                                                icon-name="utility:close" 
+                                                                size="x-small" 
+                                                                alternative-text="Remove">
+                                                            </lightning-icon>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </template>
+                            
+                        </div>
+                      </div>
+                    </div>
+                  </div>
             </div>
 
             <!-- Right Column -->
@@ -119,7 +194,7 @@
                     data-id="completion"
                     class="slds-m-bottom_small"
                 ></lightning-input>
-                <lightning-input
+                <lightning-input 
                     label="Milestone"
                     type="checkbox"
                     data-id="milestone"
@@ -132,4 +207,8 @@
         <button class="slds-button slds-button_neutral" onclick={handleCancel}>Cancel</button>
         <button class="slds-button slds-button_brand" onclick={createNewTask}>Save</button>
     </div>
+
+
+
+
 </template>

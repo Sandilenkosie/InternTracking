@@ -9,11 +9,14 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
     @api recordId;
     trainingProgram  = [];
     @track searchKey = '';
+    @track searchphase = '';
     @track assignedToId = '';
+    @track phaseId = '';
+    @track selectedPhase = '';
     @track selectedInterns = [];
-    @track phaseOptions = [];
     @track searchResults = [];
     @track isLoading = false;
+    @track isshow = false;
 
     phases = [];
     interns = [];
@@ -25,12 +28,6 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
             this.trainingProgram = data.trainingProgram;
             this.phases = data.phases;
             this.interns = data.interns;
-            
-
-            this.phaseOptions = [{ label: 'None', value: 'None' },
-                                ...data.phases.map(phase => ({ 
-                                    label: phase.Name, value: phase.Id }))
-                                ];
 
         } else if (error) {
             console.error('Error fetching data:', error);  // Log the error if there's an issue
@@ -58,23 +55,70 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
             this.searchResults = [];
         }
     }
-
     selectIntern(event) {
-         this.assignedToId = event.target.closest('li').dataset.id;
-        const selectedIntern = this.interns.find(intern => intern.User__c === this.assignedToId);
+        this.assignedToId = event.target.closest('li').dataset.id;
+       const selectedIntern = this.interns.find(intern => intern.User__c === this.assignedToId);
 
-        if (selectedIntern && !this.selectedInterns.some(intern => intern.User__c === this.assignedToId)) {
-            this.selectedInterns = [...this.selectedInterns, selectedIntern];
+       if (selectedIntern && !this.selectedInterns.some(intern => intern.User__c === this.assignedToId)) {
+           this.selectedInterns = [...this.selectedInterns, selectedIntern];
+       }
+
+       this.searchKey = '';
+       this.searchResults = [];
+   }
+
+   removeSelectedIntern(event) {
+       this.assignedToId = event.target.closest('button').dataset.id;
+       this.selectedInterns = this.selectedInterns.filter(intern => intern.User__c !== this.assignedToId);
+   }
+
+
+    handlePhaseSearch(event) {
+        this.searchphase = event.target.value.toLowerCase();
+        console.log('Search Key:', this.searchphase);
+        if (this.searchphase) {
+            this.searchResults = this.phases.filter(phase => {
+                // Check if intern.User__r and Name are defined and contain searchKey
+                const nameMatches = phase.Name.toLowerCase().includes(this.searchphase );
+    
+                console.log('Name Match:', phase.Name, nameMatches); // Debugging to check the filter logic
+    
+                return nameMatches;
+            });
+    
+            console.log('Filtered Results:', this.searchResults); // Debugging: Check the filtered results
+        } else {
+            this.searchResults = [];
+        }
+    }
+
+    selectPhase(event) {
+        this.phaseId = event.target.closest('li').dataset.id;
+        const selectedPhase = this.phases.find(phase => phase.Id === this.phaseId);
+    
+        if (selectedPhase) {
+            // Replace the current selection with the newly selected phase
+            this.selectedPhase = selectedPhase;
         }
 
-        this.searchKey = '';
-        this.searchResults = [];
+       this.searchphase = '';
+       this.searchResults = [];
+       this.isshow = true;
+   }
+
+    removeSelectedPhase(event) {
+        const button = event.target.closest('button'); // Ensure we get the closest button
+        const phaseId = button ? button.dataset.id : null;
+
+
+        if (phaseId && this.selectedPhase && this.selectedPhase.Id === phaseId) {
+            this.selectedPhase = null;
+
+            this.isshow = false;
+        } 
     }
 
-    removeSelectedIntern(event) {
-        this.assignedToId = event.target.closest('button').dataset.id;
-        this.selectedInterns = this.selectedInterns.filter(intern => intern.User__c !== this.assignedToId);
-    }
+
 
     createNewTask() {
         const taskName = this.template.querySelector('[data-id="taskName"]').value;
@@ -82,7 +126,7 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
         const dueDate = this.template.querySelector('[data-id="dueDate"]').value;
         const startDate = this.template.querySelector('[data-id="startDate"]').value;
         const completion = this.template.querySelector('[data-id="completion"]').value;
-        const milestone = this.template.querySelector('[data-id="milestone"]').value;
+        const milestone = this.template.querySelector('[data-id="milestone"]').checked
         const assignedTo = this.selectedInterns.map(intern => intern.User__c);
 
         if (!taskName || !phaseId || !dueDate || !startDate || !completion || assignedTo.length === 0) {
@@ -95,7 +139,7 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
         addNewTask({ taskName, phaseId, assignedTo, dueDate, completion, startDate, milestone })
             .then(() => {
                 this.showToast('Success', 'Task created successfully.', 'success');
-                this.resetForm();
+                this.handleCancel();
             })
             .catch(error => {
                 console.error('Error creating task:', error);
@@ -106,11 +150,6 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
             });
     }
 
-    resetForm() {
-        this.template.querySelectorAll('lightning-input, lightning-combobox').forEach(input => (input.value = ''));
-        this.selectedInterns = [];
-        this.searchResults = [];
-    }
     handleCancel() {
         this.dispatchEvent(new CloseActionScreenEvent());
 

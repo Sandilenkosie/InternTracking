@@ -223,23 +223,28 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
             filteredSchedules = filteredSchedules.filter(schedule => schedule.Assigned_To__c === this.selectedInternId);
         }
     
+        // Calculate next period start and end dates
+        const { nextPeriodStart, nextPeriodEnd } = this.calculateNextPeriodDates(endDate, filterType);
+    
         this.filteredSchedules = filteredSchedules.map(schedule => {
             const scheduledDate = new Date(schedule.Scheduled_Date__c);
     
             const isInCurrentPeriod = scheduledDate >= startDate && scheduledDate <= endDate;
-            const isOngoing = scheduledDate > endDate;
+            const isInNextPeriod = scheduledDate >= nextPeriodStart && scheduledDate <= nextPeriodEnd;
+            const isOngoing = scheduledDate > nextPeriodEnd;
     
             // Set the badge class based on the Exam_Result__c
             let badgeClass = 'slds-badge'; // Default neutral badge class
             if (schedule.Exam_Result__c === 'Passed') {
-                badgeClass = 'slds-badge slds-theme_success';  // Green for Passed
+                badgeClass = 'slds-badge slds-theme_success'; // Green for Passed
             } else if (schedule.Exam_Result__c === 'Failed') {
-                badgeClass = 'slds-badge slds-theme_error';   // Red for Failed
+                badgeClass = 'slds-badge slds-theme_error'; // Red for Failed
             }
     
             return {
                 ...schedule,
                 isInCurrentPeriod,
+                isInNextPeriod,
                 isOngoing,
                 formattedDate: this.formatDate(scheduledDate),
                 badgeClass, // Add the computed badgeClass here
@@ -253,17 +258,13 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         }, 500);
     }
     
-
-    // Update date ranges for the current, next, and ongoing periods
-    updateDateRanges(startDate, endDate, filterType) {
-        const periodString = `${this.formatDate(startDate)} - ${this.formatDate(endDate)}`;
-        this.currentPeriodRange = `(${periodString})`;
-
-        // Next period
+    // Calculate next period start and end dates
+    calculateNextPeriodDates(endDate, filterType) {
         const nextPeriodStart = new Date(endDate);
         nextPeriodStart.setDate(endDate.getDate() + 1);
+    
         let nextPeriodEnd = new Date(nextPeriodStart);
-
+    
         if (filterType === 'Week') {
             nextPeriodEnd.setDate(nextPeriodStart.getDate() + 6);
         } else if (filterType === 'Month') {
@@ -271,14 +272,26 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         } else if (filterType === 'Quarter') {
             nextPeriodEnd = new Date(nextPeriodStart.getFullYear(), this.getQuarterStartMonth(nextPeriodStart.getMonth()) + 3, 0);
         }
-
+    
+        return { nextPeriodStart, nextPeriodEnd };
+    }
+    
+    // Update date ranges for the current, next, and ongoing periods
+    updateDateRanges(startDate, endDate, filterType) {
+        const periodString = `${this.formatDate(startDate)} - ${this.formatDate(endDate)}`;
+        this.currentPeriodRange = `(${periodString})`;
+    
+        // Get the next period dates
+        const { nextPeriodStart, nextPeriodEnd } = this.calculateNextPeriodDates(endDate, filterType);
+    
         this.nextPeriodRange = `(${this.formatDate(nextPeriodStart)} - ${this.formatDate(nextPeriodEnd)})`;
-
+    
         // Ongoing period
         const ongoingStart = new Date(nextPeriodEnd);
         ongoingStart.setDate(nextPeriodEnd.getDate() + 1);
-        this.ongoingPeriodRange = `(Due After - ${this.formatDate(ongoingStart)})`;
+        this.ongoingPeriodRange = `(Due After ${this.formatDate(ongoingStart)})`;
     }
+    
 
     // Format date for display
     formatDate(date) {

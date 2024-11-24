@@ -1,0 +1,10 @@
+.slds-modal__header {
+    background-color: #4a90e2;
+    color: white;
+    border-radius: 5px 5px 0 0;
+}
+
+.slds-modal__content {
+    background-color: #f4f6f9;
+    border-radius: 0 0 5px 5px;
+}
