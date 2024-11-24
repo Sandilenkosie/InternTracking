@@ -84,13 +84,14 @@
 
     <!-- Task Table -->
     <lightning-datatable
-    key-field="Id"
-    data={tasks}
-    columns={columns}
-    onrowaction={handleRowSelection}
-    onrowselection={handleRowSelection}
-    selected-rows={selectedTasks}>
-</lightning-datatable>
+        key-field="Id"
+        data={tasks}
+        columns={columns}
+        onrowaction={handleRowAction}
+        onrowselection={handleRowSelection}
+        
+        >
+    </lightning-datatable>
 
 
     <div class="slds-grid slds-grid_align-center slds-m-top_medium">
@@ -154,16 +155,10 @@
 
                 <!-- Modal Footer -->
                 <footer class="slds-modal__footer">
-                    <lightning-button
-                        variant="neutral"
-                        label="Cancel"
-                        onclick={closeModal}>
-                    </lightning-button>
-                    <lightning-button
-                        variant="brand"
-                        label="Save"
-                        onclick={saveStatus}>
-                    </lightning-button>
+                    
+                    <lightning-button label="Cancel" onclick={closeModal} variant="neutral" class="slds-m-right_small"></lightning-button>
+                    <!-- Save Button -->
+                    <lightning-button label="Save" onclick={saveStatus} variant="brand"></lightning-button>
                 </footer>
             </div>
         </section>

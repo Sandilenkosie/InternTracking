@@ -17,4 +17,37 @@
     background-color: #f1f1f1; /* Light gray background */
 }
 
+.slds-modal__container_custom {
+    width: 50%;
+    max-width: 800px;
+    padding: 20px;
+}
+
+.slds-modal__header {
+    background-color: #4a90e2;
+    color: white;
+    border-radius: 5px 5px 0 0;
+}
+
+.slds-modal__content {
+    background-color: #f4f6f9;
+    border-radius: 0 0 5px 5px;
+}
+
+.slds-button_icon-inverse {
+    background-color: transparent;
+    color: #ffffff;
+}
+
+.slds-button_icon-inverse:hover {
+    background-color: #e0e0e0;
+}
+
+.slds-dropdown {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add a subtle shadow for better visibility */
+    max-height: 300px; /* Limit height if many results */
+    overflow-y: auto; /* Enable scrolling for large result sets */
+}
+
+
 

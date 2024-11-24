@@ -1,11 +1,12 @@
 import { LightningElement, api, wire, track } from 'lwc';
+import { NavigationMixin } from 'lightning/navigation';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent'; 
 import getTrainingProgramDetails from '@salesforce/apex/TrainingProgramController.getTrainingProgramDetails';
 import savePerformanceRatingApex from '@salesforce/apex/TrainingProgramController.savePerformanceRatingApex';
-import addNewTask from '@salesforce/apex/TrainingProgramController.addNewTask';
 
-export default class TrainingProgramSummary extends LightningElement {
+export default class TrainingProgramSummary extends NavigationMixin(LightningElement) {
     @api recordId;
+    @api selectedSchedule;
     trainingProgram;
     phases = [];
     interns = [];
@@ -13,12 +14,10 @@ export default class TrainingProgramSummary extends LightningElement {
     filteredSchedules = [];
     milestones = [];
     error;
-    @track searchKey = '';
     selectedFilter = 'Week';
     currentPeriodRange = '';
     nextPeriodRange = '';
     ongoingPeriodRange = '';
-    @track assignedToId = '';
 
     @track selectedInternId = '';
     @track selectedInternDetails = {};
@@ -27,15 +26,13 @@ export default class TrainingProgramSummary extends LightningElement {
     @track phaseOptions = [];
     @track isLoading = false;
     isMilestoneOpen = false;
-    @track searchResults = [];
-    @track showResults = false;
-    @track allInterns = [];
+    isModalView = false;
+    @track isEditing = false;
     selectedInterns = []; 
     @track assignedTo = [];
     
 
     @track showModal = false; // Modal visibility
-    isTaskOpen = false;
     @track goalAchieved = false; // Checkbox state
     performanceRatingFormatted = 0;
     performanceRating = 0;
@@ -79,115 +76,6 @@ export default class TrainingProgramSummary extends LightningElement {
             this.error = error;
         }
     }
-
-    // Open the modal
-    handleOpen() {
-        this.isTaskOpen = true;
-    }
-
-    // Close the modal
-    handleClose() {
-        this.isTaskOpen = false;
-    }
-
-    handleSearch(event) {
-        this.searchKey = event.target.value.toLowerCase();  // Normalize the search key
-        console.log('Search Key:', this.searchKey);  // Log search input to ensure it's being captured
-    
-        if (this.searchKey) {
-            this.searchResults = this.interns.filter(intern => {
-                // Check if intern.User__r and Name are defined and contain searchKey
-                const nameMatches = intern.User__r && intern.Name && 
-                    intern.User__r.Name.toLowerCase().includes(this.searchKey );
-    
-                console.log('Name Match:', intern.User__r.Name, nameMatches); // Debugging to check the filter logic
-    
-                return nameMatches;
-            });
-    
-            console.log('Filtered Results:', this.searchResults); // Debugging: Check the filtered results
-        } else {
-            // Reset to all interns if search key is empty
-            this.searchResults = [...this.interns];
-            console.log('No search, showing all interns:', this.searchResults); // Debugging
-        }
-    }
-
-    handleCheckboxChange(event) {
-        const isChecked = event.target.checked;
-    }
-
-    // Define picklist options
-    signOffOptions = [
-        { label: 'Approved', value: 'Approved' },
-        { label: 'Pending', value: 'Pending' },
-        { label: 'Rejected', value: 'Rejected' },
-    ];
-
-    // Handle value change
-    handleSignOffChange(event) {
-        this.signOffValue = event.detail.value;
-    }
-
-    // Create New Task with multiple assigned users
-    createNewTask() {
-        const taskData = {
-            taskName : this.template.querySelector('[data-id="taskName"]').value,
-            phaseId : this.template.querySelector('[data-id="phaseId"]').value,
-            assignedTo : this.selectedInterns.map(intern => intern.Id), // Use the selected intern IDs
-            dueDate : this.template.querySelector('[data-id="dueDate"]').value,
-            completion : this.template.querySelector('[data-id="completion"]').value,
-            startDate : this.template.querySelector('[data-id="startDate"]').value,
-            onHold : this.template.querySelector('[data-id="onHold"]').value,
-            mileStone : this.template.querySelector('[data-id="mileStone"]').value,
-            signOff : this.template.querySelector('[data-id="signOff"]').value,
-        };
-        alert("assignedTo ID: ", this.selectedInterns.map(intern => intern.Id))
-
-        if (!taskData.taskName || !taskData.phaseId || !taskData.assignedTo.length || !taskData.completion || !taskData.startDate || !taskData.dueDate) {
-            this.showToast('Error', 'All fields are required.', 'error');
-            return;
-        }
-
-        this.isLoading = true;
-        addNewTask({taskData})
-        .then(() => {
-            this.showToast('Success', 'Task created successfully.', 'success');
-            this.handleRefresh(); // Optionally refresh the data
-            this.handleClose(); // Close the modal
-        })
-        .catch(error => {
-            console.error('Error creating task:', error);
-            this.showToast('Error', 'Failed to create task.', 'error');
-        })
-        .finally(() => {
-            this.isLoading = false;
-        });
-    }
-    
-
-    // Select an intern when clicked in the dropdown
-    selectIntern(event) {
-        this.assignedToId = event.target.getAttribute('data-id');
-
-        console.log('Selected intern ID:', this.assignedToId); // Debugging step
-
-        // Find the intern in the search results by matching the ID
-        const selectedIntern = this.searchResults.find(intern => intern.Id === this.assignedToId);
-
-        // Only add the intern if they are not already selected
-        if (selectedIntern && !this.selectedInterns.some(intern => intern.Id === selectedIntern.Id)) {
-            this.selectedInterns = [...this.selectedInterns, selectedIntern];
-        }
-    }
-
-    // Remove an intern from the selectedInterns array (remove from pills)
-    removeSelectedIntern(event) {
-        const internId = event.target.closest('button').getAttribute('data-id');
-        this.selectedInterns = this.selectedInterns.filter(intern => intern.Id !== internId);
-    }
-    
-    
     calculatePerformanceRating() {
         let totalRating = 0;
     
@@ -420,6 +308,7 @@ export default class TrainingProgramSummary extends LightningElement {
     // Close modal
     closeModal() {
         this.showModal = false;
+        this.isModalView = false;
     }
 
     // Handle checkbox change
@@ -432,7 +321,7 @@ export default class TrainingProgramSummary extends LightningElement {
 
         savePerformanceRatingApex({
             
-            internId: this.selectedInternDetails.Id,
+            userId: this.selectedInternDetails.Id,
             goalsAchieved: this.goalAchieved,
             trainingProgress: this.performanceRatingFormatted
         })
@@ -445,6 +334,22 @@ export default class TrainingProgramSummary extends LightningElement {
             });
     }
 
+    handleEdit(event) {
+        const scheduleId = event.target.dataset.id;
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: {
+                recordId: scheduleId,
+                objectApiName: 'Exam_Schedule__c', // Replace with your object API name
+                actionName: 'edit'
+            }
+        });
+    }
+    handleView(event) {
+        const scheduleId = event.target.dataset.id;
+        this.selectedSchedule = this.filteredSchedules.find(schedule => schedule.Id === scheduleId);
+        this.isModalView = true;
+    }
 
     // Handle reset (refresh)
     handleRefresh() {
@@ -454,6 +359,7 @@ export default class TrainingProgramSummary extends LightningElement {
         this.applyFilter(this.getStartOfWeek(new Date()), this.getEndOfWeek(new Date()), this.selectedFilter); // Re-apply filter for the current period
         
     }
+    
     // Show Toast Notification
     showToast(title, message, variant) {
         const event = new ShowToastEvent({

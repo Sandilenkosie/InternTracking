@@ -20,14 +20,13 @@ export default class TrainingProgramFilter extends NavigationMixin(LightningElem
     @track selectedAssignedTo = 'All';
     
     @track isLoading = false;
-    @track columns = [
-        { label: '#', fieldName: 'Id' },
-        { label: 'Phase', fieldName: 'Phase__r.Name', type: 'text' },
-        { label: 'Name', fieldName: 'Name' },
-        { label: 'Status', fieldName: 'Status__c' },
-        { label: '% Completion', fieldName: 'Completion__c' },
-        { label: 'Start Date', fieldName: 'Start_Date__c', type: 'date' },
-        { label: 'Due Date', fieldName: 'Due_Date__c', type: 'date' },
+    columns = [
+        { label: 'Phase', fieldName: 'phaseName', type: 'text' },
+        { label: 'Name', fieldName: 'taskName' },
+        { label: 'Status', fieldName: 'status' },
+        { label: '% Completion', fieldName: 'completion' },
+        { label: 'Start Date', fieldName: 'startDate', type: 'date' },
+        { label: 'Due Date', fieldName: 'dueDate', type: 'date' },
         {
             label: 'Action',
             type: 'action',
@@ -43,6 +42,7 @@ export default class TrainingProgramFilter extends NavigationMixin(LightningElem
 
 
     @track isStatusOpen = false;
+    @track rowId = '';
     @track selectedTasks = [];
     @track newStatus = '';
     @track showTaskModal = false;
@@ -100,48 +100,58 @@ export default class TrainingProgramFilter extends NavigationMixin(LightningElem
         }
     }
 
+
+    loadTasks() {
+        this.isLoading = true;
+        getTasks({ phaseId: this.selectedPhase, status: this.selectedStatus, assignedToId: this.selectedAssignedTo })
+        .then(result => {
+            this.tasks = result.map(task => ({
+                taskId: task.Id,
+                taskName: task.Name,
+                phaseName: task.Phase__r.Name,
+                status: task.Status__c,
+                completion: task.Completion__c,
+                startDate: task.Start_Date__c,
+                dueDate: task.Due_Date__c
+            }));
+            this.isLoading = false;
+        })
+        .catch(error => {
+            console.error(error);
+            this.isLoading = false;
+        });
+    }
+
     handleRowSelection(event) {
-        const detail = event.detail;
-    
-        // Check if it's a row action
-        if (detail.action) {
-            this.handleRowAction(detail.action.name, detail.row);
-        } 
-        // Check if rows are selected
-        else if (detail.selectedRows) {
-            this.handleRowSelectionChange(detail.selectedRows);
-        } 
-        // Log unexpected event details
-        else {
-            console.error('Unexpected event detail:', JSON.stringify(detail, null, 2));
+        const selectedRows = event.detail.selectedRows; // Get the selected rows from the event
+        if (selectedRows && selectedRows.length > 0) {
+            this.selectedTasks = selectedRows.map(row => row.taskId); // Map the Ids of selected rows
+        } else {
+            this.selectedTasks = []; // Handle the case where no rows are selected
         }
+        console.log('Selected Tasks:', this.selectedTasks);
     }
     
-    // Separate function to handle row actions
-    handleRowAction(actionName, row) {
-        
+    
+    // Handle row action (view, edit, delete)
+    handleRowAction(event) {
+        const actionName = event.detail.action.name;
+        const row = event.detail.row;
+
         switch (actionName) {
             case 'view':
-                this.navigateToTaskView(row.Id);
+                this.navigateToTaskView(row.taskId);
                 break;
             case 'edit':
-                this.openEditModal(row.Id);
+                this.openEditModal(row.taskId);
                 break;
             case 'delete':
-                this.openDeleteModal(row.Id);
+                this.openDeleteModal(row.taskId);
                 break;
             default:
                 console.error(`Unknown action: ${actionName}`);
         }
     }
-    
-    // Separate function to handle row selection changes
-    handleRowSelectionChange(selectedRows) {
-        this.selectedTasks = selectedRows.map(row => row.Id);
-        console.log('Selected Tasks:', this.selectedTasks);
-    }
-    
-    
 
     navigateToTaskView(taskId) {
         this[NavigationMixin.Navigate]({
@@ -154,8 +164,9 @@ export default class TrainingProgramFilter extends NavigationMixin(LightningElem
         });
     }
 
-    openEditModal(recordId) {
-        this.recordIdToEdit = recordId;
+    openEditModal(taskId) {
+        this.recordIdToEdit = taskId;
+        console.log('Opening edit modal for task:', taskId);
         this.showTaskModal = true;
     }
 
@@ -190,20 +201,7 @@ export default class TrainingProgramFilter extends NavigationMixin(LightningElem
                 this.showToast('Error', `Error deleting task: ${error.body.message}`, 'error');
             });
     }
-
-    loadTasks() {
-        this.isLoading = true;
-        getTasks({ phaseId: this.selectedPhase, status: this.selectedStatus, assignedToId: this.selectedAssignedTo })
-            .then(result => {
-                this.tasks = result;
-                this.isLoading = false;
-            })
-            .catch(error => {
-                console.error(error);
-                this.isLoading = false;
-            });
-    }
-
+    
     handlePhaseChange(event) {
         this.selectedPhase = event.detail.value;
         this.loadTasks();

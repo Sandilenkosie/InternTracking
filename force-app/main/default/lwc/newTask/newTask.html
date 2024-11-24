@@ -1,0 +1,135 @@
+<template>
+    <div class="slds-modal__header">
+    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">New Task</h1>
+    </div>
+    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+        <div class="slds-form-element">
+            <div class="slds-form-element__control">
+                <div class="slds-combobox-group slds-has-selection">
+            
+                    <div class="slds-combobox_container slds-combobox-addon_end">
+                    <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open" id="primary-combobox-id-4">
+                        <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                            <!-- Input Field -->
+                            <lightning-input
+                                label="Assigned To"
+                                type="search"
+                                placeholder="Search..."
+                                onchange={handleSearch}
+                                value={searchKey}
+                            ></lightning-input>
+                        </div>
+                        
+                        <!-- Search Results Dropdown -->
+                        <template if:true={searchKey}>
+                            <template if:true={searchResults}>
+                                <div id="listbox-id-4" class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
+                                    <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                        <template for:each={searchResults} for:item="intern">
+                                            <li key={intern.User__c} onclick={selectIntern} data-id={intern.User__c} role="presentation" class="slds-listbox__item">
+                                                <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
+                                                    <span class="slds-media__figure slds-listbox__option-icon">
+                                                        <span class="slds-icon_container slds-icon-standard-account">
+                                                            <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                        </span>
+                                                    </span>
+                                                    <span class="slds-media__body">
+                                                        <span class="slds-listbox__option-text slds-listbox__option-text_entity">{intern.User__r.Name}</span>
+                                                        <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">{intern.Name} • {intern.Program__r.Name}, NC</span>
+                                                    </span>
+                                                </div>
+                                            </li>
+                                        </template>
+                                    </ul>
+                                </div>
+                            </template>
+                        </template>
+                    </div>
+                    </div>
+                </div>
+                <template if:true={assignedToId}>
+                    <template if:true={selectedInterns}>
+                        <div class="slds-listbox_selection-group">
+                            <ul class="slds-listbox slds-listbox_horizontal" aria-label="Selected Options:">
+                                <template for:each={selectedInterns} for:item="intern">
+                                    <li key={intern.User__c} class="slds-listbox-item">
+                                        <span class="slds-pill">
+                                            <span class="slds-icon_container slds-icon-standard-account slds-pill__icon_container" title="Account">
+                                                <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                            </span>
+                                            <span class="slds-pill__label" title="Dickenson plc">{intern.User__r.Name}</span>
+                                        <span class="slds-icon_container slds-pill__remove" title="Remove">
+                                            <button 
+                                                class="slds-button slds-button_icon slds-button_icon slds-pill__remove" 
+                                                onclick={removeSelectedIntern}
+                                                data-id={intern.User__c}        
+                                                title="Remove">
+                                                <lightning-icon icon-name="utility:close" size="x-small" alternative-text="Remove"></lightning-icon>
+                                            </button>
+                                        </span>
+                                        </span>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </template>
+                </template>
+            </div>
+        </div>
+
+        <!-- Task Details Form -->
+        <div class="slds-grid slds-wrap slds-gutters">
+            <!-- Left Column -->
+            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                <lightning-input
+                    label="Start Date"
+                    type="date"
+                    required
+                    data-id="startDate"
+                    class="slds-m-bottom_small"
+                ></lightning-input>
+                <lightning-input
+                    label="Task Name"
+                    required
+                    data-id="taskName"
+                    class="slds-m-bottom_small"
+                ></lightning-input>
+                <lightning-combobox
+                    label="Phase"
+                    options={phaseOptions}
+                    required
+                    data-id="phaseId"
+                    class="slds-m-bottom_small"
+                ></lightning-combobox>
+            </div>
+
+            <!-- Right Column -->
+            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                <lightning-input
+                    label="Due Date"
+                    type="date"
+                    required
+                    data-id="dueDate"
+                    class="slds-m-bottom_small"
+                ></lightning-input>
+                <lightning-input
+                    label="Completion (%)"
+                    type="number"
+                    required
+                    data-id="completion"
+                    class="slds-m-bottom_small"
+                ></lightning-input>
+                <lightning-input
+                    label="Milestone"
+                    type="checkbox"
+                    data-id="milestone"
+                    class="slds-m-bottom_small"
+                ></lightning-input>
+            </div>
+        </div>
+    </div>
+    <div class="slds-modal__footer">
+        <button class="slds-button slds-button_neutral" onclick={handleCancel}>Cancel</button>
+        <button class="slds-button slds-button_brand" onclick={createNewTask}>Save</button>
+    </div>
+</template>
