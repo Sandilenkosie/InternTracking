@@ -28,7 +28,6 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     isMilestoneOpen = false;
     isModalView = false;
     @track isEditing = false;
-    selectedInterns = []; 
     @track assignedTo = [];
     
 
@@ -38,8 +37,11 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     performanceRating = 0;
     @track RatingIntern = '';
     signOffValue = ''; // Holds the selected value
-<<<<<<< HEAD
-=======
+    @track searchKey = '';
+    @track internId = '';
+    @track selectedIntern = [];
+    @track isshow = false;
+
     @track ratingOptions = [
         { label: '--None--', value: '' },
         { label: '★', value: 'Needs Improvemen' },
@@ -48,9 +50,6 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         { label: '★★★★', value: 'Very Good!' },
         { label: '★★★★★', value: 'Excellent' },
     ];
->>>>>>> 6062f26871b0bda96e0dbd62793018b47a067d81
-    
-
 
     // Wire function to fetch data
     @wire(getTrainingProgramDetails, { trainingProgramId: '$recordId' })
@@ -109,21 +108,40 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         }
     }
     selectIntern(event) {
-        this.assignedToId = event.target.closest('li').dataset.id;
-       const selectedIntern = this.interns.find(intern => intern.User__c === this.assignedToId);
-
-       if (selectedIntern && !this.selectedInterns.some(intern => intern.User__c === this.assignedToId)) {
-           this.selectedInterns = [...this.selectedInterns, selectedIntern];
-       }
+        this.selectedInternId = event.target.closest('li').dataset.id;
+        const selectedIntern = this.interns.find(intern => intern.User__c === this.selectedInternId);
+    
+        if (selectedIntern) {
+            // Replace the current selection with the newly selected phase
+            this.selectedIntern = selectedIntern;
+        }
+            this.selectedInternDetails = this.interns.find(
+                intern => intern.User__c === this.selectedInternId
+            ) || {}
+            console.log('selectedIntern Results:', this.selectedInternId);
+            // Re-apply the filter based on selected intern and current period
+            this.applyFilter(this.getStartOfWeek(new Date()), this.getEndOfWeek(new Date()), this.selectedFilter);
+            this.calculatePerformanceRating();
+            if (this.performanceRatingFormatted === 50 && this.selectedInternDetails.Goals_Achieved__c === false) {
+                this.openModal();
+            }
 
        this.searchKey = '';
        this.searchResults = [];
+       this.isshow = true;
    }
 
    removeSelectedIntern(event) {
-       this.assignedToId = event.target.closest('button').dataset.id;
-       this.selectedInterns = this.selectedInterns.filter(intern => intern.User__c !== this.assignedToId);
-   }
+    const button = event.target.closest('button'); // Ensure we get the closest button
+    const selectedInternId = button ? button.dataset.id : null;
+
+
+    if (selectedInternId && this.selectedIntern && this.selectedIntern.User__c === selectedInternId) {
+        this.selectedIntern = null;
+
+        this.isshow = false;
+    } 
+}
 
     calculatePerformanceRating() {
         let totalRating = 0;
@@ -349,20 +367,24 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     }
 
 
-
-    // Handle intern filter change
-    handleInternChange(event) {
-        this.selectedInternId = event.target.value;
-        this.selectedInternDetails = this.interns.find(
-            intern => intern.User__c === this.selectedInternId
-        ) || {}
-        // Re-apply the filter based on selected intern and current period
-        this.applyFilter(this.getStartOfWeek(new Date()), this.getEndOfWeek(new Date()), this.selectedFilter);
-        this.calculatePerformanceRating();
-        if (this.performanceRatingFormatted === 50 && this.selectedInternDetails.Goals_Achieved__c === false) {
-            this.openModal();
+    handleSearch(event) {
+        this.searchKey = event.target.value.toLowerCase();
+        console.log('Search Key:', this.searchKey);
+        if (this.searchKey) {
+            this.searchResults = this.interns.filter(intern => {
+                // Check if intern.User__r and Name are defined and contain searchKey
+                const nameMatches = intern.User__r && intern.Name && 
+                    intern.User__r.Name.toLowerCase().includes(this.searchKey );
+    
+                console.log('Name Match:', intern.User__r.Name, nameMatches); // Debugging to check the filter logic
+    
+                return nameMatches;
+            });
+    
+            console.log('Filtered Results:', this.searchResults); // Debugging: Check the filtered results
+        } else {
+            this.searchResults = [];
         }
-        
     }
 
     // Open modal

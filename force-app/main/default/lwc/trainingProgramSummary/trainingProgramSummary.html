@@ -27,77 +27,86 @@
                 </lightning-combobox> -->
                 <div class="slds-form-element">
                     <div class="slds-form-element__control">
-                        <div class="slds-combobox-group slds-has-selection">
-                    
-                            <div class="slds-combobox_container slds-combobox-addon_end">
-                            <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open" id="primary-combobox-id-4">
-                                <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
-                                    <!-- Input Field -->
-                                    <lightning-input
-                                        label="Interns"
-                                        type="search"
-                                        placeholder="Search..."
-                                        onchange={handleSearch}
-                                        value={searchKey}
-                                    ></lightning-input>
-                                </div>
-                                
-                                <!-- Search Results Dropdown -->
-                                <template if:true={searchKey}>
-                                    <template if:true={searchResults}>
-                                        <div id="listbox-id-4" class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
-                                            <ul class="slds-listbox slds-listbox_vertical" role="presentation">
-                                                <template for:each={searchResults} for:item="intern">
-                                                    <li key={intern.User__c} onclick={selectIntern} data-id={intern.User__c} role="presentation" class="slds-listbox__item">
-                                                        <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
-                                                            <span class="slds-media__figure slds-listbox__option-icon">
-                                                                <span class="slds-icon_container slds-icon-standard-account">
-                                                                    <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
-                                                                </span>
-                                                            </span>
-                                                            <span class="slds-media__body">
-                                                                <span class="slds-listbox__option-text slds-listbox__option-text_entity">{intern.User__r.Name}</span>
-                                                                <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">{intern.Name} • {intern.Program__r.Name}, NC</span>
-                                                            </span>
-                                                        </div>
-                                                    </li>
-                                                </template>
-                                            </ul>
-                                        </div>
-                                    </template>
-                                </template>
-                            </div>
-                            </div>
-                        </div>
-                        <template if:true={assignedToId}>
-                            <template if:true={selectedInterns}>
-                                <div class="slds-listbox_selection-group">
-                                    <ul class="slds-listbox slds-listbox_horizontal" aria-label="Selected Options:">
-                                        <template for:each={selectedInterns} for:item="intern">
-                                            <li key={intern.User__c} class="slds-listbox-item">
-                                                <span class="slds-pill">
-                                                    <span class="slds-icon_container slds-icon-standard-account slds-pill__icon_container" title="Account">
-                                                        <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
-                                                    </span>
-                                                    <span class="slds-pill__label" title="Dickenson plc">{intern.User__r.Name}</span>
-                                                <span class="slds-icon_container slds-pill__remove" title="Remove">
-                                                    <button 
-                                                        class="slds-button slds-button_icon slds-button_icon slds-pill__remove" 
-                                                        onclick={removeSelectedIntern}
-                                                        data-id={intern.User__c}        
-                                                        title="Remove">
-                                                        <lightning-icon icon-name="utility:close" size="x-small" alternative-text="Remove"></lightning-icon>
-                                                    </button>
-                                                </span>
-                                                </span>
-                                            </li>
-                                        </template>
-                                    </ul>
-                                </div>
+                      <div class="slds-combobox_container">
+                        <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
+                          <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                            <template if:false={isshow}>
+                                <lightning-input
+                                    label="Intern"
+                                    type="search"
+                                    placeholder="Search..."
+                                    onchange={handleSearch}
+                                    required
+                                    value={searchKey}
+                                ></lightning-input>
                             </template>
-                        </template>
+                          </div>
+                          
+                            <template if:true={searchKey}>
+                                <template if:true={searchResults}>
+                                    <div id="listbox-id-2" class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
+                                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                            <template for:each={searchResults} for:item="intern">
+                                                <li key={intern.User__c} onclick={selectIntern} data-id={intern.User__c} role="presentation" class="slds-listbox__item">
+                                                    <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
+                                                    <span class="slds-media__figure slds-listbox__option-icon">
+                                                        <span class="slds-icon_container slds-icon-standard-account">
+                                                        <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                                                            <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#account"></use>
+                                                        </svg>
+                                                        </span>
+                                                    </span>
+                                                    <span class="slds-media__body">
+                                                        <span class="slds-listbox__option-text slds-listbox__option-text_entity">{intern.User__r.Name}</span>
+                                                        <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">Account • Burlington, NC</span>
+                                                    </span>
+                                                    </div>
+                                                </li>
+                                            </template>
+                                        </ul>
+                                    </div>
+                                </template>
+                            </template>
+
+                            <template if:true={isshow}>
+                                <template if:true={selectedIntern}>
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label" for="combobox-id-5" id="combobox-label-id-68">Intern</label>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-combobox_container slds-has-selection">
+                                                <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                                                    <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right" role="none">
+                                                        <span class="slds-icon_container slds-icon-standard-account slds-combobox__input-entity-icon" title="Account">
+                                                            <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                        </span>
+                                                        <div role="combobox" tabindex="0" class="slds-input_faux slds-combobox__input slds-combobox__input-value" aria-labelledby="combobox-label-id-68" id="combobox-id-5-selected-value" aria-controls="listbox-id-5" aria-expanded="false" aria-haspopup="listbox">
+                                                            <span class="slds-truncate" id="combobox-value-id-40">{selectedIntern.User__r.Name}</span>
+                                                        </div>
+                                                        <!-- Remove Button -->
+                                                        <button 
+                                                            class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" 
+                                                            data-id={selectedIntern.User__c} 
+                                                            onclick={removeSelectedIntern} 
+                                                            title="Remove"
+                                                        >
+                                                            <lightning-icon 
+                                                                icon-name="utility:close" 
+                                                                size="x-small" 
+                                                                alternative-text="Remove">
+                                                            </lightning-icon>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </template>
+                            
+                        </div>
+                      </div>
                     </div>
-                </div>
+                  </div>
             </lightning-layout-item>
 
         </lightning-layout>
