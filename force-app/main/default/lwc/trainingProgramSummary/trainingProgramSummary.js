@@ -38,6 +38,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     performanceRating = 0;
     @track RatingIntern = '';
     signOffValue = ''; // Holds the selected value
+    
 
 
     // Wire function to fetch data
@@ -76,6 +77,43 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
             this.error = error;
         }
     }
+
+    handleSearch(event) {
+        this.searchKey = event.target.value.toLowerCase();
+        console.log('Search Key:', this.searchKey);
+        if (this.searchKey) {
+            this.searchResults = this.interns.filter(intern => {
+                // Check if intern.User__r and Name are defined and contain searchKey
+                const nameMatches = intern.User__r && intern.Name && 
+                    intern.User__r.Name.toLowerCase().includes(this.searchKey );
+    
+                console.log('Name Match:', intern.User__r.Name, nameMatches); // Debugging to check the filter logic
+    
+                return nameMatches;
+            });
+    
+            console.log('Filtered Results:', this.searchResults); // Debugging: Check the filtered results
+        } else {
+            this.searchResults = [];
+        }
+    }
+    selectIntern(event) {
+        this.assignedToId = event.target.closest('li').dataset.id;
+       const selectedIntern = this.interns.find(intern => intern.User__c === this.assignedToId);
+
+       if (selectedIntern && !this.selectedInterns.some(intern => intern.User__c === this.assignedToId)) {
+           this.selectedInterns = [...this.selectedInterns, selectedIntern];
+       }
+
+       this.searchKey = '';
+       this.searchResults = [];
+   }
+
+   removeSelectedIntern(event) {
+       this.assignedToId = event.target.closest('button').dataset.id;
+       this.selectedInterns = this.selectedInterns.filter(intern => intern.User__c !== this.assignedToId);
+   }
+
     calculatePerformanceRating() {
         let totalRating = 0;
     

@@ -122,12 +122,12 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
 
     createNewTask() {
         const taskName = this.template.querySelector('[data-id="taskName"]').value;
-        const phaseId = this.template.querySelector('[data-id="phaseId"]').value;
         const dueDate = this.template.querySelector('[data-id="dueDate"]').value;
         const startDate = this.template.querySelector('[data-id="startDate"]').value;
         const completion = this.template.querySelector('[data-id="completion"]').value;
         const milestone = this.template.querySelector('[data-id="milestone"]').checked
         const assignedTo = this.selectedInterns.map(intern => intern.User__c);
+        const phaseId = this.selectedPhase.Id;
 
         if (!taskName || !phaseId || !dueDate || !startDate || !completion || assignedTo.length === 0) {
             this.showToast('Error', 'All fields are required.', 'error');
