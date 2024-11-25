@@ -118,8 +118,6 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
         } 
     }
 
-
-
     createNewTask() {
         const taskName = this.template.querySelector('[data-id="taskName"]').value;
         const dueDate = this.template.querySelector('[data-id="dueDate"]').value;

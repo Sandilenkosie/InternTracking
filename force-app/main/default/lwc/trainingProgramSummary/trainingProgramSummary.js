@@ -38,6 +38,17 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     performanceRating = 0;
     @track RatingIntern = '';
     signOffValue = ''; // Holds the selected value
+<<<<<<< HEAD
+=======
+    @track ratingOptions = [
+        { label: '--None--', value: '' },
+        { label: '★', value: 'Needs Improvemen' },
+        { label: '★★', value: 'Average' },
+        { label: '★★★', value: 'Good' },
+        { label: '★★★★', value: 'Very Good!' },
+        { label: '★★★★★', value: 'Excellent' },
+    ];
+>>>>>>> 6062f26871b0bda96e0dbd62793018b47a067d81
     
 
 
@@ -337,6 +348,8 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         return date.toLocaleDateString('en-US', options);
     }
 
+
+
     // Handle intern filter change
     handleInternChange(event) {
         this.selectedInternId = event.target.value;
@@ -346,9 +359,10 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         // Re-apply the filter based on selected intern and current period
         this.applyFilter(this.getStartOfWeek(new Date()), this.getEndOfWeek(new Date()), this.selectedFilter);
         this.calculatePerformanceRating();
-        if (this.performanceRatingFormatted === 40 && !this.goalAchieved) {
+        if (this.performanceRatingFormatted === 50 && this.selectedInternDetails.Goals_Achieved__c === false) {
             this.openModal();
         }
+        
     }
 
     // Open modal
@@ -362,26 +376,34 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         this.isModalView = false;
     }
 
-    // Handle checkbox change
-    handleGoalAchievedChange(event) {
-        this.goalAchieved = event.target.checked;
-    }
 
-    // Save goal achieved
-    updateGoalAchieved() {
+
+    // Save updatePerfomances
+    updatePerfomances() {
+        const internId = this.selectedInternDetails.Id;
+        const goalsAchieved = this.template.querySelector('[data-id="goalsAchieved"]').checked;
+        const rating = this.template.querySelector('[data-id="rating"]').value;
+        const note = this.template.querySelector('[data-id="note"]').value;
+        const trainingProgress = this.performanceRatingFormatted
+
+        console.log("Evalaution Note: ", note)
+        console.log("Performance Rating: ", rating)
+
 
         savePerformanceRatingApex({
-            
-            userId: this.selectedInternDetails.Id,
-            goalsAchieved: this.goalAchieved,
-            trainingProgress: this.performanceRatingFormatted
+            internId: internId,
+            goalsAchieved: goalsAchieved,
+            rating: rating,
+            note: note,
+            trainingProgress: trainingProgress
         })
             .then(() => {
-                this.showToast('Success', 'Goal Achieved updated successfully.'+ this.RatingIntern.Id, 'success');
+                this.showToast('Success', 'Goal Achieved updated successfully.', 'success');
                 this.closeModal();
             })
             .catch(error => {
-                this.showToast('Error', 'Error saving goal achieved: ' + this.RatingIntern.Id, 'error');
+                const errorMessage = error.body ? error.body.message : 'Unknown error occurred';
+                this.showToast('Error', 'Error saving Performances: ','error');
             });
     }
 

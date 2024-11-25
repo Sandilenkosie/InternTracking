@@ -32,21 +32,19 @@ export default class TrainingProgramFilter extends NavigationMixin(LightningElem
             type: 'action',
             typeAttributes: {
                 rowActions: [
-                    { label: 'View', name: 'view' },
-                    { label: 'Edit', name: 'edit' },
-                    { label: 'Delete', name: 'delete' }
+                    { label: 'View', name: 'view', iconName: 'utility:preview' },
+                    { label: 'Edit', name: 'edit', iconName: 'utility:edit' },
+                    { label: 'Delete', name: 'delete', iconName: 'utility:delete' }
                 ]
+                
             }
         }
     ];
 
 
     @track isStatusOpen = false;
-    @track rowId = '';
     @track selectedTasks = [];
     @track newStatus = '';
-    @track showTaskModal = false;
-    @track recordIdToEdit;
     @track showDeleteModal = false;
     @track recordIdToDelete;
     @track isAssigneeModalOpen = false; // Controls modal visibility
@@ -165,14 +163,18 @@ export default class TrainingProgramFilter extends NavigationMixin(LightningElem
     }
 
     openEditModal(taskId) {
-        this.recordIdToEdit = taskId;
-        console.log('Opening edit modal for task:', taskId);
-        this.showTaskModal = true;
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: {
+                recordId: taskId,
+                objectApiName: 'Tasks__c', // Replace with your object API name
+                actionName: 'edit'
+            }
+        });
     }
 
     handleEditSuccess() {
         this.showToast('Success', 'Task updated successfully', 'success');
-        this.closeModal();
         this.loadTasks();
     }
 
