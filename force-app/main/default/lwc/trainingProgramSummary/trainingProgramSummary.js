@@ -20,7 +20,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     ongoingPeriodRange = '';
 
     @track selectedInternId = '';
-    @track selectedInternDetails = {};
+    @track selectedIntern = {};
     @track selectedInternUpdate = {}
     @track internOptions = [];
     @track phaseOptions = [];
@@ -33,8 +33,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
 
     @track showModal = false; // Modal visibility
     @track goalAchieved = false; // Checkbox state
-    performanceRatingFormatted = 0;
-    performanceRating = 0;
+    @track performanceRatingFormatted = 0;
     @track RatingIntern = '';
     signOffValue = ''; // Holds the selected value
     @track searchKey = '';
@@ -74,7 +73,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
                 }))
             ];
 
-            this.phaseOptions = [{ label: 'None', value: 'None' },
+            this.phaseOptions = [{ label: '--None--', value: '' },
                                 ...data.phases.map(phase => ({ 
                                     label: phase.Name, value: phase.Id }))
                                 ];
@@ -97,51 +96,55 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
                 const nameMatches = intern.User__r && intern.Name && 
                     intern.User__r.Name.toLowerCase().includes(this.searchKey );
     
-                console.log('Name Match:', intern.User__r.Name, nameMatches); // Debugging to check the filter logic
-    
                 return nameMatches;
             });
-    
-            console.log('Filtered Results:', this.searchResults); // Debugging: Check the filtered results
         } else {
             this.searchResults = [];
         }
     }
     selectIntern(event) {
         this.selectedInternId = event.target.closest('li').dataset.id;
+
         const selectedIntern = this.interns.find(intern => intern.User__c === this.selectedInternId);
-    
+
         if (selectedIntern) {
             // Replace the current selection with the newly selected phase
             this.selectedIntern = selectedIntern;
         }
-            this.selectedInternDetails = this.interns.find(
-                intern => intern.User__c === this.selectedInternId
-            ) || {}
-            console.log('selectedIntern Results:', this.selectedInternId);
             // Re-apply the filter based on selected intern and current period
             this.applyFilter(this.getStartOfWeek(new Date()), this.getEndOfWeek(new Date()), this.selectedFilter);
             this.calculatePerformanceRating();
-            if (this.performanceRatingFormatted === 50 && this.selectedInternDetails.Goals_Achieved__c === false) {
+            if (this.performanceRatingFormatted === 100 && !this.selectedIntern.Goals_Achieved__c) {
                 this.openModal();
             }
 
-       this.searchKey = '';
-       this.searchResults = [];
-       this.isshow = true;
-   }
+        this.searchKey = '';
+        this.searchResults = [];
+        this.isshow = true;
+    }
 
-   removeSelectedIntern(event) {
-    const button = event.target.closest('button'); // Ensure we get the closest button
-    const selectedInternId = button ? button.dataset.id : null;
-
-
-    if (selectedInternId && this.selectedIntern && this.selectedIntern.User__c === selectedInternId) {
-        this.selectedIntern = null;
-
-        this.isshow = false;
-    } 
-}
+    removeSelectedIntern(event) {
+        // Safely get the selected intern ID from the event
+        const button = event.target.closest('button'); // Ensure we target the button element
+        const selectedInternId = button ? button.dataset.id : null;
+        console.log('RemoveId: ', selectedInternId);
+    
+        if (!selectedInternId) {
+            this.showToast('error', 'Unable to identify the intern to remove.', 'error');
+            return;
+        }
+    
+        // Check if the selected intern matches the current selected intern
+        if (this.selectedIntern && this.selectedIntern.User__c === selectedInternId) {
+            this.selectedIntern = null; // Clear the selected intern
+            this.selectedInternId = ''; // Reset the selected intern ID
+            this.isshow = false; // Update UI state
+            this.showToast('success', 'Intern removed successfully.', 'success');
+        } else {
+            this.showToast('info', 'No matching intern found to remove.', 'info');
+        }
+    }
+    
 
     calculatePerformanceRating() {
         let totalRating = 0;
@@ -149,33 +152,49 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         // Find the current intern
         const currentUserIntern = this.interns.find(intern => intern.User__c === this.selectedInternId);
         if (!currentUserIntern) {
-            this.showToast('warning', 'Intern not found for the current user.', 'warning');
+            this.showToast('warning', 'Please select a valid intern.', 'warning');
             return;
         }
     
-        // Calculate performance from exams
-        this.examSchedules.forEach(exam => {
-            if (exam.Assigned_To__c === this.selectedInternId && exam.Exam_Result__c === 'Passed') {
-                totalRating += exam.Completion__c;
-            }
-        });
-    
-        // Calculate performance from tasks
-        this.phases.forEach(phase => {
-            phase.Tasks1__r.forEach(task => {
-                if (task.Assigned_To__c === this.selectedInternId && task.Status__c === 'Completed') {
-                    totalRating += task.Completion__c;
+        // Validate and calculate performance from exams
+        if (Array.isArray(this.examSchedules)) {
+            this.examSchedules.forEach(exam => {
+                if (exam.Assigned_To__c === this.selectedInternId 
+                    && exam.Exam_Result__c === 'Passed' 
+                    && typeof exam.Completion__c === 'number') {
+                    totalRating += exam.Completion__c;
                 }
             });
-        });
+        }
     
-        // Normalize performance rating
-        totalRating = Math.min(totalRating, 100);
-        this.performanceRatingFormatted = Math.round(totalRating);
+        // Validate and calculate performance from tasks in phases
+        if (Array.isArray(this.phases)) {
+            this.phases.forEach(phase => {
+                if (Array.isArray(phase.Tasks1__r)) {
+                    phase.Tasks1__r.forEach(task => {
+                        if (task.Assigned_To__c === this.selectedInternId 
+                            && task.Status__c === 'Completed' 
+                            && typeof task.Completion__c === 'number') {
+                            totalRating += task.Completion__c;
+                        }
+                    });
+                }
+            });
+        }
     
+        // Normalize performance rating to a maximum of 100
+        this.performanceRatingFormatted = Math.min(Math.round(totalRating), 100);
+    
+        // Provide feedback to the user
+        if (this.performanceRatingFormatted === 0) {
+            this.showToast('info', 'No performance data available for the selected intern.', 'info');
+        } else {
+            this.showToast('success', `Performance rating calculated: ${this.performanceRatingFormatted}`, 'success');
+        }
     }
-
     
+
+        
     extractMilestones(phases) {
         let milestones = [];
         phases.forEach(phase => {
@@ -376,12 +395,10 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
                 const nameMatches = intern.User__r && intern.Name && 
                     intern.User__r.Name.toLowerCase().includes(this.searchKey );
     
-                console.log('Name Match:', intern.User__r.Name, nameMatches); // Debugging to check the filter logic
     
                 return nameMatches;
             });
     
-            console.log('Filtered Results:', this.searchResults); // Debugging: Check the filtered results
         } else {
             this.searchResults = [];
         }
@@ -402,14 +419,11 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
 
     // Save updatePerfomances
     updatePerfomances() {
-        const internId = this.selectedInternDetails.Id;
+        const internId = this.selectedIntern.Id;
         const goalsAchieved = this.template.querySelector('[data-id="goalsAchieved"]').checked;
         const rating = this.template.querySelector('[data-id="rating"]').value;
         const note = this.template.querySelector('[data-id="note"]').value;
         const trainingProgress = this.performanceRatingFormatted
-
-        console.log("Evalaution Note: ", note)
-        console.log("Performance Rating: ", rating)
 
 
         savePerformanceRatingApex({

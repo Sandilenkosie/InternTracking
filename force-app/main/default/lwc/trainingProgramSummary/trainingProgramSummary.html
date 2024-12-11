@@ -33,12 +33,17 @@
                             <template if:false={isshow}>
                                 <lightning-input
                                     label="Intern"
-                                    type="search"
                                     placeholder="Search..."
                                     onchange={handleSearch}
                                     required
-                                    value={searchKey}
-                                ></lightning-input>
+                                    value={searchKey}>
+
+                                    <lightning-icon 
+                                        icon-name="utility:search" 
+                                        size="x-small" 
+                                        alternative-text="Rearch">
+                                    </lightning-icon>
+                                </lightning-input>
                             </template>
                           </div>
                           
@@ -87,8 +92,8 @@
                                                             class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" 
                                                             data-id={selectedIntern.User__c} 
                                                             onclick={removeSelectedIntern} 
-                                                            title="Remove"
-                                                        >
+                                                            title="Remove">
+
                                                             <lightning-icon 
                                                                 icon-name="utility:close" 
                                                                 size="x-small" 
@@ -116,7 +121,7 @@
 
     <template if:true={selectedInternId}>
         <div class="slds-p-around_medium slds-theme_datualt">
-            <lightning-card padding = 8px title={selectedInternDetails.Full_intern_Name__c} icon-name="custom:custom19">
+            <lightning-card padding = 8px title={selectedIntern.Name} icon-name="custom:custom19">
                 <template if:true={trainingProgram}>
                     
                         <div class="slds-grid slds-wrap slds-gutters">
@@ -135,20 +140,20 @@
                 <div class="slds-grid slds-wrap slds-gutters ">
                     <div class="slds-col slds-size_1-of-8 slds-p-around_x-small">
                         <p class="slds-text-title_bold">Program Duration</p>
-                        <p class="slds-text-body_regular">{selectedInternDetails.Program_Duration__c}</p>
+                        <p class="slds-text-body_regular">{selectedIntern.Program_Duration__c}</p>
                     </div>
                     <div class="slds-col slds-size_1-of-8 slds-p-around_x-small">
                         <p class="slds-text-title_bold">Program Name</p>
-                        <p class="slds-text-body_regular">{selectedInternDetails.Program__r.Name}</p>
+                        <p class="slds-text-body_regular">{selectedIntern.Program__r.Name}</p>
                     </div>
 
                     <div class="slds-col slds-size_1-of-8 slds-p-around_x-small">
                         <p class="slds-text-title_bold">Goals Achieved?</p>
-                        <p class="slds-text-body_regular">{selectedInternDetails.Goals_Achieved__c}</p>
+                        <p class="slds-text-body_regular">{selectedIntern.Goals_Achieved__c}</p>
                     </div>
                     <div class="slds-col slds-size_1-of-4 slds-p-around_x-small">
                         <p class="slds-text-title_bold">Department</p>
-                        <p class="slds-text-body_regular">{selectedInternDetails.Department__c}</p>
+                        <p class="slds-text-body_regular">{selectedIntern.Department__c}</p>
                     </div>
                 </div>
             </lightning-card>

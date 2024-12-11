@@ -11,7 +11,7 @@
     "include": [
         "**/*",
         "../../../../.sfdx/typings/lwc/**/*.d.ts"
-, "../../../../dateUtils.js"    ],
+    ],
     "typeAcquisition": {
         "include": [
             "jest"

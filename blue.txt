@@ -1,2 +1,0 @@
-            return [SELECT Id, WhoId, Status, Subject, ActivityDate, OwnerId, Phase__c
-                    FROM Task WHERE Id=:projectId order by ActivityDate ASC limit: limits.getLimitQueryRows()]; 
