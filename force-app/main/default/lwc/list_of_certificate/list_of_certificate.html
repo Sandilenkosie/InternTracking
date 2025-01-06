@@ -1,0 +1,38 @@
+<template>
+    <template if:true={certificates}>
+        <div class="slds-p-around_medium slds-theme_datualt">
+            <template for:each={certificates} for:item="certificate">
+                <div key={certificate.Id}>
+                <!-- Intern Details Section with Highlight Panel -->
+                    <div class="slds-grid slds-wrap slds-gutters ">
+                        <div class="slds-col slds-size_1-of-6 slds-p-around_x-small">
+                            <p class="slds-text-title_bold">Certificate Name</p>
+                            <p class="slds-text-body_regular">{certificate.Name}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6 slds-p-around_x-small">
+                            <p class="slds-text-title_bold">Expiration Date</p>
+                            <p class="slds-text-body_regular">{certificate.Expiration_Date__c}</p>
+                        </div>
+
+                        <div class="slds-col slds-size_1-of-6 slds-p-around_x-small">
+                            <p class="slds-text-title_bold">Issued Date</p>
+                            <p class="slds-text-body_regular">{certificate.Issued_Date__c}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6 slds-p-around_x-small">
+                            <p class="slds-text-title_bold">Issuing Authority</p>
+                            <p class="slds-text-body_regular">{certificate.Issuing_Authority__c}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6 slds-p-around_x-small">
+                            <p class="slds-text-title_bold">Score</p>
+                            <p class="slds-text-body_regular">{certificate.Score__c}</p>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6 slds-p-around_x-small">
+                            <p class="slds-text-title_bold">Status</p>
+                            <p class="slds-text-body_regular">{certificate.Status__c}</p>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </template>
+</template>

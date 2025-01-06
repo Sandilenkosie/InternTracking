@@ -1,0 +1,113 @@
+<template>
+    <div class="slds-modal__header">
+        <h1 id="header43" class="slds-text-heading_medium">Create New Certificate</h1>
+        <div class="slds-progress slds-progress_shade">
+            <ol class="slds-progress__list">
+                <template for:each={steps} for:item="step">
+                    <li key={step.id} class={step.class}>
+                        <div class="slds-progress__marker" tabindex="0">
+                            <span class="slds-assistive-text">{step.label}</span>
+                        </div>
+                    </li>
+                </template>
+            </ol>
+            <div class="slds-progress-bar slds-progress-bar_x-small" aria-valuemin="0" aria-valuemax="100" aria-valuenow={progress} role="progressbar">
+                <span class="slds-progress-bar__value" style={progressStyle}>
+                    <span class="slds-assistive-text">Progress: {progress}%</span>
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+        <template if:true={isStep1}>
+            <!-- Step 1: Certificate Name -->
+            <div class="slds-grid slds-wrap slds-gutters">
+                <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                    <lightning-input
+                        label="Certificate Name"
+                        type="text"
+                        required
+                        data-id="certificateName"
+                        class="slds-m-bottom_small"
+                        value={certificateName}
+                        onchange={handleInputChange}>
+                    </lightning-input>
+                </div>
+            </div>
+
+            <!-- Step 2: Certificate Code and Program Name -->
+            <div class="slds-grid slds-wrap slds-gutters">
+                <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                    <lightning-input
+                        label="Certificate Code"
+                        type="text"
+                        required
+                        data-id="code"
+                        class="slds-m-bottom_small"
+                        value={code}
+                        onchange={handleInputChange}>
+                    </lightning-input>
+                </div>
+
+                <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                    <div class="slds-form-element">
+                        <div class="slds-form-element__control">
+                          <div class="slds-combobox_container">
+                            <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
+                                <template if:true={isshow}>
+                                        <div class="slds-form-element">
+                                            <label class="slds-form-element__label" for="combobox-id-5" id="combobox-label-id-68">Pragram Name</label>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-combobox_container slds-has-selection">
+                                                    <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                                                        <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right" role="none">
+                                                            <span class="slds-icon_container slds-icon-standard-account slds-combobox__input-entity-icon" title="Account">
+                                                                <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                            </span>
+                                                            <div role="combobox" tabindex="0" class="slds-input_faux slds-combobox__input slds-combobox__input-value" aria-labelledby="combobox-label-id-68" id="combobox-id-5-selected-value" aria-controls="listbox-id-5" aria-expanded="false" aria-haspopup="listbox">
+                                                                <span class="slds-truncate" id="combobox-value-id-40">{program.Name}</span>
+                                                            </div>
+                                                            <!-- Remove Button -->
+                                                            <button 
+                                                                class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" 
+                                                                title="Remove"
+                                                                aria-readonly="true"
+                                                            >
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                </template>
+                                
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                </div>
+            </div>
+        </template>
+
+        <template if:true={isStep2}>
+
+        </template>
+
+        <template if:true={isStep3}>
+            <!-- Step 3: Summary -->
+            <div class="slds-text-body_regular">
+                <p><strong>Certificate Name:</strong> {certificateName}</p>
+                <p><strong>Certificate Code:</strong> {code}</p>
+                <p><strong>Program Name:</strong> {programName}</p>
+            </div>
+        </template>
+    </div>
+
+    <div class="slds-modal__footer slds-grid slds-grid_align-spread">
+        <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick={handleCancel}>Cancel</button>
+        <button class="slds-button slds-button_neutral" onclick={handleBack} if:true={canGoBack}>Back</button>
+        <button class="slds-button slds-button_brand" onclick={handleNext} if:true={canGoNext}>Next</button>
+        <button class="slds-button slds-button_brand" onclick={handleSubmit} if:true={isLastStep}>Save</button>
+    </div>
+</template>
