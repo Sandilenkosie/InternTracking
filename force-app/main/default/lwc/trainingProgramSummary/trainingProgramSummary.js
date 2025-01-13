@@ -50,6 +50,13 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         { label: '★★★★★', value: 'Excellent' },
     ];
 
+    @track StageOptions = [
+        { label: '--None--', value: '' },
+        { label: 'On Boarding', value: 'On Boarding' },
+        { label: 'Training', value: 'Training' },
+        { label: 'Consultant', value: 'Consultant' },
+    ];
+
     // Wire function to fetch data
     @wire(getTrainingProgramDetails, { trainingProgramId: '$recordId' })
     wiredTrainingProgram({ error, data }) {
@@ -61,8 +68,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
             this.milestones = this.extractMilestones(data.phases);
             this.examSchedules = data.examSchedules;
             this.filteredSchedules = data.examSchedules;
-            
-            
+
 
             // Create options for the intern filter combobox
             this.internOptions = [
@@ -77,7 +83,6 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
                                 ...data.phases.map(phase => ({ 
                                     label: phase.Name, value: phase.Id }))
                                 ];
-            
 
             // Apply Week filter by default after fetching data
             this.handleWeekFilter();
@@ -422,6 +427,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         const internId = this.selectedIntern.Id;
         const goalsAchieved = this.template.querySelector('[data-id="goalsAchieved"]').checked;
         const rating = this.template.querySelector('[data-id="rating"]').value;
+        const stages = this.template.querySelector('[data-id="stages"]').value;
         const note = this.template.querySelector('[data-id="note"]').value;
         const trainingProgress = this.performanceRatingFormatted
 
@@ -430,6 +436,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
             internId: internId,
             goalsAchieved: goalsAchieved,
             rating: rating,
+            stages: stages,
             note: note,
             trainingProgress: trainingProgress
         })
