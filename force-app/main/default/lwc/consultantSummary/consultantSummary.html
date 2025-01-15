@@ -1,0 +1,302 @@
+<template>
+    <!-- Spinner to show while data is loading -->
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading" size="medium" variant="brand"></lightning-spinner>
+    </template>
+    
+    <lightning-card>
+        <!-- Title Section -->
+        <h2 slot="header">
+            <lightning-icon icon-name="custom:custom83" size="small" alternative-text="Tasks"></lightning-icon>
+            Consultants
+        </h2>
+
+        <!-- Filters Section -->
+        <lightning-layout>
+            <lightning-layout-item flexibility="auto" padding="around-small" size="1">
+                <div class="slds-text-heading--label">Filters</div>
+            </lightning-layout-item>
+
+        </lightning-layout>
+
+                
+    </lightning-card>
+
+        <div class="slds-p-around_medium slds-theme_datualt">
+            <lightning-card padding = 8px title="Project" icon-name="custom:custom19">
+                <template if:true={project}>
+                        <div class="slds-grid slds-wrap slds-gutters ">
+                            <div class="slds-col slds-size_1-of-8 slds-p-around_x-small">
+                                <p class="slds-text-title_bold">Project Name</p>
+                                <p class="slds-text-body_regular">{project.Name}</p>
+                            </div>
+                            <div class="slds-col slds-size_1-of-8 slds-p-around_x-small">
+                                <p class="slds-text-title_bold">Start Date</p>
+                                <p class="slds-text-body_regular">{project.Start_Date__c}</p>
+                            </div>
+        
+                            <div class="slds-col slds-size_1-of-8 slds-p-around_x-small">
+                                <p class="slds-text-title_bold">Due Date</p>
+                                <p class="slds-text-body_regular">{project.End_Date__c}</p>
+                            </div>
+                            <div class="slds-col slds-size_1-of-4 slds-p-around_x-small">
+                                <p class="slds-text-title_bold">Status</p>
+                                <p class="slds-text-body_regular">{project.Status__c}</p>
+                            </div>
+                        </div>
+                </template>
+            </lightning-card>
+        </div>
+    <br>
+    <lightning-card>
+
+    </lightning-card>
+        
+        <template if:true={consultants}>
+            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                <thead>
+                    <tr>
+                        <th class="slds-text-title_caps">Consultant Name</th>
+                        <th class="slds-text-title_caps">Gender</th>
+                        <th class="slds-text-title_caps">Date of Birth</th>
+                        <th class="slds-text-title_caps">ID Number</th>
+                        <th class="slds-text-title_caps">Action</th> <!-- New Action column -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <template for:each={consultants} for:item="consultant">
+                        <tr key={consultant.Id}>
+                            <td>{consultant.Name}</td>
+            
+                            <td>
+                                <p class="slds-m-bottom_xx-small">
+                                    {consultant.Gender__c}
+                                </p>
+                            </td>
+            
+                            <td>
+                                <p class="slds-m-bottom_xx-small">
+                                    {consultant.Date_of_Birth__c}
+                                </p>
+                            </td>
+            
+                            <td>
+                                <p class="slds-m-bottom_xx-small">
+                                    {consultant.ID_Number__c}
+                                </p>
+                            </td>
+                            <!-- Action Column -->
+                            <td>
+                                <lightning-button-icon
+                                    icon-name="utility:edit"
+                                    alternative-text="Edit"
+                                    onclick={handleEdit}
+                                    variant="bare"
+                                    class="slds-m-left_x-small"
+                                    data-id={consultant.Id}>
+                                </lightning-button-icon>
+                                <lightning-button-icon
+                                    icon-name="utility:preview"
+                                    alternative-text="view"
+                                    onclick={handleView}
+                                    variant="bare"
+                                    class="slds-m-left_x-small"
+                                    data-id={consultant.Id}>
+                                </lightning-button-icon>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </template>
+        <template if:false={consultants}>
+            <p>No consultants found for this project.</p>
+        </template>
+            
+        <template if:true={isModalView}>
+            <section class="slds-modal slds-fade-in-open slds-modal_large">
+                <div class="slds-modal__container">
+                    <!-- Modal Header -->
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">Consultant Details</h2>
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" 
+                                title="Close" onclick={closeModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                        </button>
+                    </header>
+        
+                    <!-- Modal Content -->
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <div class="slds-section slds-is-open">
+                            <h3 class="slds-section__title">
+                              <button aria-controls="expando-unique-id" aria-expanded="true" class="slds-button slds-section__title-action">
+                                <lightning-icon icon-name="utility:chevrondown" size="x-small"></lightning-icon>
+                                <span class="slds-truncate" title="Section Title">Consultant Information</span>
+                              </button>
+                            </h3>
+                            <div class="slds-section__content" id="expando-unique-id">
+                                <div class="slds-form" role="list">
+                                    <div class="slds-form__row">
+                                      <div class="slds-form__item" role="listitem">
+                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_horizontal slds-hint-parent">
+                                          <span class="slds-form-element__label">
+                                            <abbr class="slds-required" title="required">* </abbr>Assigned Consultant</span>
+                                          <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+                                              <span class="slds-avatar slds-avatar_x-small slds-avatar_circle slds-m-right_xx-small">
+                                                <lightning-icon icon-name="utility:change_owner" size="x-small"></lightning-icon>
+                                              </span>
+                                              <a href="#">{selectedConsultant.Name}</a>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="slds-form__item" role="listitem">
+                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_horizontal slds-hint-parent">
+                                          <span class="slds-form-element__label">Gender</span>
+                                          <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static"> {selectedConsultant.Gender__c}</div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+            
+                                    <div class="slds-form__row">
+                                      <div class="slds-form__item" role="listitem">
+                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_horizontal slds-hint-parent">
+                                          <span class="slds-form-element__label">Date of Birth</span>
+                                          <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">{selectedConsultant.Date_of_Birth__c}</div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="slds-form__item" role="listitem">
+
+                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_horizontal slds-hint-parent">
+                                          <span class="slds-form-element__label">Project</span>
+                                          <div class="slds-form-element__control">
+                                            <template if:true={isEditingProject}>
+                                                <lightning-input 
+                                                    type="text" 
+                                                    value={selectedConsultant.Project__r.Name} 
+                                                    onchange={handleProjectChange}>
+                                                </lightning-input>
+                                            </template>
+                                            <template if:false={isEditingProject}>
+                                                <div class="slds-form-element__static">{selectedConsultant.Project__r.Name}</div>
+                                                <button class="slds-button slds-button_icon" onclick={editProject}>
+                                                    <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
+                                                </button>
+                                            </template>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                            </div>
+                          </div>
+                          <br>
+                          <div class="slds-section slds-is-open">
+                            <h3 class="slds-section__title">
+                              <button aria-controls="expando-unique-id" aria-expanded="true" class="slds-button slds-section__title-action">
+                                <lightning-icon icon-name="utility:chevrondown" size="x-small"></lightning-icon>
+                                <span class="slds-truncate" title="Section Title">Interviews List</span>
+                              </button>
+                            </h3>
+                            <div class="slds-section__content">
+                                <template if:true={interviews}>
+                                    <template for:each={interviews} for:item="interview">
+                                        <div key={interview.Id} class="slds-form" role="list">
+                                            <div class="slds-form__row">
+                                                <div class="slds-form__item" role="listitem">
+                                                    <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_horizontal slds-hint-parent">
+                                                    <span class="slds-form-element__label">
+                                                        <abbr class="slds-required" title="required">* </abbr>Interview Name</span>
+                                                    <div class="slds-form-element__control">
+                                                        <div class="slds-form-element__static">
+                                                        <span class="slds-avatar slds-avatar_x-small slds-avatar_circle slds-m-right_xx-small">
+                                                            <lightning-icon icon-name="utility:change_owner" size="x-small"></lightning-icon>
+                                                        </span>
+                                                        <a href="#">{interview.Name}</a>
+                                                        </div>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-form__item" role="listitem">
+                                                    <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_horizontal slds-hint-parent">
+                                                    <span class="slds-form-element__label">Date</span>
+                                                    <div class="slds-form-element__control">
+                                                        <div class="slds-form-element__static"> {interview.Date__c}</div>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-form__item" role="listitem">
+                                                    <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_horizontal slds-hint-parent">
+                                                    <span class="slds-form-element__label">Status</span>
+                                                    <div class="slds-form-element__control">
+                                                        <template if:true={isEditingProject}>
+                                                            <lightning-input 
+                                                                type="text" 
+                                                                value={interview.Status__c} 
+                                                                onchange={handleProjectChange}>
+                                                            </lightning-input>
+                                                        </template>
+                                                        <template if:false={isEditingProject}>
+                                                            <div class="slds-form-element__static">{interview.Status__c}</div>
+                                                            <button class="slds-button slds-button_icon" onclick={editProject}>
+                                                                <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
+                                                            </button>
+                                                        </template>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slds-form__item" role="listitem">
+
+                                                    <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_horizontal slds-hint-parent">
+                                                    <span class="slds-form-element__label">Feedback</span>
+                                                    <div class="slds-form-element__control">
+                                                        <template if:true={isEditingProject}>
+                                                            <lightning-input 
+                                                                type="text" 
+                                                                value={interview.Interview_Feedback__c} 
+                                                                onchange={handleProjectChange}>
+                                                            </lightning-input>
+                                                        </template>
+                                                        <template if:false={isEditingProject}>
+                                                            <div class="slds-form-element__static">{interview.Interview_Feedback__c}</div>
+                                                            <button class="slds-button slds-button_icon" onclick={editProject}>
+                                                                <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
+                                                            </button>
+                                                        </template>
+                                                    </div>
+                                                    </div>
+                                                </div>
+                                                <lightning-button-icon
+                                                    icon-name="utility:recycle_bin_empty"
+                                                    alternative-text="view"
+                                                    onclick={handleDelete}
+                                                    variant="bare"
+                                                    class="slds-m-left-small"
+                                                    data-id={interview.Id}>
+                                                </lightning-button-icon>
+                                            </div>
+
+                                        </div>
+                                        
+                                    </template>
+                                </template>
+                            </div>
+     
+                          </div>
+                    </div>
+                    <!-- Modal Footer -->
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_brand" onclick={saveChanges}>Save</button>
+                        <button class="slds-button slds-button_neutral" onclick={closeModal}>Close</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+        
+</template>

@@ -19,11 +19,7 @@ export default class interviewSchedules extends NavigationMixin(LightningElement
     @track isLoading = false;
     @track selectedClient = '';
     @track isshow = false;
-    @track locationOptions = [
-        { label: '--None--', value: '' },
-        { label: 'On-Site', value: 'On-Site' },
-        { label: 'Exam center', value: 'Exam center' },
-    ];
+
 
     consultants = [];
     clients = [];
@@ -112,10 +108,8 @@ export default class interviewSchedules extends NavigationMixin(LightningElement
         const button = event.target.closest('button');
         const clientId = button ? button.dataset.id : null;
 
-
         if (clientId && this.selectedClient && this.selectedClient.Id === clientId) {
             this.selectedClient = null;
-
             this.isshow = false;
         } 
     }
@@ -125,7 +119,6 @@ export default class interviewSchedules extends NavigationMixin(LightningElement
         const clientId = this.selectedClient.Id;
         const interviewName = this.template.querySelector('[data-id="interviewName"]').value;
         const scheduleDate = this.template.querySelector('[data-id="scheduleDate"]').value;
-        // const location = this.template.querySelector('[data-id="location"]').value
         const assignedTo = this.selectedConsultants.map(consultant => consultant.Id);
 
         if (!interviewName || !clientId || !scheduleDate || assignedTo.length === 0) {
