@@ -121,11 +121,6 @@ export default class interviewSchedules extends NavigationMixin(LightningElement
         const scheduleDate = this.template.querySelector('[data-id="scheduleDate"]').value;
         const assignedTo = this.selectedConsultants.map(consultant => consultant.Id);
 
-        if (!interviewName || !clientId || !scheduleDate || assignedTo.length === 0) {
-            this.showToast('Error', 'All fields are required.', 'error');
-            return;
-        }
-
         this.isLoading = true;
 
         createInterview({ clientId, interviewName, scheduleDate, assignedTo })

@@ -3,32 +3,70 @@ import { NavigationMixin } from 'lightning/navigation';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent'; 
 import { CloseActionScreenEvent } from 'lightning/actions';
 import getProjectdetails from '@salesforce/apex/ProjectController.getProjectdetails';
+import saveConsultantAndInterview from '@salesforce/apex/ProjectController.saveConsultantAndInterview';
 
 export default class ConsultantSummary extends NavigationMixin(LightningElement) {
     @api recordId;
-    project  = '';
+    @track project = '';
     @track searchKey = '';
-    @track _searchKey = '';
-    @track assignedToId = '';
-    @track selectedConsultant = '';
+    @track projectId = '';
+    @track selectedProject = null; // Ensure this is an object, not an array
     @track searchResults = [];
     @track isLoading = false;
+    @track isshow = false;
     @track isModalView = false;
     @track isEditingProject = false;
+    @track selectedConsultant = '';
     consultants = [];
+    interviews = [];
+    projects = [];
 
-    @wire(getProjectdetails, {projectId : '$recordId'})
-    wiredConsultant({error, data}){
-        console.log('Consultant Data', data)
-        if(data){
+    // Fetch project details
+    @wire(getProjectdetails, { projectId: '$recordId' })
+    wiredConsultant({ error, data }) {
+        if (data) {
             this.project = data.project;
+            this.projects = data.projects;
             this.consultants = data.consultants;
-        }else if(error){
+        } else if (error) {
             console.error('Error fetching data:', error); 
             this.error = error;
         }
     }
 
+    handleSearch(event) {
+        this.searchKey = event.target.value.toLowerCase();
+        if (this.searchKey) {
+            this.searchResults = this.projects.filter(project => {
+                return project.Name.toLowerCase().includes(this.searchKey);
+            });
+        } else {
+            this.searchResults = [];
+        }
+    }
+
+    selectProject(event) {
+        this.projectId = event.target.closest('li').dataset.id;
+        this.selectedProject = this.projects.find(project => project.Id === this.projectId);
+
+        if (this.selectedProject) {
+            this.searchResults = [];
+            this.searchKey = ''; // Clear search key
+            this.isshow = true;
+        }
+    }
+
+    removeselectedProject(event) {
+        const button = event.target.closest('button');
+        const projectId = button ? button.dataset.id : null;
+
+        if (projectId && this.selectedProject && this.selectedProject.Id === projectId) {
+            this.selectedClient = null;
+            this.isshow = false;
+        } 
+    }
+
+    // View modal for a selected consultant
     handleView(event) {
         const consultantId = event.target.dataset.id;
         this.selectedConsultant = this.consultants.find(consultant => consultant.Id === consultantId);
@@ -36,23 +74,74 @@ export default class ConsultantSummary extends NavigationMixin(LightningElement)
         this.isModalView = true;
     }
 
+    // Enable project editing
     editProject() {
         this.isEditingProject = true;
     }
 
+    // Handle project changes
     handleProjectChange(event) {
-        this.selectedConsultant.Project__c = event.target.value;
+        const newProjectValue = event.target.value;
+        
+        if (this.selectedConsultant) {
+            // Update the selected consultant's project
+            this.selectedConsultant.Project__c = newProjectValue;
+
+            // Update the interviews associated with this consultant
+            this.interviews.forEach(interview => {
+                interview.Status__c = newProjectValue;
+                interview.Interview_Feedback__c = newProjectValue;
+            });
+        }
     }
 
+    handleSaveChanges() {
+        const projectId = this.selectedProject?.Id;
+        const status = this.template.querySelector('[data-id="status"]').value;
+        const feedback = this.template.querySelector('[data-id="feedback"]').value;
+    
+        // Validate the data before calling Apex
+        if (!projectId || !status || !feedback) {
+            this.showToast('Error', 'Please fill in all fields', 'error');
+            return;
+        }
+    
+        // Assuming you need to loop through interviews and save data for each one
+        const interviewsToSave = this.interviews || [];  // List of interviews to save
+    
+        // Prepare the interviews data array to pass to Apex
+        const interviewsData = interviewsToSave.map(interview => {
+            return {
+                Id: interview.Id,         // Assuming each interview has an Id field
+                Status__c: status,            // Status to save
+                Interview_Feedback__c: feedback         // Feedback to save
+            };
+        });
+    
+        // Call Apex to save data
+        saveConsultantAndInterview({ projectId, interviewsData })
+            .then(() => {
+                this.showToast('Success', 'Data saved successfully!', 'success');
+                this.isEditingProject = false;
+            })
+            .catch(error => {
+                this.showToast('Error', error.body?.message || 'An error occurred', 'error');
+            });
+    }
+    
+    
+
+    // Handle cancel and close modal
     handleCancel() {
         this.dispatchEvent(new CloseActionScreenEvent());
-
     }
+
     closeModal() {
         this.isModalView = false;
         this.isEditingProject = false; // Reset editing mode
     }
 
+    // Show toast messages
     showToast(title, message, variant) {
         this.dispatchEvent(new ShowToastEvent({ title, message, variant }));
     }

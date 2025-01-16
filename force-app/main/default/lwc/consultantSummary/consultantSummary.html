@@ -88,14 +88,6 @@
                             <!-- Action Column -->
                             <td>
                                 <lightning-button-icon
-                                    icon-name="utility:edit"
-                                    alternative-text="Edit"
-                                    onclick={handleEdit}
-                                    variant="bare"
-                                    class="slds-m-left_x-small"
-                                    data-id={consultant.Id}>
-                                </lightning-button-icon>
-                                <lightning-button-icon
                                     icon-name="utility:preview"
                                     alternative-text="view"
                                     onclick={handleView}
@@ -138,7 +130,7 @@
                                 <div class="slds-form" role="list">
                                     <div class="slds-form__row">
                                       <div class="slds-form__item" role="listitem">
-                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_horizontal slds-hint-parent">
+                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
                                           <span class="slds-form-element__label">
                                             <abbr class="slds-required" title="required">* </abbr>Assigned Consultant</span>
                                           <div class="slds-form-element__control">
@@ -152,7 +144,7 @@
                                         </div>
                                       </div>
                                       <div class="slds-form__item" role="listitem">
-                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_horizontal slds-hint-parent">
+                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
                                           <span class="slds-form-element__label">Gender</span>
                                           <div class="slds-form-element__control">
                                             <div class="slds-form-element__static"> {selectedConsultant.Gender__c}</div>
@@ -163,7 +155,7 @@
             
                                     <div class="slds-form__row">
                                       <div class="slds-form__item" role="listitem">
-                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_horizontal slds-hint-parent">
+                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
                                           <span class="slds-form-element__label">Date of Birth</span>
                                           <div class="slds-form-element__control">
                                             <div class="slds-form-element__static">{selectedConsultant.Date_of_Birth__c}</div>
@@ -173,21 +165,102 @@
                                       <div class="slds-form__item" role="listitem">
 
                                         <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_horizontal slds-hint-parent">
-                                          <span class="slds-form-element__label">Project</span>
-                                          <div class="slds-form-element__control">
-                                            <template if:true={isEditingProject}>
-                                                <lightning-input 
-                                                    type="text" 
-                                                    value={selectedConsultant.Project__r.Name} 
-                                                    onchange={handleProjectChange}>
-                                                </lightning-input>
-                                            </template>
-                                            <template if:false={isEditingProject}>
-                                                <div class="slds-form-element__static">{selectedConsultant.Project__r.Name}</div>
-                                                <button class="slds-button slds-button_icon" onclick={editProject}>
-                                                    <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
-                                                </button>
-                                            </template>
+                                            <div class="slds-combobox_container">
+                                            <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
+                                                <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                                    <template if:false={isshow}>
+                                                        <template if:false={isEditingProject}>
+                                                            <div class="slds-form-element">
+                                                                <label class="slds-form-element__label" for="combobox-id-5">Project</label>
+                                                                <div class="slds-form-element__control">
+                                                                    <div class="slds-combobox_container slds-has-selection">
+                                                                        <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                                                                            <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right" role="none">
+                                                                                <span class="slds-icon_container slds-icon-standard-account slds-combobox__input-entity-icon" title="Account">
+                                                                                    <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                                                </span>
+                                                                                <div role="combobox" tabindex="0" class="slds-input_faux slds-combobox__input slds-combobox__input-value" aria-labelledby="combobox-label-id-68" aria-controls="listbox-id-5" aria-expanded="false" aria-haspopup="listbox">
+                                                                                    <span class="slds-truncate">{selectedConsultant.Project__.Name}</span>
+                                                                                </div>
+                                                     
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </template>
+                                                        <template if:true={isEditingProject}>
+                                                            <lightning-input
+                                                                label="Project"
+                                                                type="search"
+                                                                placeholder="Search Project..."
+                                                                onchange={handleSearch}
+                                                                required
+                                                                value={searchKey}
+                                                            ></lightning-input>
+                                                        </template>
+                                                    </template>
+                                                </div>
+                                                
+                                                <template if:true={searchKey}>
+                                                    <template if:true={searchResults}>
+                                                        <div id="listbox-id-2" class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
+                                                            <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                                <template for:each={searchResults} for:item="project">
+                                                                    <li key={project.Id} onclick={selectProject} data-id={project.Id} role="presentation" class="slds-listbox__item">
+                                                                        <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
+                                                                        <span class="slds-media__figure slds-listbox__option-icon">
+                                                                            <span class="slds-icon_container slds-icon-standard-account">
+                                                                                <lightning-icon icon-name="standard:account" size="small"></lightning-icon>
+                                                                            </span>
+                                                                        </span>
+                                                                        <span class="slds-media__body">
+                                                                            <span class="slds-listbox__option-text slds-listbox__option-text_entity">{project.Name}</span>
+                                                                            <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">Account • {project.Account__r.Name}</span>
+                                                                        </span>
+                                                                        </div>
+                                                                    </li>
+                                                                </template>
+                                                            </ul>
+                                                        </div>
+                                                    </template>
+                                                </template>
+                    
+                                                <template if:true={isshow}>
+                                                    <template if:true={selectedProject}>
+                                                        <div class="slds-form-element">
+                                                            <label class="slds-form-element__label" for="combobox-id-5" >Project</label>
+                                                            <div class="slds-form-element__control">
+                                                                <div class="slds-combobox_container slds-has-selection">
+                                                                    <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                                                                        <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right" role="none">
+                                                                            <span class="slds-icon_container slds-icon-standard-account slds-combobox__input-entity-icon" title="Account">
+                                                                                <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                                            </span>
+                                                                            <div role="combobox" tabindex="0" class="slds-input_faux slds-combobox__input slds-combobox__input-value" aria-labelledby="combobox-label-id-68" aria-controls="listbox-id-5" aria-expanded="false" aria-haspopup="listbox">
+                                                                                <span class="slds-truncate">{selectedProject.Name}</span>
+                                                                            </div>
+                                                                            <!-- Remove Button -->
+                                                                            <button 
+                                                                                class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" 
+                                                                                data-id={selectedProject.Id} 
+                                                                                onclick={removeselectedProject} 
+                                                                                title="Remove"
+                                                                            >
+                                                                                <lightning-icon 
+                                                                                    icon-name="utility:close" 
+                                                                                    size="x-small" 
+                                                                                    alternative-text="Remove">
+                                                                                </lightning-icon>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                </template>
+                                            </div>
                                           </div>
                                         </div>
                                       </div>
@@ -209,21 +282,21 @@
                                         <div key={interview.Id} class="slds-form" role="list">
                                             <div class="slds-form__row">
                                                 <div class="slds-form__item" role="listitem">
-                                                    <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_horizontal slds-hint-parent">
-                                                    <span class="slds-form-element__label">
-                                                        <abbr class="slds-required" title="required">* </abbr>Interview Name</span>
-                                                    <div class="slds-form-element__control">
-                                                        <div class="slds-form-element__static">
-                                                        <span class="slds-avatar slds-avatar_x-small slds-avatar_circle slds-m-right_xx-small">
-                                                            <lightning-icon icon-name="utility:change_owner" size="x-small"></lightning-icon>
-                                                        </span>
-                                                        <a href="#">{interview.Name}</a>
+                                                    <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                                        <span class="slds-form-element__label">
+                                                            <abbr class="slds-required" title="required">* </abbr>Interview Name</span>
+                                                        <div class="slds-form-element__control">
+                                                            <div class="slds-form-element__static">
+                                                                <span class="slds-avatar slds-avatar_x-small slds-avatar_circle slds-m-right_xx-small">
+                                                                    <lightning-icon icon-name="utility:change_owner" size="x-small"></lightning-icon>
+                                                                </span>
+                                                                <a href="#">{interview.Name}</a>
+                                                            </div>
                                                         </div>
-                                                    </div>
                                                     </div>
                                                 </div>
                                                 <div class="slds-form__item" role="listitem">
-                                                    <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_horizontal slds-hint-parent">
+                                                    <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
                                                     <span class="slds-form-element__label">Date</span>
                                                     <div class="slds-form-element__control">
                                                         <div class="slds-form-element__static"> {interview.Date__c}</div>
@@ -238,7 +311,8 @@
                                                             <lightning-input 
                                                                 type="text" 
                                                                 value={interview.Status__c} 
-                                                                onchange={handleProjectChange}>
+                                                                data-id="status"
+                                                                >
                                                             </lightning-input>
                                                         </template>
                                                         <template if:false={isEditingProject}>
@@ -259,7 +333,8 @@
                                                             <lightning-input 
                                                                 type="text" 
                                                                 value={interview.Interview_Feedback__c} 
-                                                                onchange={handleProjectChange}>
+                                                                data-id="feedback"
+                                                                >
                                                             </lightning-input>
                                                         </template>
                                                         <template if:false={isEditingProject}>
@@ -277,6 +352,7 @@
                                                     onclick={handleDelete}
                                                     variant="bare"
                                                     class="slds-m-left-small"
+                                                    size="large"
                                                     data-id={interview.Id}>
                                                 </lightning-button-icon>
                                             </div>
@@ -291,7 +367,7 @@
                     </div>
                     <!-- Modal Footer -->
                     <footer class="slds-modal__footer">
-                        <button class="slds-button slds-button_brand" onclick={saveChanges}>Save</button>
+                        <button class="slds-button slds-button_brand" onclick={handleSaveChanges}>Save</button>
                         <button class="slds-button slds-button_neutral" onclick={closeModal}>Close</button>
                     </footer>
                 </div>
