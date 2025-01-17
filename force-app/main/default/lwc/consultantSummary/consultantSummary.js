@@ -20,6 +20,13 @@ export default class ConsultantSummary extends NavigationMixin(LightningElement)
     consultants = [];
     interviews = [];
     projects = [];
+    @track StatusOptions = [
+        { label: '--None--', value: '' },
+        { label: 'Poorly', value: 'Poorly' },
+        { label: 'Poorly', value: 'Poorly' },
+        { label: 'Good', value: 'Good' },
+        { label: 'Excellent', value: 'Excellent' },
+    ];
 
     // Fetch project details
     @wire(getProjectdetails, { projectId: '$recordId' })
@@ -53,7 +60,7 @@ export default class ConsultantSummary extends NavigationMixin(LightningElement)
             };
         });
     }
-    
+
     handleSearch(event) {
         this.searchKey = event.target.value.toLowerCase();
         if (this.searchKey) {

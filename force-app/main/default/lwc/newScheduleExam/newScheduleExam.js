@@ -30,7 +30,7 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
             this.interns = data.interns;
 
         } else if (error) {
-            console.error('Error fetching data:', error);  // Log the error if there's an issue
+            console.error('Error fetching data:', error);
             this.error = error;
         }
     }
@@ -97,7 +97,7 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
         const examName = this.template.querySelector('[data-id="examName"]').value;
         const traingId = this.template.querySelector('[data-id="traingId"]').value;
         const scheduleDate = this.template.querySelector('[data-id="scheduleDate"]').value;
-        const completion = this.template.querySelector('[data-id="completion"]').value;
+        const completion = 30;
         const location = this.template.querySelector('[data-id="location"]').value
         const assignedTo = this.selectedInterns.map(intern => intern.User__c);
 

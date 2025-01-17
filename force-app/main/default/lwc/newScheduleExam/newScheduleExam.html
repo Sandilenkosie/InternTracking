@@ -122,13 +122,24 @@
                     data-id="scheduleDate"
                     class="slds-m-bottom_small"
                 ></lightning-input>
-                <lightning-input
-                    label="Completion (%)"
-                    type="number"
-                    required
-                    data-id="completion"
-                    class="slds-m-bottom_small"
-                ></lightning-input>
+                <div class="slds-form-element">
+                    <label class="slds-form-element__label" for="combobox-id-5">Rewards (%)</label>
+                    <div class="slds-form-element__control">
+                        <div class="slds-combobox_container slds-has-selection">
+                            <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                                <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right" role="none">
+                                    <span class="slds-icon_container slds-icon-standard-account slds-combobox__input-entity-icon" title="Account">
+                                        <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                    </span>
+                                    <div role="combobox" tabindex="0" class="slds-input_faux slds-combobox__input slds-combobox__input-value" aria-labelledby="combobox-label-id-68" aria-controls="listbox-id-5" aria-expanded="false" aria-haspopup="listbox">
+                                        <span class="slds-truncate">50%</span>
+                                    </div>
+         
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

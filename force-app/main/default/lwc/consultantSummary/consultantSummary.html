@@ -295,12 +295,13 @@
                                                     <span class="slds-form-element__label">Status</span>
                                                     <div class="slds-form-element__control">
                                                         <template if:true={isEditingProject}>
-                                                            <lightning-input 
+                                                            <lightning-combobox 
                                                                 type="text" 
-                                                                value={interview.Status__c} 
+                                                                value={StatusOptions} 
+                                                                options={StatusOptions}
                                                                 data-id="status"
                                                                 >
-                                                            </lightning-input>
+                                                            </lightning-combobox>
                                                         </template>
                                                         <template if:false={isEditingProject}>
                                                             <div class="slds-form-element__static">{interview.Status__c}</div>
