@@ -180,7 +180,7 @@
                                                                                     <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
                                                                                 </span>
                                                                                 <div role="combobox" tabindex="0" class="slds-input_faux slds-combobox__input slds-combobox__input-value" aria-labelledby="combobox-label-id-68" aria-controls="listbox-id-5" aria-expanded="false" aria-haspopup="listbox">
-                                                                                    <span class="slds-truncate">{selectedConsultant.Project__.Name}</span>
+                                                                                    <span class="slds-truncate">{selectedConsultant.Project__r.Name}</span>
                                                                                 </div>
                                                      
                                                                             </div>
@@ -240,19 +240,6 @@
                                                                             <div role="combobox" tabindex="0" class="slds-input_faux slds-combobox__input slds-combobox__input-value" aria-labelledby="combobox-label-id-68" aria-controls="listbox-id-5" aria-expanded="false" aria-haspopup="listbox">
                                                                                 <span class="slds-truncate">{selectedProject.Name}</span>
                                                                             </div>
-                                                                            <!-- Remove Button -->
-                                                                            <button 
-                                                                                class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" 
-                                                                                data-id={selectedProject.Id} 
-                                                                                onclick={removeselectedProject} 
-                                                                                title="Remove"
-                                                                            >
-                                                                                <lightning-icon 
-                                                                                    icon-name="utility:close" 
-                                                                                    size="x-small" 
-                                                                                    alternative-text="Remove">
-                                                                                </lightning-icon>
-                                                                            </button>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -278,7 +265,7 @@
                             </h3>
                             <div class="slds-section__content">
                                 <template if:true={interviews}>
-                                    <template for:each={interviews} for:item="interview">
+                                    <template for:each={processedInterviews} for:item="interview">
                                         <div key={interview.Id} class="slds-form" role="list">
                                             <div class="slds-form__row">
                                                 <div class="slds-form__item" role="listitem">

@@ -34,6 +34,26 @@ export default class ConsultantSummary extends NavigationMixin(LightningElement)
         }
     }
 
+    get processedInterviews() {
+        if (!this.interviews) {
+            return [];
+        }
+
+        const today = new Date();
+
+        console.log(today)
+
+        return this.interviews.map((interview) => {
+            const interviewDate = new Date(interview.Date__c);
+            console.log(interviewDate)
+
+            return {
+                ...interview,
+                isValid: interviewDate < today, 
+            };
+        });
+    }
+    
     handleSearch(event) {
         this.searchKey = event.target.value.toLowerCase();
         if (this.searchKey) {
