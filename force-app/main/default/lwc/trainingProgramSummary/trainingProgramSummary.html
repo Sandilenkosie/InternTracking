@@ -212,7 +212,7 @@
                 <tbody>
                     <template for:each={filteredSchedules} for:item="schedule">
                         <tr key={schedule.Id}>
-                            <td>{schedule.Name}</td>
+                            <td>{schedule.Certificate__r.Name}</td>
             
                             <!-- Current Period -->
                             <td>
@@ -388,13 +388,13 @@
                                     class="slds-m-bottom_small"
                                 ></lightning-input>
                                 <lightning-combobox
-                                label="Intern Stages"
-                                type="search"
-                                placeholder="Search..."
-                                data-id="stages"
-                                required
-                                options={StageOptions}
-                            ></lightning-combobox>
+                                    label="Intern Stages"
+                                    type="search"
+                                    placeholder="Search..."
+                                    data-id="stages"
+                                    required
+                                    options={StageOptions}
+                                ></lightning-combobox>
     
                             </div>
                 
@@ -426,7 +426,7 @@
 
          <!-- Modal for Viewing Details -->
          <template if:true={isModalView}>
-            <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open slds-modal_small">
+            <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open slds-modal_medium">
                 <div class="slds-modal__container">
                     <header class="slds-modal__header">
                         <button class="slds-button slds-button_icon slds-modal__close" title="Close" onclick={closeModal}>
@@ -437,129 +437,332 @@
                     </header>
                     <div class="slds-modal__content slds-p-around_medium">
                   
-                    <div class="slds-form" role="list">
-                        <!-- Modal content rows -->
-                        <div class="slds-form__row">
-                            <div class="slds-form__item" role="listitem">
-                                <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
-                                    <span class="slds-form-element__label slds-text-title_bold">Exam Name</span>
-                                    <div class="slds-form-element__control">
-                                        <div class="slds-form-element__static">{selectedSchedule.Name}</div>
-                                        <button class="slds-button slds-button_icon" title="Edit: Personalization Settings">
-                                            <svg class="slds-button__icon slds-button__icon_hint" aria-hidden="true">
-                                                <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#edit"></use>
-                                            </svg>
-                                            <span class="slds-assistive-text">Edit: Personalization Settings</span>
-                                        </button>
+                        <div class="slds-form" role="list">
+                            <!-- Modal content rows -->
+                            <div class="slds-form__row">
+                                <div class="slds-form__item" role="listitem">
+                                    <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                        <span class="slds-form-element__label slds-text-title_bold">Exam Name</span>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">{selectedSchedule.Certificate__r.Name}</div>
+                                            <button class="slds-button slds-button_icon" title="Edit: Personalization Settings">
+                                                <svg class="slds-button__icon slds-button__icon_hint" aria-hidden="true">
+                                                    <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#edit"></use>
+                                                </svg>
+                                                <span class="slds-assistive-text">Edit: Personalization Settings</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-form__item" role="listitem">
+                                    <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                        <span class="slds-form-element__label slds-text-title_bold">Scheduled Date</span>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">{selectedSchedule.Scheduled_Date__c}</div>
+                                            <button class="slds-button slds-button_icon" title="Edit: SLA Expiration Date">
+                                                <svg class="slds-button__icon slds-button__icon_hint" aria-hidden="true">
+                                                    <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#edit"></use>
+                                                </svg>
+                                                <span class="slds-assistive-text">Edit: SLA Expiration Date</span>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="slds-form__item" role="listitem">
-                                <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
-                                    <span class="slds-form-element__label slds-text-title_bold">Scheduled Date</span>
-                                    <div class="slds-form-element__control">
-                                        <div class="slds-form-element__static">{selectedSchedule.Scheduled_Date__c}</div>
-                                        <button class="slds-button slds-button_icon" title="Edit: SLA Expiration Date">
-                                            <svg class="slds-button__icon slds-button__icon_hint" aria-hidden="true">
-                                                <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#edit"></use>
-                                            </svg>
-                                            <span class="slds-assistive-text">Edit: SLA Expiration Date</span>
-                                        </button>
+            
+                            <div class="slds-form__row">
+                                <div class="slds-form__item" role="listitem">
+                                    <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                        <span class="slds-form-element__label slds-text-title_bold">Location</span>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">{selectedSchedule.Location__c}</div>
+                                            <button class="slds-button slds-button_icon" title="Edit: Location">
+                                                <svg class="slds-button__icon slds-button__icon_hint" aria-hidden="true">
+                                                    <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#edit"></use>
+                                                </svg>
+                                                <span class="slds-assistive-text">Edit: Location</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-form__item" role="listitem">
+                                    <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                        <span class="slds-form-element__label slds-text-title_bold">Training Program</span>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">{selectedSchedule.Training_Program__r.Name}</div>
+                                            <button class="slds-button slds-button_icon" title="Edit: Selected Languages">
+                                                <svg class="slds-button__icon slds-button__icon_hint" aria-hidden="true">
+                                                    <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#edit"></use>
+                                                </svg>
+                                                <span class="slds-assistive-text">Edit: Selected Languages</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+            
+                            <div class="slds-form__row">
+                                <div class="slds-form__item" role="listitem">
+                                    <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent slds-form-element_1-col">
+                                        <span class="slds-form-element__label slds-text-title_bold">Assigned To</span>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static slds-text-longform">{selectedSchedule.Assigned_To__r.Name}</div>
+                                            <button class="slds-button slds-button_icon" title="Edit: Description">
+                                                <svg class="slds-button__icon slds-button__icon_hint" aria-hidden="true">
+                                                    <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#edit"></use>
+                                                </svg>
+                                                <span class="slds-assistive-text">Edit: Description</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-form__item" role="listitem">
+                                    <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent slds-form-element_1-col">
+                                        <span class="slds-form-element__label slds-text-title_bold">Exam Result</span>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static slds-text-longform">{selectedSchedule.Exam_Result__c}</div>
+                                            <button class="slds-button slds-button_icon" title="Edit: Description">
+                                                <svg class="slds-button__icon slds-button__icon_hint" aria-hidden="true">
+                                                    <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#edit"></use>
+                                                </svg>
+                                                <span class="slds-assistive-text">Edit: Description</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-form__row">
+                                <div class="slds-form__item" role="listitem">
+                                    <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent slds-form-element_1-col">
+                                        <span class="slds-form-element__label slds-text-title_bold">% Completion</span>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static slds-text-longform">{selectedSchedule.Completion__c}</div>
+                                            <button class="slds-button slds-button_icon" title="Edit: Description">
+                                                <svg class="slds-button__icon slds-button__icon_hint" aria-hidden="true">
+                                                    <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#edit"></use>
+                                                </svg>
+                                                <span class="slds-assistive-text">Edit: Description</span>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        <br>
+                        <div class="slds-section slds-is-open">
+                          <h3 class="slds-section__title">
+                            <button aria-controls="expando-unique-id" aria-expanded="true" class="slds-button slds-section__title-action">
+                              <lightning-icon icon-name="utility:chevrondown" size="x-small"></lightning-icon>
+                              <span class="slds-truncate" title="Section Title">Certificate Monitor</span>
+                            </button>
+                          </h3>
+                          <div class="slds-section__content">
+                            <template if:true={certified}>
+                                <div class="slds-form" role="list">
+                                    <div class="slds-form__row">
+                                        <!-- Expiration Date -->
+                                        <div class="slds-form__item" role="listitem">
+                                            <div class="slds-form-element slds-form-element_stacked slds-hint-parent">
+                                                <span class="slds-form-element__label">Expiration Date</span>
+                                                <div class="slds-form-element__control">
+                                                    <template if:true={isEditing}>
+                                                        <lightning-input type="date" value={certified.Expiration_Date__c} data-id="expireDate"></lightning-input>
+                                                    </template>
+                                                    <template if:false={isEditing}>
+                                                        <div class="slds-form-element__static">{certified.Expiration_Date__c}</div>
+             
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <!-- Status -->
+                                        <div class="slds-form__item" role="listitem">
+                                            <div class="slds-form-element slds-form-element_stacked slds-hint-parent">
+                                                <span class="slds-form-element__label">Status</span>
+                                                <div class="slds-form-element__control">
+                                                    <template if:true={isEditing}>
+                                                        <lightning-combobox value={certified.Status__c} options={statusOptions} data-id="status"></lightning-combobox>
+                                                    </template>
+                                                    <template if:false={isEditing}>
+                                                        <div class="slds-form-element__static">{certified.Status__c}</div>
+                         
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Issued Date -->
+                                        <div class="slds-form__item" role="listitem">
+                                            <div class="slds-form-element slds-form-element_stacked slds-hint-parent">
+                                                <span class="slds-form-element__label">Issued Date</span>
+                                                <div class="slds-form-element__control">
+                                                    <template if:true={isEditing}>
+                                                        <lightning-input type="date" value={certified.Issued_Date__c} data-id="issuedDate"></lightning-input>
+                                                    </template>
+                                                    <template if:false={isEditing}>
+                                                        <div class="slds-form-element__static">{certified.Issued_Date__c}</div>
+                               
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </div>
+                  
+                                        <div class="slds-form__item" role="listitem">
+                                            <div class="slds-form-element slds-form-element_stacked slds-hint-parent">
+                                                <span class="slds-form-element__label">Score</span>
+                                                <div class="slds-form-element__control">
+                                                    <template if:true={isEditing}>
+                                                        <lightning-input type="number" value={certified.Score__c} data-id="score"></lightning-input>
+                                                    </template>
+                                                    <template if:false={isEditing}>
+                                                        <div class="slds-form-element__static">{certified.Score__c}</div>
+                                  
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Issuing Authority -->
+                                        <div class="slds-form__item" role="listitem">
+                                            <div class="slds-form-element slds-form-element_stacked slds-hint-parent">
+                                                <span class="slds-form-element__label">Issuing Authority</span>
+                                                <div class="slds-form-element__control">
+                                                    <template if:true={isEditing}>
+                                                        <lightning-input type="text" value={certified.Issuing_Authority__c} data-id="author"></lightning-input>
+                                                    </template>
+                                                    <template if:false={isEditing}>
+                                                        <div class="slds-form-element__static">{certified.Issuing_Authority__c}</div>
+                                   
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                            
+                            <template if:false={certified}>
+                                <div class="slds-form" role="list">
+                                    <div class="slds-form__row">
+                                        <div class="slds-form__item" role="listitem">
+                                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                                <span class="slds-form-element__label">Expiration Date</span>
+                                                <div class="slds-form-element__control">
+                                                    <template if:true={isEditing}>
+                                                        <lightning-input 
+                                                            type="date" 
+                                                            data-id="expireDate"
+                                                            >
+                                                        </lightning-input>
+                                                    </template>
+                                                    <template if:false={isEditing}>
+                                                        <button class="slds-button slds-button_icon" onclick={editProject}>
+                                                            <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
+                                                        </button>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </div>
+                        
+                                    </div>
+                                    <div class="slds-form__row">
+                                        <div class="slds-form__item" role="listitem">
+                                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                            <span class="slds-form-element__label">Status</span>
+                                            <div class="slds-form-element__control">
+                                                <template if:true={isEditing}>
+                                                    <lightning-combobox 
+                                                        type="text" 
+                                                        value={statusOptions} 
+                                                        options={statusOptions}
+                                                        data-id="status"
+                                                        >
+                                                    </lightning-combobox>
+                                                </template>
+                                                <template if:false={isEditing}>
+                                                    <button class="slds-button slds-button_icon" onclick={editProject}>
+                                                        <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
+                                                    </button>
+                                                </template>
+                                            </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form__item" role="listitem">
+
+                                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                            <span class="slds-form-element__label">Issued Date</span>
+                                            <div class="slds-form-element__control">
+                                                <template if:true={isEditing}>
+                                                    <lightning-input 
+                                                        type="date" 
+                                                        data-id="issuedDate"
+                                                        >
+                                                    </lightning-input>
+                                                </template>
+                                                <template if:false={isEditing}>
+                                                    <button class="slds-button slds-button_icon" onclick={editProject}>
+                                                        <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
+                                                    </button>
+                                                </template>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form__row">
+                                        <div class="slds-form__item" role="listitem">
+                                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                                <span class="slds-form-element__label">Score</span>
+                                                <div class="slds-form-element__control">
+                                                    <template if:true={isEditing}>
+                                                        <lightning-input 
+                                                            type="number" 
+                                                            data-id="score"
+                                                            >
+                                                        </lightning-input>
+                                                    </template>
+                                                    <template if:false={isEditing}>
+                                                        <button class="slds-button slds-button_icon" onclick={editProject}>
+                                                            <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
+                                                        </button>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </div>
         
-                        <div class="slds-form__row">
-                            <div class="slds-form__item" role="listitem">
-                                <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
-                                    <span class="slds-form-element__label slds-text-title_bold">Location</span>
-                                    <div class="slds-form-element__control">
-                                        <div class="slds-form-element__static">{selectedSchedule.Location__c}</div>
-                                        <button class="slds-button slds-button_icon" title="Edit: Location">
-                                            <svg class="slds-button__icon slds-button__icon_hint" aria-hidden="true">
-                                                <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#edit"></use>
-                                            </svg>
-                                            <span class="slds-assistive-text">Edit: Location</span>
-                                        </button>
+                                        <div class="slds-form__item" role="listitem">
+                                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                            <span class="slds-form-element__label">Issuing Authority</span>
+                                            <div class="slds-form-element__control">
+                                                <template if:true={isEditing}>
+                                                    <lightning-input 
+                                                        type="text" 
+                                                        data-id="author"
+                                                        >
+                                                    </lightning-input>
+                                                </template>
+                                                <template if:false={isEditing}>
+                                                    <button class="slds-button slds-button_icon" onclick={editProject}>
+                                                        <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
+                                                    </button>
+                                                </template>
+                                            </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="slds-form__item" role="listitem">
-                                <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
-                                    <span class="slds-form-element__label slds-text-title_bold">Training Program</span>
-                                    <div class="slds-form-element__control">
-                                        <div class="slds-form-element__static">{selectedSchedule.Training_Program__r.Name}</div>
-                                        <button class="slds-button slds-button_icon" title="Edit: Selected Languages">
-                                            <svg class="slds-button__icon slds-button__icon_hint" aria-hidden="true">
-                                                <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#edit"></use>
-                                            </svg>
-                                            <span class="slds-assistive-text">Edit: Selected Languages</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            </template>
+                            
+                          </div>
                         </div>
-        
-                        <div class="slds-form__row">
-                            <div class="slds-form__item" role="listitem">
-                                <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent slds-form-element_1-col">
-                                    <span class="slds-form-element__label slds-text-title_bold">Assigned To</span>
-                                    <div class="slds-form-element__control">
-                                        <div class="slds-form-element__static slds-text-longform">{selectedSchedule.Assigned_To__r.Name}</div>
-                                        <button class="slds-button slds-button_icon" title="Edit: Description">
-                                            <svg class="slds-button__icon slds-button__icon_hint" aria-hidden="true">
-                                                <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#edit"></use>
-                                            </svg>
-                                            <span class="slds-assistive-text">Edit: Description</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="slds-form__item" role="listitem">
-                                <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent slds-form-element_1-col">
-                                    <span class="slds-form-element__label slds-text-title_bold">Exam Result</span>
-                                    <div class="slds-form-element__control">
-                                        <div class="slds-form-element__static slds-text-longform">{selectedSchedule.Exam_Result__c}</div>
-                                        <button class="slds-button slds-button_icon" title="Edit: Description">
-                                            <svg class="slds-button__icon slds-button__icon_hint" aria-hidden="true">
-                                                <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#edit"></use>
-                                            </svg>
-                                            <span class="slds-assistive-text">Edit: Description</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="slds-form__row">
-                            <div class="slds-form__item" role="listitem">
-                                <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent slds-form-element_1-col">
-                                    <span class="slds-form-element__label slds-text-title_bold">% Completion</span>
-                                    <div class="slds-form-element__control">
-                                        <div class="slds-form-element__static slds-text-longform">{selectedSchedule.Completion__c}</div>
-                                        <button class="slds-button slds-button_icon" title="Edit: Description">
-                                            <svg class="slds-button__icon slds-button__icon_hint" aria-hidden="true">
-                                                <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#edit"></use>
-                                            </svg>
-                                            <span class="slds-assistive-text">Edit: Description</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     </div>
                     <div class="slds-modal__footer">
                         <button class="slds-button slds-button_neutral" onclick={closeModal}>Close</button>
+                        <template if:false={certified}>
+                            <button class="slds-button slds-button_brand" onclick={updateCertificate}>Save</button>
+                        </template>
                     </div>
                 </div>
               </section>
               <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
 
         </template>
-        
-        
-        
-            
-            
 </template>

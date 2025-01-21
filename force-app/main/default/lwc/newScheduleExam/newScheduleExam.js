@@ -2,19 +2,28 @@ import { LightningElement, api, wire, track } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent'; 
 import { CloseActionScreenEvent } from 'lightning/actions';
+import { getRecord } from 'lightning/uiRecordApi';
 import getTrainingProgramDetails from '@salesforce/apex/TrainingProgramController.getTrainingProgramDetails';
 import addNewschedule from '@salesforce/apex/TrainingProgramController.addNewschedule';
 import getTraining from '@salesforce/apex/TrainingProgramController.getTraining';
 
+const FIELDS = ['Training_Program__r.Name'];
+
 export default class NewTaskCreation extends NavigationMixin(LightningElement) {
     @api recordId;
+    recordName;
     trainingProgram  = [];
     @track searchKey = '';
+    @track _searchKey = '';
     @track assignedToId = '';
+    @track certificateId = '';
     @track selectedInterns = [];
+    @track selectedCertificate = '';
     @track phaseOptions = [];
     @track searchResults = [];
+    @track _searchResults = [];
     @track isLoading = false;
+    @track isshow = false;
     @track locationOptions = [
         { label: '--None--', value: '' },
         { label: 'On-Site', value: 'On-Site' },
@@ -23,11 +32,14 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
 
     trainingOptions = [];
     interns = [];
+    certificates = [];
+    programs = [];
 
     @wire(getTrainingProgramDetails, { trainingProgramId: '$recordId' })
     wiredTrainingProgram({ error, data }) {
         if (data) {
             this.interns = data.interns;
+            this.programs = data.programs;
 
         } else if (error) {
             console.error('Error fetching data:', error);
@@ -35,23 +47,13 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
         }
     }
 
-    @wire(getTraining)
-    wiredTraining({ error, data }) {
+    @wire(getRecord, { recordId: '$recordId', fields: FIELDS })
+    wiredRecord({ error, data }) {
         if (data) {
-            console.log('Training Program Data:', data);
-            
-            // Ensure trainingProgram is always an array
-            this.trainingProgram = data.trainingProgram || [];
-            console.log('Processed Interns:', this.trainingProgram);
-            this.trainingOptions = [
-                { label: '--None--', value: '' },
-                ...data.map(training => ({
-                    label: training.Name,
-                    value: training.Id
-                }))
-            ];
+            this.recordName = data.fields.Name.value;
         } else if (error) {
             console.error('Error fetching data:', error);
+            this.error = error;
         }
     }
 
@@ -93,22 +95,71 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
         this.selectedInterns = this.selectedInterns.filter(intern => intern.User__c !== this.assignedToId);
     }
 
+    _handleSearch(event) {
+        this._searchKey = event.target.value.toLowerCase();
+        console.log('Search Key:', this._searchKey);
+    
+        if (this._searchKey) {
+            // Flatten all certificates from programs
+            let allCertificates = [];
+            this.programs.forEach(program => {
+                if (program.Certificates__r) {
+                    allCertificates = allCertificates.concat(program.Certificates__r);
+                }
+            });
+            this.certificates = allCertificates;
+    
+            // Filter certificates based on search key
+            this._searchResults = this.certificates.filter(certificate => {
+                return certificate.Name.toLowerCase().includes(this._searchKey);
+            });
+    
+            console.log('Filtered Results:', this._searchResults);
+        } else {
+            this._searchResults = [];
+        }
+    }
+    
+
+    selectCertificate(event) {
+        this.certificateId = event.target.closest('li').dataset.id;
+        this.selectedCertificate = this.certificates.find(certificate => certificate.Id === this.certificateId);
+
+        if (this.selectedCertificate) {
+            this._searchResults = [];
+            this._searchKey = '';
+            this.isshow = true;
+        }
+    }
+
+    _removeselected(event) {
+        const button = event.target.closest('button');
+        const certificateId = button ? button.dataset.id : null;
+
+        if (certificateId && this.selectedCertificate && this.selectedCertificate.Id === certificateId) {
+            this.selectedCertificate = null;
+            this.isshow = false;
+        } 
+    }
+
     newScheduleExam() {
-        const examName = this.template.querySelector('[data-id="examName"]').value;
-        const traingId = this.template.querySelector('[data-id="traingId"]').value;
+        const certificateId = this.selectedCertificate.Id;
+        const traingId = this.recordId;
         const scheduleDate = this.template.querySelector('[data-id="scheduleDate"]').value;
         const completion = 30;
         const location = this.template.querySelector('[data-id="location"]').value
         const assignedTo = this.selectedInterns.map(intern => intern.User__c);
 
-        if (!examName || !traingId || !scheduleDate || !location || !completion || assignedTo.length === 0) {
+        console.log('certificateId data', certificateId)
+
+        if (!certificateId || !traingId || !scheduleDate || !location || !completion || assignedTo.length === 0) {
             this.showToast('Error', 'All fields are required.', 'error');
             return;
         }
 
         this.isLoading = true;
 
-        addNewschedule({ examName, traingId, scheduleDate, location, completion, assignedTo })
+        addNewschedule({ certificateId, traingId, scheduleDate, location, completion, assignedTo })
             .then(() => {
                 this.showToast('Success', 'Task created successfully.', 'success');
                 this.handleCancel();

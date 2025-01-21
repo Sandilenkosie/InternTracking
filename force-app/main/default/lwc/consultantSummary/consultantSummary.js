@@ -23,7 +23,6 @@ export default class ConsultantSummary extends NavigationMixin(LightningElement)
     @track StatusOptions = [
         { label: '--None--', value: '' },
         { label: 'Poorly', value: 'Poorly' },
-        { label: 'Poorly', value: 'Poorly' },
         { label: 'Good', value: 'Good' },
         { label: 'Excellent', value: 'Excellent' },
     ];

@@ -3,6 +3,7 @@ import { NavigationMixin } from 'lightning/navigation';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent'; 
 import getTrainingProgramDetails from '@salesforce/apex/TrainingProgramController.getTrainingProgramDetails';
 import savePerformanceRatingApex from '@salesforce/apex/TrainingProgramController.savePerformanceRatingApex';
+import createCertificate from '@salesforce/apex/TrainingProgramController.createCertificate';
 
 export default class TrainingProgramSummary extends NavigationMixin(LightningElement) {
     @api recordId;
@@ -11,6 +12,9 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     phases = [];
     interns = [];
     examSchedules = [];
+    certified = null;
+    certifieds = [];
+    certificates = [];
     filteredSchedules = [];
     milestones = [];
     error;
@@ -28,10 +32,12 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     isMilestoneOpen = false;
     isModalView = false;
     @track isEditing = false;
+    @track isPassed = false;
     @track assignedTo = [];
     
 
     @track showModal = false; // Modal visibility
+    @track showModalCerti = false; // Modal visibility
     @track goalAchieved = false; // Checkbox state
     @track performanceRatingFormatted = 0;
     @track RatingIntern = '';
@@ -39,10 +45,10 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     @track searchKey = '';
     @track internId = '';
     @track selectedIntern = [];
+    projects = [];
     @track isshow = false;
 
     @track ratingOptions = [
-        { label: '--None--', value: '' },
         { label: '★', value: 'Needs Improvemen' },
         { label: '★★', value: 'Average' },
         { label: '★★★', value: 'Good' },
@@ -51,10 +57,14 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     ];
 
     @track StageOptions = [
-        { label: '--None--', value: '' },
         { label: 'On Boarding', value: 'On Boarding' },
         { label: 'Training', value: 'Training' },
         { label: 'Consultant', value: 'Consultant' },
+    ];
+
+    @track statusOptions = [
+        { label: 'Active', value: 'Active' },
+        { label: 'Expired', value: 'Expired' },
     ];
 
     // Wire function to fetch data
@@ -65,6 +75,8 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
             this.trainingProgram = data.trainingProgram;
             this.phases = data.phases;
             this.interns = data.interns;
+            this.certificates = data.certificates;
+            this.projects = data.projects;
             this.milestones = this.extractMilestones(data.phases);
             this.examSchedules = data.examSchedules;
             this.filteredSchedules = data.examSchedules;
@@ -171,6 +183,8 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
                 }
             });
         }
+
+
     
         // Validate and calculate performance from tasks in phases
         if (Array.isArray(this.phases)) {
@@ -198,6 +212,10 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         }
     }
     
+
+    handleCloseModal() {
+        this.showModalCerti = false;
+    }
 
         
     extractMilestones(phases) {
@@ -418,6 +436,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     closeModal() {
         this.showModal = false;
         this.isModalView = false;
+        this.showModalCerti = false
     }
 
 
@@ -452,21 +471,87 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
 
     handleEdit(event) {
         const scheduleId = event.target.dataset.id;
+        this.selectedSchedule = this.filteredSchedules.find(schedule => schedule.Id === scheduleId );
         this[NavigationMixin.Navigate]({
             type: 'standard__recordPage',
             attributes: {
                 recordId: scheduleId,
-                objectApiName: 'Exam_Schedule__c', // Replace with your object API name
+                objectApiName: 'Exam_Schedule__c',
                 actionName: 'edit'
             }
         });
     }
+
     handleView(event) {
         const scheduleId = event.target.dataset.id;
+    
+        // Find the selected schedule
         this.selectedSchedule = this.filteredSchedules.find(schedule => schedule.Id === scheduleId);
+    
+        if (this.selectedSchedule) {
+            // Find the associated certificate
+            const certificate = this.certificates.find(certificate => certificate.Id === this.selectedSchedule.Certificate__c);
+    
+            if (certificate && certificate.Certifieds__r) {
+                // Find the certified user
+                this.certified = certificate.Certifieds__r.find(certified => certified.User__c === this.selectedSchedule.Assigned_To__c);
+            } else {
+                this.certified = null;
+            }
+        } else {
+            console.error('Schedule not found for ID:', scheduleId);
+            this.certified = null;
+        }
+    
+        // Open the modal view
         this.isModalView = true;
     }
-
+    
+    
+    
+    
+    
+    updateCertificate() {
+        try {
+            // Retrieve values from input fields
+            const certificateId = this.selectedSchedule?.Certificate__c;
+            const userId = this.selectedSchedule?.Assigned_To__c;
+            const expireDate = this.template.querySelector('[data-id="expireDate"]')?.value;
+            const issuedDate = this.template.querySelector('[data-id="issuedDate"]')?.value;
+            const author = this.template.querySelector('[data-id="author"]')?.value;
+            const score = this.template.querySelector('[data-id="score"]')?.value;
+            const status = this.template.querySelector('[data-id="status"]')?.value;
+    
+            // Check for required fields
+            if (!expireDate || !issuedDate || !author || !score || !status) {
+                this.showToast('Error', 'All fields are required.', 'error');
+                return;
+            }
+    
+            // Call Apex method
+            createCertificate({
+                certificateId,
+                userId,
+                expireDate,
+                issuedDate,
+                author,
+                score: parseInt(score, 10), // Convert score to an integer
+                status
+            })
+                .then(() => {
+                    this.showToast('Success', 'Certificate updated successfully.', 'success');
+                    this.closeModal(); // Close modal on success
+                })
+                .catch((error) => {
+                    const errorMessage = error?.body?.message || 'Unknown error occurred';
+                    this.showToast('Error', `Error saving certificate: ${errorMessage}`, 'error');
+                });
+        } catch (e) {
+            console.error('Error in updateCertificate:', e);
+            this.showToast('Error', 'Unexpected error occurred. Please try again.', 'error');
+        }
+    }
+    
     // Handle reset (refresh)
     handleRefresh() {
         this.selectedInternId = ''; // Reset the intern filter
@@ -476,6 +561,9 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         
     }
     
+    editProject(){
+        this.isEditing = true; 
+    }
     // Show Toast Notification
     showToast(title, message, variant) {
         const event = new ShowToastEvent({
