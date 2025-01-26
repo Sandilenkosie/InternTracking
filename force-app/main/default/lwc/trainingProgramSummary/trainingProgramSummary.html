@@ -29,7 +29,7 @@
                                     label="Intern"
                                     placeholder="Search..."
                                     onchange={handleSearch}
-                                    required
+                                    onfocus={handleInputFocus}
                                     value={searchKey}>
 
                                     <lightning-icon 
@@ -41,7 +41,7 @@
                             </template>
                           </div>
                           
-                            <template if:true={searchKey}>
+                            <template if:true={isfocus}>
                                 <template if:true={searchResults}>
                                     <div id="listbox-id-2" class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
                                         <ul class="slds-listbox slds-listbox_vertical" role="presentation">

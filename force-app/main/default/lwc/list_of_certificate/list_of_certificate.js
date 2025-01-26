@@ -1,24 +1,22 @@
 import { LightningElement, api, track, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import getProgramDetails from '@salesforce/apex/ProgramController.getProgramDetails';
+import getInternDetails from '@salesforce/apex/InternController.getInternDetails';
 
 export default class InternCertificates extends LightningElement {
-    @api recordId; // Record ID of the program
-    @track certificates = []; // List of certificates
-    @track interns; // List of interns
-    error; // Error handler
+    @api recordId;
+    @track certificates = []; 
+    error;
+    selectedIntern = '';
 
-    @wire(getProgramDetails, { internId: '$recordId' })
-    wiredgetProgramDetails({ error, data }) {
-        console.log('Intern Data:', data);
+    @wire(getInternDetails, { internId: '$recordId' })
+    wiredInternDetails({ error, data }) {
         if (data) {
-            this.interns = data.interns;
             this.certificates = data.certificates;
         } else if (error) {
-            this.showToast('Error', 'Error fetching program details.', 'error');
-            console.error('Error fetching data:', error);
+            this.error = error;
         }
     }
+
 
     showToast(title, message, variant) {
         const event = new ShowToastEvent({

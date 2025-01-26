@@ -52,7 +52,7 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
     
             console.log('Filtered Results:', this.searchResults); // Debugging: Check the filtered results
         } else {
-            this.searchResults = [];
+            this.searchResults = [...this.interns];;
         }
     }
     selectIntern(event) {
@@ -88,7 +88,7 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
     
             console.log('Filtered Results:', this.searchResults); // Debugging: Check the filtered results
         } else {
-            this.searchResults = [];
+            this.searchResults = [...this.interns];;
         }
     }
 

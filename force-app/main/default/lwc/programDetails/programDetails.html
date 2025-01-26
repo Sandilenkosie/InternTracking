@@ -1,0 +1,1000 @@
+<template>
+  <template if:true={isLoading}>
+    <lightning-spinner alternative-text="Loading" size="medium" variant="brand"></lightning-spinner>
+</template>
+  <div class="slds-p-around_medium slds-theme_datualt">
+    <div class="slds-grid slds-wrap slds-gutters ">
+        <div class="slds-col slds-size_1-of-4 slds-p-around_x-small">
+          <div class="slds-split-view_container slds-is-open">
+              <article class="slds-split-view slds-grid slds-grid_vertical slds-grow">
+                <header class="slds-split-view__header">
+                  <div class="slds-grid slds-grid_vertical-align-center slds-m-bottom_xx-small">
+                    <div class="slds-has-flexi-truncate">
+                      <div class="slds-media slds-media_center">
+                        <div class="slds-media__figure">
+                          <template if:true={selectedCategory}>
+                            <div class="slds-icon_container slds-icon-standard-lead">
+                              <lightning-icon 
+                                icon-name={getIconName} 
+                                alternative-text={selectedCategory} 
+                                class="slds-icon">
+                              </lightning-icon>
+                              <span class="slds-assistive-text">{selectedCategory}</span>
+                            </div>
+                          </template>
+                        </div>
+                        <div class="slds-media__body">
+                          <h1 class="slds-text-heading_small slds-text-color_default slds-p-right_x-small">
+                            <!-- Conditionally apply the class for dropdown visibility -->
+                            <div class="demo-only">
+                              <button class="slds-button slds-button_reset slds-type-focus slds-truncate" onclick={toggleDropdown} aria-haspopup="true" aria-expanded={dropdownOpen} title="">
+                                <span class="slds-grid slds-has-flexi-truncate slds-grid_vertical-align-center">
+                                  <span class="slds-truncate" title={selectedCategory}>{selectedCategory}</span>
+                                  <lightning-icon 
+                                    icon-name="utility:down" 
+                                    size="x-small" 
+                                    class="slds-button__icon_right slds-no-flex"
+                                    aria-hidden="true">
+                                  </lightning-icon>
+                                </span>
+                              </button>
+                              <section aria-describedby="dialog-body-id-15" aria-label="My Favourites" class={dropdownClass} role="dialog" style="position:absolute;left:-0.5rem;top:48px">
+                                <div class="slds-popover__body slds-p-horizontal_none">
+                                  <div class="slds-media">
+                                    <div class="slds-media__body">
+                                      <div class="slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
+                                        <ul class="slds-listbox slds-listbox_vertical" role="group" aria-label="My Favorites">
+                                          <li role="presentation" class="slds-listbox__item">
+                                            <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_center" role="presentation">
+                                              <h3 class="slds-listbox__option-header" role="presentation">My Favorites</h3>
+                                            </div>
+                                          </li>
+                                          <template for:each={categories} for:item="category">
+                                            <li key={category.value} role="presentation" class="slds-listbox__item" data-value={category.value} onclick={handleCategoryChange}>
+                                              <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option" tabindex="0">
+                                                <span class="slds-media__figure slds-listbox__option-icon">
+                                                  <span class="slds-icon_container slds-icon-standard-account">
+                                                    <lightning-icon 
+                                                      icon-name={category.iconName} 
+                                                      size="small"
+                                                      class="slds-icon slds-icon_small">
+                                                    </lightning-icon>
+                                                  </span>
+                                                </span>
+                                                <span class="slds-media__body">
+                                                  <span class="slds-listbox__option-text slds-listbox__option-text_entity">{category.label}</span>
+                                                  <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">Account • Burlington, NC</span>
+                                                </span>
+                                              </div>
+                                            </li>
+                                          </template>
+                                        </ul>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </section>
+                            </div>
+                          </h1>
+                        </div>
+                      </div>
+                    </div>
+                    <template if:true={showButton}>
+                      <div class="slds-no-flex slds-grid">
+                          <lightning-button 
+                            label="New"
+                            icon-name="utility:add"
+                            icon-position="right"
+                            variant="neutral"
+                            onclick={handleButtonClick}
+                            class="slds-button">
+                          </lightning-button>
+                      </div>
+                    </template>
+                  </div>
+                  <div class="slds-grid slds-grid_vertical-align-center">
+                    <p class="slds-text-body_small slds-text-color_weak">{totalItems} items • Updated just now</p>
+                    <div class="slds-no-flex slds-grid slds-col_bump-left">
+                      <div class="slds-button-group">
+                        <button class="slds-button slds-button_icon slds-button_icon slds-button_icon-container" title="Refresh List">
+                          <lightning-icon icon-name="utility:refresh" size="x-small" class="slds-button__icon"></lightning-icon>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </header>
+                <div class="slds-grid slds-grid_vertical">
+                  <div class="slds-split-view__list-header slds-grid">
+                    <span class="slds-assistive-text">Sorted by:</span>
+                    <span>Lead Score
+                      <svg class="slds-icon slds-icon_xx-small slds-icon-text-default slds-align-top" aria-hidden="true">
+                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#arrowdown"></use>
+                      </svg>
+                    </span>
+                    <span class="slds-assistive-text">- Descending</span>
+                  </div>
+                  <ul aria-multiselectable="true" class="slds-scrollable_y" role="listbox" aria-label="Select an item to open it in a new workspace tab.">
+                    <template if:true={isCertificatesSelected}>
+                      <template for:each={certificates} for:item="certificate">
+                        <li key={certificate.Id} class="slds-split-view__list-item" role="presentation" data-row={certificate.Id} onclick={_editingButton}>
+                          <a href="#" role="option" class="slds-split-view__list-item-action slds-grow slds-has-flexi-truncate" tabindex="0">
+                            <div class="slds-grid slds-wrap">
+                              <span class="slds-truncate slds-text-body_regular slds-text-color_default" title={certificate.Name}>{certificate.Name}</span>
+                              <span class="slds-truncate slds-col_bump-left" title="99">Passing Mark Required</span>
+                            </div>
+                            <div class="slds-grid slds-wrap">
+                              <span class="slds-truncate" title={certificate.Authority_By__c}>{certificate.Authority_By__c}.</span>
+                              <span class="slds-truncate slds-col_bump-left" title="Nurturing">70%</span>
+                            </div>
+                          </a>
+                        </li>
+                    </template>
+                    </template>
+                    <template if:true={isOnboardingSelected}>
+                      <template for:each={onboardings} for:item="onboarding">
+                        <li key={onboarding.Id} class="slds-split-view__list-item" role="presentation" data-row={onboarding.Id} onclick={_editingButton}>
+                          <a href="#" role="option" class="slds-split-view__list-item-action slds-grow slds-has-flexi-truncate" tabindex="0">
+                            <div class="slds-grid slds-wrap">
+                              <span class="slds-truncate slds-text-body_regular slds-text-color_default" title={onboarding.Name}>{onboarding.Name}</span>
+                              <span class="slds-truncate slds-col_bump-left" title="Received Date">Received Date</span>
+                            </div>
+                            <div class="slds-grid slds-wrap">
+                              <span class="slds-truncate" title=""></span>
+                              <span class="slds-truncate slds-col_bump-left" title={onboarding.Received_Date__c}>{onboarding.Received_Date__c}</span>
+                            </div>
+                          </a>
+                        </li>
+                    </template>
+                    </template>
+                    <template if:true={isInternsSelected}>
+                      <template for:each={interns} for:item="intern">
+                        <li key={intern.Id} class="slds-split-view__list-item" role="presentation" data-row={intern.Id} onclick={_editingButton}>
+                          <a href="#" role="option" class="slds-split-view__list-item-action slds-grow slds-has-flexi-truncate" tabindex="0">
+                            <div class="slds-grid slds-wrap">
+                              <span class="slds-truncate slds-text-body_regular slds-text-color_default" title={intern.User__r.Name}>{intern.User__r.Name}</span>
+                              <span class="slds-truncate slds-col_bump-left" title="Profile">Training Program</span>
+                            </div>
+                            <div class="slds-grid slds-wrap">
+                              <span class="slds-truncate" title={intern.Name}>{intern.Name}</span>
+                              <span class="slds-truncate slds-col_bump-left" title={intern.Training_Program__r.Name}>{intern.Training_Program__r.Name}</span>
+                            </div>
+                          </a>
+                        </li>
+                    </template>
+                    </template>
+                  </ul>
+                </div>
+              </article>
+          </div>
+        </div>
+
+        <div class="slds-col slds-size_1-of-9 slds-p-around_x-small">
+          <div class="slds-tabs_default">
+              <!-- Program Tab Content -->
+              <template if:true={showProgram}>
+                <div class="slds-tabs_default__content slds-show" role="tabpanel" aria-labelledby="tab-default-1__item">
+                    <div class="slds-form" role="list">
+                        <div class="slds-form__row">
+                            <div class="slds-form__item" role="listitem">
+                                <template if:true={isEditingProgram}>
+                                  <div class="slds-form-element slds-form-element_stacked ">
+                                      <lightning-input label="Program Name" name="programName" value={program.Name} onchange={handleProgramChange}></lightning-input>
+                                  </div>
+                                </template>
+                                <template if:false={isEditingProgram}>
+                                  <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                    <span class="slds-form-element__label">
+                                    <abbr class="slds-required" title="required">* </abbr>Program Name</span>
+                                    <div class="slds-form-element__control">
+                                      <div class="slds-form-element__static">{program.Name}</div>
+                                      <button class="slds-button slds-button_icon" title="Edit: Program Name" onclick={_editProgram}>
+                                          <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
+                                      </button>
+                                    </div>
+                                  </div>
+                                </template>
+                            </div>
+
+                            <div class="slds-form__item" role="listitem">
+                              <template if:true={isEditingProgram}>
+                                <div class="slds-form-element slds-form-element_stacked">
+                                    <lightning-combobox label="Program Type" options={programtypeOptions} name="programType" value={program.Program_Type__c} onchange={handleProgramChange}></lightning-combobox>
+                                </div>
+                              </template>
+                              <template if:false={isEditingProgram}>
+                                <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                  <span class="slds-form-element__label">
+                                  <abbr class="slds-required" title="required">* </abbr>Program Type</span>
+                                  <div class="slds-form-element__control">
+                                    <div class="slds-form-element__static">{program.Program_Type__c}</div>
+                                    <button class="slds-button slds-button_icon" title="Edit: Program Type" onclick={_editProgram}>
+                                        <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
+                                    </button>
+                                  </div>
+                                </div>
+                              </template>
+                            </div>
+                        </div>
+                        <div class="slds-form__row">
+                            <div class="slds-form__item" role="listitem">
+                              <template if:true={isEditingProgram}>
+                                <div class="slds-form-element slds-form-element_stacked">
+                                  <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                                    <lightning-input label="Department" name="department" value={program.Department__c} onchange={handleProgramChange}></lightning-input>
+                                  </div>
+                                </div>
+                              </template>
+                              <template if:false={isEditingProgram}>
+                                <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                  <span class="slds-form-element__label">
+                                  <abbr class="slds-required" title="required">* </abbr>Program Name</span>
+                                  <div class="slds-form-element__control">
+                                    <div class="slds-form-element__static">{program.Department__c}</div>
+                                    <button class="slds-button slds-button_icon" title="Edit: Department" onclick={_editProgram}>
+                                        <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
+                                    </button>
+                                  </div>
+                                </div>
+                              </template>
+                          </div>
+                        </div>
+                        <div class="slds-form__row">
+                            <div class="slds-form__item" role="listitem">
+                              <template if:true={isEditingProgram}>
+                                <div class="slds-form-element slds-form-element_stacked ">
+                                  <label class="slds-form-element__label" for="stacked-form-element-id-03">Start Date</label>
+                                  <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                                    <lightning-input label="Start Date" type="date" name="startDate"  value={program.Start_Date__c} onchange={handleProgramChange} ></lightning-input>
+                                  </div>
+                                </div>
+                              </template>
+                              <template if:false={isEditingProgram}>
+                                <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                  <span class="slds-form-element__label">
+                                  <abbr class="slds-required" title="required">* </abbr>Program Name</span>
+                                  <div class="slds-form-element__control">
+                                    <div class="slds-form-element__static">{program.Start_Date__c}</div>
+                                    <button class="slds-button slds-button_icon" title="Edit: Start Date" onclick={_editProgram}>
+                                        <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
+                                    </button>
+                                  </div>
+                                </div>
+                              </template>
+                          </div>
+                          <div class="slds-form__item" role="listitem">
+                            <template if:true={isEditingProgram}>
+                              <div class="slds-form-element slds-form-element_stacked ">
+                                <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                                  <lightning-input label="End Date" type="date" name="endDate" value={program.End_Date__c} onchange={handleProgramChange} ></lightning-input>
+                                </div>
+                              </div>
+                            </template>
+                            <template if:false={isEditingProgram}>
+                              <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                <span class="slds-form-element__label">
+                                <abbr class="slds-required" title="required">* </abbr>Program Name</span>
+                                <div class="slds-form-element__control">
+                                  <div class="slds-form-element__static">{program.End_Date__c}</div>
+                                  <button class="slds-button slds-button_icon" title="Edit: End Date" onclick={_editProgram}>
+                                      <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
+                                  </button>
+                                </div>
+                              </div>
+                            </template>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+    
+                <!-- Certificate Tab Content -->
+                <template if:true={isCertificatesSelected}>
+                  <div class="slds-tabs_default__content" role="tabpanel" aria-labelledby="tab-default-2__item">
+                    <template if:true={certificates}>
+                      <template for:each={certificates} for:item="certificate">
+                        <div key={certificate.Id}>
+                        <div class="slds-form__row">
+                          <template if:false={showProgram}>
+                            <template if:true={certificate.isSelected}>
+                              <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_stacked ">
+                                  <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                                      <lightning-input label="Certificate Name" name="Name" data-id={certificate.Id} value={certificate.Name} onchange={handleObjectChanges} ></lightning-input>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_stacked">
+                                  <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                                    <lightning-combobox label="Authority By" options={authoritybyOptions} name="Authority_By__c"  data-id={certificate.Id} value={certificate.Authority_By__c} onchange={handleObjectChanges}></lightning-combobox>
+                                  </div>
+                                </div>
+                              </div>
+                            </template>
+                          </template>
+                        </div>
+                      </div>
+                    </template>
+                  </template>
+                </div>
+              </template>
+     
+    
+              <!-- Onboarding Tab Content -->
+              <template if:true={isOnboardingSelected}>
+                <div class="slds-tabs_default__content" role="tabpanel" aria-labelledby="tab-default-3__item">
+                  <template if:true={onboardings}>
+                    <template for:each={onboardings} for:item="onboarding"> 
+                      <div key={onboarding.Id}>
+                        <div class="slds-form__row">
+                          <template if:false={showProgram}>
+                            <template if:true={onboarding.isSelected}>
+                              <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_stacked ">
+                                  <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                                    <lightning-input label="Onboarding Name" name="Name" value={onboarding.Name} data-id={onboarding.Id} onchange={handleObjectChanges} ></lightning-input>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_stacked ">
+                                  <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                                    <lightning-input label="Checklist" name="Checklist__c" value={onboarding.Checklist__c} data-id={onboarding.Id} onchange={handleObjectChanges} ></lightning-input>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="slds-form__item" role="listitem">
+                                  <div class="slds-form-element slds-form-element_stacked ">
+                                    <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                                      <lightning-input label="Received Date" type="date" name="Received_Date__c" value={onboarding.Received_Date__c} data-id={onboarding.Id} onchange={handleObjectChanges} ></lightning-input>
+                                    </div>
+                                  </div>
+                              </div>
+                            </template>
+                          </template>
+                        </div>
+                      </div>
+                    </template>
+                  </template>
+                </div>
+              </template>
+              
+              <!-- Interns Tab Content -->
+              <template if:true={isInternsSelected}>
+                <div class="slds-tabs_default__content" role="tabpanel" aria-labelledby="tab-default-4__item">
+                  <template if:true={interns}>
+                    <template for:each={interns} for:item="intern"> 
+                      <div key={intern.Id}>
+                        <div class="slds-form__row">
+                          <template if:false={showProgram}>
+                            <template if:true={intern.isSelected}>
+                              <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_stacked ">
+                                  <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                                    <div class="slds-form-element">
+                                      <div class="slds-form-element__control">
+                                        <div class="slds-combobox_container">
+                                          <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
+                                            <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                              <template if:false={_isshow}>
+                                                  <lightning-input
+                                                      label="User"
+                                                      type="search"
+                                                      placeholder="Search Users..."
+                                                      onchange={_handleSearch}
+                                                      onfocus={_handleInputFocus}
+                                                      value={_searchKey}
+                                                  ></lightning-input>
+
+                                              </template>
+                                            </div>
+                                            
+                                              <template if:true={_isfocus}>
+                                                  <template if:true={_searchResults}>
+                                                      <div class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
+                                                          <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                          <template if:true={_searchKey}>
+                                                            <li role="presentation" class="slds-listbox__item">
+                                                              <div aria-selected="true" id="option0" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_term slds-has-focus" role="option">
+                                                                <span class="slds-media__figure slds-listbox__option-icon">
+                                                                  <span class="slds-icon_container slds-icon-utility-search" title="Search for term: ">
+                                                                      <lightning-icon icon-name="utility:search" size="x-small" class="slds-icon slds-icon_x-small slds-icon-text-default"></lightning-icon>
+                                                                  </span>
+                                                                </span>
+                                                                <span class="slds-media__body">
+                                                                  <span class="slds-listbox__option-text slds-listbox__option-text_entity">{_searchKey}</span>
+                                                                </span>
+                                                              </div>
+                                                            </li>
+                                                          </template>
+                                                            <template for:each={_searchResults} for:item="user">
+                                                                  <li key={user.Id} onclick={selectUser} data-id={user.Id} role="presentation" class="slds-listbox__item">
+                                                                      <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
+                                                                      <span class="slds-media__figure slds-listbox__option-icon">
+                                                                          <span class="slds-icon_container slds-icon-standard-account">
+                                                                              <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                                          </span>
+                                                                      </span>
+                                                                      <span class="slds-media__body">
+                                                                          <span class="slds-listbox__option-text slds-listbox__option-text_entity">{user.Name}</span>
+                                                                          <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">Profile • {user.Profile.Name}</span>
+                                                                      </span>
+                                                                      </div>
+                                                                  </li>
+                                                              </template>
+                                                          </ul>
+                                                      </div>
+                                                  </template>
+                                              </template>
+                  
+                                              <template if:true={_isshow}>
+                                                  <template if:true={selectedUser}>
+                                                      <div class="slds-form-element">
+                                                          <label class="slds-form-element__label" for="combobox-id-5">User</label>
+                                                          <div class="slds-form-element__control">
+                                                              <div class="slds-combobox_container slds-has-selection">
+                                                                  <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                                                                      <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right" role="none">
+                                                                          <span class="slds-icon_container slds-icon-standard-account slds-combobox__input-entity-icon" title="Intern">
+                                                                              <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                                          </span>
+                                                                          <div role="combobox" tabindex="0" class="slds-input_faux slds-combobox__input slds-combobox__input-value" aria-labelledby="combobox-label-id-68" aria-controls="listbox-id-5" aria-expanded="false" aria-haspopup="listbox">
+                                                                              <span class="slds-truncate">{selectedUser.Name}</span>
+                                                                          </div>
+                                                                          <!-- Remove Button -->
+                                                                          <button 
+                                                                              class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" 
+                                                                              data-id={selectedUser.Id} 
+                                                                              onclick={_removeSelected} 
+                                                                              title="Remove"
+                                                                          >
+                                                                              <lightning-icon 
+                                                                                  icon-name="utility:close" 
+                                                                                  size="x-small" 
+                                                                                  alternative-text="Remove">
+                                                                              </lightning-icon>
+                                                                          </button>
+                                                                      </div>
+                                                                  </div>
+                                                              </div>
+                                                          </div>
+                                                      </div>
+                                                  </template>
+                                              </template>
+                                              
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="slds-form__item" role="listitem">
+                                <div class="slds-form-element slds-form-element_stacked ">
+                                    <div class="slds-form-element">
+                                      <div class="slds-form-element__control">
+                                        <div class="slds-combobox_container">
+                                          <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
+                                            <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                              <template if:false={isshow}>
+                                                  <lightning-input
+                                                      label="Training Program"
+                                                      type="search"
+                                                      placeholder="Search Training..."
+                                                      onchange={handleSearch}
+                                                      onfocus={handleInputFocus}
+                                                      value={searchKey}
+                                                  ></lightning-input>
+                                              </template>
+                                            </div>
+                                            
+                                              <template if:true={isfocus}>
+                                                  <template if:true={searchResults}>
+                                                      <div class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
+                                                          <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                              <template for:each={searchResults} for:item="training">
+                                                                  <li key={training.Id} onclick={selectTraining} data-id={training.Id} role="presentation" class="slds-listbox__item">
+                                                                      <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
+                                                                      <span class="slds-media__figure slds-listbox__option-icon">
+                                                                          <span class="slds-icon_container slds-icon-standard-account">
+                                                                              <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                                          </span>
+                                                                      </span>
+                                                                      <span class="slds-media__body">
+                                                                          <span class="slds-listbox__option-text slds-listbox__option-text_entity">{training.Name}</span>
+                                                                          <!-- <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">Account • {intern.Account__r.Name}</span> -->
+                                                                      </span>
+                                                                      </div>
+                                                                  </li>
+                                                              </template>
+                                                          </ul>
+                                                      </div>
+                                                  </template>
+                                              </template>
+                  
+                                              <template if:true={isshow}>
+                                                  <template if:true={selectedTraining}>
+                                                      <div class="slds-form-element">
+                                                          <label class="slds-form-element__label" for="combobox-id-5">Training Program</label>
+                                                          <div class="slds-form-element__control">
+                                                              <div class="slds-combobox_container slds-has-selection">
+                                                                  <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                                                                      <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right" role="none">
+                                                                          <span class="slds-icon_container slds-icon-standard-account slds-combobox__input-entity-icon" title="Training">
+                                                                              <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                                          </span>
+                                                                          <div role="combobox" tabindex="0" class="slds-input_faux slds-combobox__input slds-combobox__input-value" aria-labelledby="combobox-label-id-68" aria-controls="listbox-id-5" aria-expanded="false" aria-haspopup="listbox">
+                                                                              <span class="slds-truncate">{selectedTraining.Name}</span>
+                                                                          </div>
+                                                                          <!-- Remove Button -->
+                                                                          <button 
+                                                                              class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" 
+                                                                              data-id={selectedTraining.Id} 
+                                                                              onclick={removeSelected} 
+                                                                              title="Remove"
+                                                                          >
+                                                                              <lightning-icon 
+                                                                                  icon-name="utility:close" 
+                                                                                  size="x-small" 
+                                                                                  alternative-text="Remove">
+                                                                              </lightning-icon>
+                                                                          </button>
+                                                                      </div>
+                                                                  </div>
+                                                              </div>
+                                                          </div>
+                                                      </div>
+                                                  </template>
+                                              </template>
+                                              
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                </div>
+                              </div>
+                            </template>
+                          </template>
+                        </div>
+                      </div>
+                    </template>
+                  </template>
+                </div>
+              </template>
+        </div>
+        </div>
+
+        <template if:true={isModalCertificate}>
+          <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small">
+              <div class="slds-modal__container">
+                  <!-- Modal Header -->
+                  <header class="slds-modal__header">
+                      <h2 class="slds-text-heading_medium">New Certificate</h2>
+                      <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModel}>
+                          <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                      </button>
+                  </header>
+                  
+                  <!-- Modal Body -->
+                  <div class="slds-modal__content slds-p-around_medium ">
+                    <template for:each={tempCeritificates} for:item="cert" for:index="index">
+                      <div key={cert.id} class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
+                        <!-- Certificate Name Input -->
+                        <div class="slds-col slds-size_5-of-12 slds-p-horizontal_x-small">
+                          <lightning-input 
+                            label="Certificate Name" 
+                            name="Name" 
+                            value={cert.Name} 
+                            data-index={index} 
+                            onchange={handleObjectChanges}>
+                          </lightning-input>
+                        </div>
+                    
+                        <!-- Authority By Combobox -->
+                        <div class="slds-col slds-size_5-of-12 slds-p-horizontal_x-small">
+                          <lightning-combobox 
+                            label="Authority By" 
+                            options={authoritybyOptions} 
+                            value={cert.Authority_By__c} 
+                            name="Authority_By__c" 
+                            data-index={index} 
+                            onchange={handleObjectChanges}>
+                          </lightning-combobox>
+                        </div>
+                    
+                        <!-- Delete Button -->
+                        <div class="slds-col slds-size_2-of-12 slds-p-horizontal_x-small slds-flex slds-align-center">
+                          <lightning-button-icon 
+                            icon-name="utility:delete" 
+                            variant="border-filled" 
+                            alternative-text="Delete Row" 
+                            class="slds-button" 
+                            data-id={cert.id} 
+                            onclick={deleteRow}>
+                          </lightning-button-icon>
+                        </div>
+                      </div>
+                    </template>
+                    
+                    
+                  </div>
+                  
+                  <!-- Modal Footer -->
+                  <footer class="slds-modal__footer">
+                      <lightning-button label="Cancel" variant="neutral" onclick={closeModel}></lightning-button>
+                      <lightning-button label="Save" variant="brand" onclick={handleSubmit}></lightning-button>
+                      <div class="slds-no-flex slds-grid">
+                        <lightning-button 
+                          label="Row"
+                          icon-name="utility:add"
+                          icon-position="left"
+                          variant="neutral"
+                          onclick={addCertificate}
+                          class="slds-button">
+                        </lightning-button>
+                    </div>
+                  </footer>
+              </div>
+          </section>
+  
+          <!-- Backdrop -->
+          <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <template if:true={isModalOnboarding}>
+          <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small">
+              <div class="slds-modal__container">
+                  <!-- Modal Header -->
+                  <header class="slds-modal__header">
+                      <h2 class="slds-text-heading_medium">New Onboarding</h2>
+                      <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModel}>
+                          <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                      </button>
+                  </header>
+                  
+                  <!-- Modal Body -->
+                  <div class="slds-modal__content slds-p-around_medium ">
+                    <!-- <template for:each={tempOnboardings} for:item="onboarding" for:index="index"> -->
+                      <div class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
+                        <!-- Certificate Name Input -->
+                        <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
+                          <lightning-input label="Onboarding Name" name="Name"  onchange={handleObjectChanges} ></lightning-input>
+                        </div>
+                    
+                        <!-- Authority By Combobox -->
+                        <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
+                          <lightning-input label="Received Date" type="date" name="Received_Date__c" onchange={handleObjectChanges} ></lightning-input>
+                        </div>
+
+                        <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
+                          <lightning-textarea label="Checklist" name="Checklist__c" onchange={handleObjectChanges} ></lightning-textarea>
+                        </div>
+                    
+                        <!-- Delete Button -->
+                        <!-- <div class="slds-col slds-size_2-of-13 slds-p-horizontal_x-small slds-flex slds-align-center">
+                          <lightning-button-icon 
+                            icon-name="utility:delete" 
+                            variant="border-filled" 
+                            alternative-text="Delete Row" 
+                            class="slds-button" 
+                            data-id={onboarding.id} 
+                            onclick={deleteRow}>
+                          </lightning-button-icon>
+                        </div> -->
+                      </div>
+                    <!-- </template> -->
+                    <template for:each={tempOnboardings} for:item="asset">
+                      <div key={asset.id} class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
+                        <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
+                          <lightning-input
+                              label="Asset Name"
+                              value={asset.Name}
+                              data-field="Name"
+                              data-asset-id={asset.id}
+                              onchange={handleObjectChanges}>
+                          </lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
+                          <lightning-input
+                              label="Serial Number"
+                              value={asset.Serial_Number__c}
+                              data-field="Serial_Number__c"
+                              data-asset-id={asset.id}
+                              onchange={handleObjectChanges}>
+                          </lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
+                          <lightning-input
+                              label="Status"
+                              value={asset.Status__c}
+                              data-field="Status__c"
+                              data-asset-id={asset.id}
+                              onchange={handleObjectChanges}>
+                          </lightning-input>
+                        </div>
+                        <!-- Delete Button -->
+                        <div class="slds-col slds-size_2-of-13 slds-p-horizontal_x-small slds-flex slds-align-center">
+                          <lightning-button-icon 
+                            icon-name="utility:delete" 
+                            variant="border-filled" 
+                            alternative-text="Delete Row" 
+                            class="slds-button" 
+                            data-id={asset.id} 
+                            onclick={deleteRow}>
+                          </lightning-button-icon>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                  
+                  <!-- Modal Footer -->
+                  <footer class="slds-modal__footer">
+                      <lightning-button label="Cancel" variant="neutral" onclick={closeModel}></lightning-button>
+                      <lightning-button label="Save" variant="brand" onclick={handleSubmit}></lightning-button>
+                      <div class="slds-no-flex slds-grid">
+                        <lightning-button 
+                          label="Row"
+                          icon-name="utility:add"
+                          icon-position="left"
+                          variant="neutral"
+                          onclick={addOnboarding}
+                          class="slds-button">
+                        </lightning-button>
+                    </div>
+                  </footer>
+              </div>
+          </section>
+
+          <!-- Backdrop -->
+          <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <template if:true={isModalIntern}>
+          <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small">
+              <div class="slds-modal__container">
+                  <!-- Modal Header -->
+                  <header class="slds-modal__header">
+                      <h2 class="slds-text-heading_medium">New Intern</h2>
+                      <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModel}>
+                          <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                      </button>
+                  </header>
+                  
+                  <!-- Modal Body -->
+                  <div class="slds-modal__content slds-p-around_medium ">
+                    <template for:each={tempInterns} for:item="intern" for:index="index">
+                      <div key={intern.id} class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
+
+                        <div class="slds-col slds-size_5-of-12 slds-p-horizontal_x-small">
+                            <div class="slds-form-element slds-form-element_stacked ">
+                              <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                                <div class="slds-form-element">
+                                  <div class="slds-form-element__control">
+                                    <div class="slds-combobox_container">
+                                      <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
+                                        <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                          <template if:false={_isshow}>
+                                              <lightning-input
+                                                  label="User"
+                                                  type="search"
+                                                  placeholder="Search Users..."
+                                                  onchange={_handleSearch}
+                                                  onfocus={_handleInputFocus}
+                                                  value={_searchKey}
+                                              ></lightning-input>
+
+                                          </template>
+                                        </div>
+                                        
+                                          <template if:true={_isfocus}>
+                                              <template if:true={_searchResults}>
+                                                  <div class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
+                                                      <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                      <template if:true={_searchKey}>
+                                                        <li role="presentation" class="slds-listbox__item">
+                                                          <div aria-selected="true" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_term slds-has-focus" role="option">
+                                                            <span class="slds-media__figure slds-listbox__option-icon">
+                                                              <span class="slds-icon_container slds-icon-utility-search" title="Search for term: ">
+                                                                  <lightning-icon icon-name="utility:search" size="x-small" class="slds-icon slds-icon_x-small slds-icon-text-default"></lightning-icon>
+                                                              </span>
+                                                            </span>
+                                                            <span class="slds-media__body">
+                                                              <span class="slds-listbox__option-text slds-listbox__option-text_entity">{_searchKey}</span>
+                                                            </span>
+                                                          </div>
+                                                        </li>
+                                                      </template>
+                                                        <template for:each={_searchResults} for:item="user">
+                                                              <li key={user.Id} onclick={selectUser} data-id={user.Id} role="presentation" class="slds-listbox__item">
+                                                                  <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
+                                                                  <span class="slds-media__figure slds-listbox__option-icon">
+                                                                      <span class="slds-icon_container slds-icon-standard-account">
+                                                                          <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                                      </span>
+                                                                  </span>
+                                                                  <span class="slds-media__body">
+                                                                      <span class="slds-listbox__option-text slds-listbox__option-text_entity">{user.Name}</span>
+                                                                      <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">Profile • {user.Profile.Name}</span>
+                                                                  </span>
+                                                                  </div>
+                                                              </li>
+                                                          </template>
+                                                      </ul>
+                                                  </div>
+                                              </template>
+                                          </template>
+              
+                                          <template if:true={_isshow}>
+                                              <template if:true={selectedUser}>
+                                                  <div class="slds-form-element">
+                                                      <label class="slds-form-element__label" for="combobox-id-5">User</label>
+                                                      <div class="slds-form-element__control">
+                                                          <div class="slds-combobox_container slds-has-selection">
+                                                              <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                                                                  <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right" role="none">
+                                                                      <span class="slds-icon_container slds-icon-standard-account slds-combobox__input-entity-icon" title="Intern">
+                                                                          <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                                      </span>
+                                                                      <div role="combobox" tabindex="0" class="slds-input_faux slds-combobox__input slds-combobox__input-value" aria-labelledby="combobox-label-id-68" aria-controls="listbox-id-5" aria-expanded="false" aria-haspopup="listbox">
+                                                                          <span class="slds-truncate">{selectedUser.Name}</span>
+                                                                      </div>
+                                                                      <!-- Remove Button -->
+                                                                      <button 
+                                                                          class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" 
+                                                                          data-id={selectedUser.Id} 
+                                                                          onclick={_removeSelected} 
+                                                                          title="Remove"
+                                                                      >
+                                                                          <lightning-icon 
+                                                                              icon-name="utility:close" 
+                                                                              size="x-small" 
+                                                                              alternative-text="Remove">
+                                                                          </lightning-icon>
+                                                                      </button>
+                                                                  </div>
+                                                              </div>
+                                                          </div>
+                                                      </div>
+                                                  </div>
+                                              </template>
+                                          </template>
+                                          
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                    
+                        <div class="slds-col slds-size_5-of-12 slds-p-horizontal_x-small">
+                          <div class="slds-form-element slds-form-element_stacked ">
+                            <div class="slds-form-element">
+                              <div class="slds-form-element__control">
+                                <div class="slds-combobox_container">
+                                  <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
+                                    <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                      <template if:false={isshow}>
+                                          <lightning-input
+                                              label="Training Program"
+                                              type="search"
+                                              placeholder="Search Training..."
+                                              onchange={handleSearch}
+                                              onfocus={handleInputFocus}
+                                              value={searchKey}
+                                          ></lightning-input>
+                                      </template>
+                                    </div>
+                                    
+                                      <template if:true={isfocus}>
+                                          <template if:true={searchResults}>
+                                              <div class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
+                                                  <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                      <template for:each={searchResults} for:item="training">
+                                                          <li key={training.Id} onclick={selectTraining} data-id={training.Id} role="presentation" class="slds-listbox__item">
+                                                              <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
+                                                              <span class="slds-media__figure slds-listbox__option-icon">
+                                                                  <span class="slds-icon_container slds-icon-standard-account">
+                                                                      <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                                  </span>
+                                                              </span>
+                                                              <span class="slds-media__body">
+                                                                  <span class="slds-listbox__option-text slds-listbox__option-text_entity">{training.Name}</span>
+                                                                  <!-- <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">Account • {intern.Account__r.Name}</span> -->
+                                                              </span>
+                                                              </div>
+                                                          </li>
+                                                      </template>
+                                                  </ul>
+                                              </div>
+                                          </template>
+                                      </template>
+          
+                                      <template if:true={isshow}>
+                                          <template if:true={selectedTraining}>
+                                              <div class="slds-form-element">
+                                                  <label class="slds-form-element__label" for="combobox-id-5">Training Program</label>
+                                                  <div class="slds-form-element__control">
+                                                      <div class="slds-combobox_container slds-has-selection">
+                                                          <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                                                              <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right" role="none">
+                                                                  <span class="slds-icon_container slds-icon-standard-account slds-combobox__input-entity-icon" title="Training">
+                                                                      <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                                  </span>
+                                                                  <div role="combobox" tabindex="0" class="slds-input_faux slds-combobox__input slds-combobox__input-value" aria-labelledby="combobox-label-id-68" aria-controls="listbox-id-5" aria-expanded="false" aria-haspopup="listbox">
+                                                                      <span class="slds-truncate">{selectedTraining.Name}</span>
+                                                                  </div>
+                                                                  <!-- Remove Button -->
+                                                                  <button 
+                                                                      class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" 
+                                                                      data-id={selectedTraining.Id} 
+                                                                      onclick={removeSelected} 
+                                                                      title="Remove"
+                                                                  >
+                                                                      <lightning-icon 
+                                                                          icon-name="utility:close" 
+                                                                          size="x-small" 
+                                                                          alternative-text="Remove">
+                                                                      </lightning-icon>
+                                                                  </button>
+                                                              </div>
+                                                          </div>
+                                                      </div>
+                                                  </div>
+                                              </div>
+                                          </template>
+                                      </template>
+                                      
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    
+                        <!-- Delete Button -->
+                        <div class="slds-col slds-size_2-of-12 slds-p-horizontal_x-small slds-flex slds-align-center">
+                          <lightning-button-icon 
+                            icon-name="utility:delete" 
+                            variant="border-filled" 
+                            alternative-text="Delete Row" 
+                            class="slds-button" 
+                            data-id={intern.id} 
+                            onclick={deleteRow}>
+                          </lightning-button-icon>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                  
+                  <!-- Modal Footer -->
+                  <footer class="slds-modal__footer">
+                      <lightning-button label="Cancel" variant="neutral" onclick={closeModel}></lightning-button>
+                      <lightning-button label="Save" variant="brand" onclick={handleSubmit}></lightning-button>
+                      <div class="slds-no-flex slds-grid">
+                        <lightning-button 
+                          label="Row"
+                          icon-name="utility:add"
+                          icon-position="left"
+                          variant="neutral"
+                          onclick={addOnboarding}
+                          class="slds-button">
+                        </lightning-button>
+                    </div>
+                  </footer>
+              </div>
+          </section>
+
+          <!-- Backdrop -->
+          <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+        <div class="slds-docked-form-footer">
+          <template if:true={isEditing}>
+            <button type="button" class="slds-button slds-button_neutral" onclick={handingClose}>Cancel</button>
+            <button type="button" class="slds-button slds-button_brand" onclick={handleSubmit}>Save</button>
+          </template>
+        </div>
+    </div>
+  </div>
+</template>

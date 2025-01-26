@@ -43,10 +43,12 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     @track RatingIntern = '';
     signOffValue = ''; // Holds the selected value
     @track searchKey = '';
+    @track searchResults = [...this.interns];
     @track internId = '';
     @track selectedIntern = [];
     projects = [];
     @track isshow = false;
+    @track isfocus = false;
 
     @track ratingOptions = [
         { label: '★', value: 'Needs Improvemen' },
@@ -117,7 +119,12 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
             });
         } else {
             this.searchResults = [];
+            this.isfocus = false;
         }
+    }
+    handleInputFocus() {
+        this.searchResults = [...this.interns]; // Show all interns when input is focused
+        this.isfocus = true;
     }
     selectIntern(event) {
         this.selectedInternId = event.target.closest('li').dataset.id;
@@ -137,6 +144,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
 
         this.searchKey = '';
         this.searchResults = [];
+        this.isfocus = false;
         this.isshow = true;
     }
 
