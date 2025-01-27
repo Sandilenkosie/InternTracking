@@ -201,10 +201,12 @@ export default class ProgramDetails extends LightningElement {
         this.interns = this.interns.map(intern => {
             return {
                 ...intern,
-                isSelected: intern.Id === rowId
+                
+                isSelected: intern.Id === rowId,
+                selectedUser: intern.Id === rowId,
+                selectedTraining: intern.Id === rowId
             };
         })
-
         this.isEditing = true;
         this.showProgram = false;
 
@@ -414,6 +416,7 @@ export default class ProgramDetails extends LightningElement {
     selectUser(event) {
         this.userId = event.target.closest('li').dataset.id;
         const selectedUser = this.users.find(user => user.Id === this.userId);
+
     
         if (selectedUser) {
             this.selectedUser = selectedUser;
@@ -429,8 +432,12 @@ export default class ProgramDetails extends LightningElement {
         const button = event.target.closest('button');
         const userId = button ? button.dataset.id : null;
 
+        console.log("User ID: ",userId)
+
         if (userId && this.selectedUser && this.selectedUser.Id === userId) {
             this.selectedUser = null;
+            this.interns = [];
+            this.trainings = [];
             this._isshow = false;
         } 
     }
@@ -477,6 +484,7 @@ export default class ProgramDetails extends LightningElement {
     removeSelected(event) {
         const button = event.target.closest('button');
         const trainingId = button ? button.dataset.id : null;
+        console.log("training ID: ",trainingId);
 
         if (trainingId && this.selectedTraining && this.selectedTraining.Id === trainingId) {
             this.selectedTraining = null;
