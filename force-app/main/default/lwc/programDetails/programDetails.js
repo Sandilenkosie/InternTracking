@@ -54,7 +54,7 @@ export default class ProgramDetails extends LightningElement {
     ];
 
     tempCeritificates = [];
-    tempOnboardings = [];
+    tempOnboarding = {};
     tempInterns = [];
 
     // Fetch program details from the Apex controller
@@ -64,7 +64,6 @@ export default class ProgramDetails extends LightningElement {
             this.program = data.program;
             this.certificates = data.certificates;
             this.onboardings = data.onboardings;
-            this.asset = data.asset;
             this.interns = data.interns;
             this.trainings = data.trainings;
             this.users = data.users;
@@ -90,7 +89,6 @@ export default class ProgramDetails extends LightningElement {
     // Handle category change and update selected category
     handleCategoryChange(event) {
       this.selectedCategory = event.target.closest('li').dataset.value;
-      console.log('Selected Category:', this.selectedCategory);
       this.dropdownOpen = false; // Close the dropdown after selection
     }
   
@@ -184,8 +182,6 @@ export default class ProgramDetails extends LightningElement {
     _editingButton(event) {
         const rowId = event.currentTarget.dataset.row;
 
-        console.log("rowId:", rowId);
-
         this.certificates = this.certificates.map(certificate => {
             return {
                 ...certificate,
@@ -220,6 +216,7 @@ export default class ProgramDetails extends LightningElement {
         this.onboardings = this.onboardings.map((onboarding) => {
             return { ...onboarding, isSelected: false };
         });
+        
 
         this.interns = this.interns.map((intern) => {
             return { ...intern, isSelected: false };
@@ -236,69 +233,65 @@ export default class ProgramDetails extends LightningElement {
         this.program[fieldName] = value;
     }
 
-    // Handle Object field changes
+   // Handle Object field changes
     handleObjectChanges(event) {
         const field = event.target.name;
         const index = event.target.dataset.index;
         const rowId = event.target.dataset.id;
-        
         const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-    
-        this.tempCeritificates[index] = {
-            ...this.tempCeritificates[index],
-            [field]: value 
-        };
 
-        this.tempOnboardings[index] = {
-            ...this.tempOnboardings[index],
-            [field]: value 
-        };
+        // Handle field changes dynamically for tempCertificates, tempOnboardings, tempInterns
+        if (this.tempCeritificates[index] && this.tempCeritificates[index].id === parseInt(rowId, 10)) {
+            this.tempCeritificates[index] = { ...this.tempCeritificates[index], [field]: value };
+        }
 
-        this.tempInterns[index] = {
-            ...this.tempInterns[index],
-            [field]: value 
-        };
-    
-        this.certificates = this.certificates.map(certificate => {
-            if (certificate.Id === rowId) {
-                return { ...certificate, [field]: value };
-            }
-            return certificate;
-        });
 
-        this.onboardings = this.onboardings.map(onboarding => {
-            if (onboarding.Id === rowId) {
-                return { ...onboarding, [field]: value };
-            }
-            return onboarding;
-        });
+        // Update onboarding fields
+        if (this.tempOnboarding.id === parseInt(rowId, 10)) {
+            this.tempOnboarding = { ...this.tempOnboarding, [field]: value };
+        }
 
-        this.interns = this.interns.map(intern => {
-            if (intern.Id === rowId) {
-                return { ...intern, [field]: value };
-            }
-            return intern;
-        });
+        // Update nested assets if applicable
+        if (this.tempOnboarding.assets) {
+            this.tempOnboarding.assets = this.tempOnboarding.assets.map(asset =>
+                asset.id === parseInt(rowId, 10) ? { ...asset, [field]: value } : asset
+            );
+        }
+
+        if (this.tempInterns[index] && this.tempInterns[index].id === parseInt(rowId, 10)) {
+            this.tempInterns[index] = { ...this.tempInterns[index], [field]: value };
+        }
+
+        // Update the actual data collections
+        this.certificates = this.certificates.map(certificate =>
+            certificate.Id === rowId ? { ...certificate, [field]: value } : certificate
+        );
+
+        // Update onboarding fields
+        if (this.tempOnboarding.id === parseInt(rowId, 10)) {
+            this.tempOnboarding = { ...this.tempOnboarding, [field]: value };
+        }
+
+        this.interns = this.interns.map(intern =>
+            intern.Id === rowId ? { ...intern, [field]: value } : intern
+        );
     }
-    
-    
+
     // Add a new certificate row dynamically
     addCertificate() {
-        const newRow = { id: Date.now(), Name: '', Authority_By__c: ''};
+        const newRow = { id: Date.now(), Name: '', Authority_By__c: '' };
         this.tempCeritificates = [...this.tempCeritificates, newRow];
     }
 
     // Add a new onboarding row dynamically
-    addOnboarding() {
-        const newOnboarding = {
-            id: Date.now(), // Unique ID for this onboarding row
-            onboarding: {
-                Name: '',
-                Checklist__c: '',
-                Received_Date__c: ''
-            },
+    addAsset() {
+        const newAsset = {
+            Name: '',
+            Checklist__c: '',
+            Received_Date__c: '',
             assets: [
                 {
+                    id: Date.now(),
                     Name: '',
                     Serial_Number__c: '',
                     Status__c: '',
@@ -306,29 +299,51 @@ export default class ProgramDetails extends LightningElement {
                 }
             ]
         };
-        
-        // Add the new onboarding to the list
-        this.tempOnboardings = [...this.tempOnboardings, newOnboarding];
-        
-        // Log the ID of the newly added onboarding for debugging
-        console.log(newOnboarding.id);
-    }
+        if (!this.tempOnboarding.assets) {
+            this.tempOnboarding.assets = [];
+        }
     
+        this.tempOnboarding = {
+            ...this.tempOnboarding,
+            assets: [...this.tempOnboarding.assets, newAsset]
+        };
+        console.log('Added new asset:', newAsset.id);
+    }
 
+    // Initialize a new onboarding record
+    initializeOnboarding() {
+        this.tempOnboarding = {
+            id: Date.now(),
+            Name: '',
+            Checklist__c: '',
+            Received_Date__c: '',
+            assets: []
+        };
+        console.log('Initialized new onboarding:', this.tempOnboarding.id);
+    }
+
+    // Add a new intern row dynamically
     addIntern() {
-        const newRow = { id: Date.now(), User__c: '', Training_Program__c: ''};
+        const newRow = { id: Date.now(), User__c: '', Training_Program__c: '' };
         this.tempInterns = [...this.tempInterns, newRow];
     }
 
+    // Delete a row based on the ID
     deleteRow(event) {
-        const rowId = event.target.dataset.id;
-        if (this.tempCeritificates.length === 1 || this.tempOnboardings.length === 1 || this.tempInterns.length === 1) {
+        const rowId = parseInt(event.target.dataset.id, 10);
+        console.error('Row ID:', rowId);
+
+        if (this.tempCeritificates.length === 1 && this.tempOnboardings.length === 1 && this.tempInterns.length === 1) {
             console.error('Cannot delete the default row.');
             return;
         }
-        this.tempCeritificates = [...this.tempCeritificates.filter(cert => cert.id !== parseInt(rowId, 10))];
-        this.tempOnboardings = [...this.tempOnboardings.filter(cert => cert.id !== parseInt(rowId, 10))];
-        this.tempInterns = [...this.tempInterns.filter(cert => cert.id !== parseInt(rowId, 10))];
+
+        // Remove rows from respective temp collections
+        this.tempCeritificates = this.tempCeritificates.filter(cert => cert.id !== rowId);
+        this.tempInterns = this.tempInterns.filter(intern => intern.id !== rowId);
+
+        this.tempOnboarding.assets = this.tempOnboarding.assets.filter(asset => asset.id !== assetId);
+        console.log('Deleted asset:', assetId);
     }
 
     handleSubmit() {
@@ -351,8 +366,30 @@ export default class ProgramDetails extends LightningElement {
             Name: onboarding.Name,
             Checklist__c: onboarding.Checklist__c,
             Received_Date__c: onboarding.Received_Date__c,
+            assets: this.tempOnboarding.assets.map(asset => ({
+                Name: asset.Name,
+                Serial_Number__c: asset.Serial_Number__c,
+                Status__c: asset.Status__c,
+                Assigned_Date__c: asset.Assigned_Date__c
+            }))
             
         }));
+
+        // Format the assets
+        // const assetsData = this.assets.map((asset) => ({
+        //     Id: asset.Id || null, 
+        //     Name: asset.Name,
+        //     // Account__c: asset.Account__c,
+        //     // Assigned_Date__c: asset.Assigned_Date__c,
+        //     // Condition_After__c: asset.Condition_After__c,
+        //     // Condition_Before__c: asset.Condition_Before__c,
+        //     // Contact__c: asset.Contact__c,
+        //     // Returned_Date__c: asset.Returned_Date__c,
+        //     Serial_Number__c: asset.Serial_Number__c,
+        //     Status__c: asset.Status__c,
+        //     // Onboarding__c: asset.Onboarding__c
+            
+        // }));
 
         const internsData = this.interns.map((intern) => ({
             Id: intern.Id || null,  
@@ -361,19 +398,20 @@ export default class ProgramDetails extends LightningElement {
         }))
     
         // Format the program itself
-        const formattedProgram = {
-            programName: this.program.Name,
-            department: this.program.Department__c,
-            programtype: this.program.Program_Type__c,
-            startDate: this.program.Start_Date__c,
-            endDate: this.program.End_Date__c,
-        };
+        // const formattedProgram = {
+        //     programName: this.program.Name,
+        //     department: this.program.Department__c,
+        //     programtype: this.program.Program_Type__c,
+        //     startDate: this.program.Start_Date__c,
+        //     endDate: this.program.End_Date__c,
+        // };
     
     
         // Logging for debugging
-        console.log('Formatted Certificates:', JSON.stringify(certificatesData));
-        console.log('Formatted Onboardings:', JSON.stringify(onboardingsData));
-        console.log('Formatted Program:', JSON.stringify(internsData));
+        // console.log('Formatted Certificates:', JSON.stringify(certificatesData));
+        // console.log('Formatted Onboardings:', JSON.stringify(onboardingsData));
+        console.log('Formatted Assets:', JSON.stringify(onboardingsData));
+        // console.log('Formatted Program:', JSON.stringify(internsData));
     
         neworUpdate({certificates : certificatesData, onboardings : onboardingsData, interns : internsData, programId: this.recordId  })
             .then(() => {

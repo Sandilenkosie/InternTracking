@@ -727,20 +727,19 @@
                   
                   <!-- Modal Body -->
                   <div class="slds-modal__content slds-p-around_medium ">
-                    <!-- <template for:each={tempOnboardings} for:item="onboarding" for:index="index"> -->
                       <div class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
                         <!-- Certificate Name Input -->
                         <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
-                          <lightning-input label="Onboarding Name" name="Name"  onchange={handleObjectChanges} ></lightning-input>
+                          <lightning-input label="Onboarding Name" name="Name" value={tempOnboarding.Name} onchange={handleObjectChanges} ></lightning-input>
                         </div>
                     
                         <!-- Authority By Combobox -->
                         <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
-                          <lightning-input label="Received Date" type="date" name="Received_Date__c" onchange={handleObjectChanges} ></lightning-input>
+                          <lightning-input label="Received Date" type="date" name="Received_Date__c" value={tempOnboarding.Received_Date__c} onchange={handleObjectChanges} ></lightning-input>
                         </div>
 
                         <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
-                          <lightning-textarea label="Checklist" name="Checklist__c" onchange={handleObjectChanges} ></lightning-textarea>
+                          <lightning-textarea label="Checklist" name="Checklist__c" value={tempOnboarding.Checklist__c}  onchange={handleObjectChanges} ></lightning-textarea>
                         </div>
                     
                         <!-- Delete Button -->
@@ -755,49 +754,52 @@
                           </lightning-button-icon>
                         </div> -->
                       </div>
-                    <!-- </template> -->
-                    <template for:each={tempOnboardings} for:item="asset">
-                      <div key={asset.id} class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
-                        <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
-                          <lightning-input
-                              label="Asset Name"
-                              value={asset.Name}
-                              data-field="Name"
-                              data-asset-id={asset.id}
-                              onchange={handleObjectChanges}>
-                          </lightning-input>
-                        </div>
-                        <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
-                          <lightning-input
-                              label="Serial Number"
-                              value={asset.Serial_Number__c}
-                              data-field="Serial_Number__c"
-                              data-asset-id={asset.id}
-                              onchange={handleObjectChanges}>
-                          </lightning-input>
-                        </div>
-                        <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
-                          <lightning-input
-                              label="Status"
-                              value={asset.Status__c}
-                              data-field="Status__c"
-                              data-asset-id={asset.id}
-                              onchange={handleObjectChanges}>
-                          </lightning-input>
-                        </div>
-                        <!-- Delete Button -->
-                        <div class="slds-col slds-size_2-of-13 slds-p-horizontal_x-small slds-flex slds-align-center">
-                          <lightning-button-icon 
-                            icon-name="utility:delete" 
-                            variant="border-filled" 
-                            alternative-text="Delete Row" 
-                            class="slds-button" 
-                            data-id={asset.id} 
-                            onclick={deleteRow}>
-                          </lightning-button-icon>
-                        </div>
-                      </div>
-                    </template>
+
+                      <!-- </template> -->
+                      <template if:true={tempOnboarding.assets}>
+                        <template for:each={tempOnboarding.assets} for:item="asset">
+                          <div key={asset.id} class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
+                            <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
+                              <lightning-input
+                                  label="Asset Name"
+                                  value={asset.Name}
+                                  name="Name"
+                                  data-id={asset.id}
+                                  onchange={handleObjectChanges}>
+                              </lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
+                              <lightning-input
+                                  label="Serial Number"
+                                  value={asset.Serial_Number__c}
+                                  name="Serial_Number__c"
+                                  data-id={asset.id}
+                                  onchange={handleObjectChanges}>
+                              </lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
+                              <lightning-input
+                                  label="Status"
+                                  value={asset.Status__c}
+                                  name="Status__c"
+                                  data-id={asset.id}
+                                  onchange={handleObjectChanges}>
+                              </lightning-input>
+                            </div>
+                            <!-- Delete Button -->
+                            <div class="slds-col slds-size_2-of-13 slds-p-horizontal_x-small slds-flex slds-align-center">
+                              <lightning-button-icon 
+                                icon-name="utility:delete" 
+                                variant="border-filled" 
+                                alternative-text="Delete Row" 
+                                class="slds-button" 
+                                data-id={asset.id} 
+                                onclick={deleteRow}>
+                              </lightning-button-icon>
+                            </div>
+                          </div>
+                        </template>
+                      </template>
                   </div>
                   
                   <!-- Modal Footer -->
@@ -810,7 +812,7 @@
                           icon-name="utility:add"
                           icon-position="left"
                           variant="neutral"
-                          onclick={addOnboarding}
+                          onclick={addAsset}
                           class="slds-button">
                         </lightning-button>
                     </div>
