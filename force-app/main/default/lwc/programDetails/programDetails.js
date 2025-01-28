@@ -241,24 +241,24 @@ export default class ProgramDetails extends LightningElement {
         const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
 
         // Handle field changes dynamically for tempCertificates, tempOnboardings, tempInterns
-        if (this.tempCeritificates[index] && this.tempCeritificates[index].id === parseInt(rowId, 10)) {
+        if (this.tempCeritificates[index] && this.tempCeritificates[index].id === parseInt(rowId)) {
             this.tempCeritificates[index] = { ...this.tempCeritificates[index], [field]: value };
         }
 
 
         // Update onboarding fields
-        if (this.tempOnboarding.id === parseInt(rowId, 10)) {
+        if (this.tempOnboarding.id === parseInt(rowId)) {
             this.tempOnboarding = { ...this.tempOnboarding, [field]: value };
         }
 
         // Update nested assets if applicable
         if (this.tempOnboarding.assets) {
             this.tempOnboarding.assets = this.tempOnboarding.assets.map(asset =>
-                asset.id === parseInt(rowId, 10) ? { ...asset, [field]: value } : asset
+                asset.id === parseInt(rowId) ? { ...asset, [field]: value } : asset
             );
         }
 
-        if (this.tempInterns[index] && this.tempInterns[index].id === parseInt(rowId, 10)) {
+        if (this.tempInterns[index] && this.tempInterns[index].id === parseInt(rowId)) {
             this.tempInterns[index] = { ...this.tempInterns[index], [field]: value };
         }
 
@@ -268,7 +268,7 @@ export default class ProgramDetails extends LightningElement {
         );
 
         // Update onboarding fields
-        if (this.tempOnboarding.id === parseInt(rowId, 10)) {
+        if (this.tempOnboarding.id === parseInt(rowId)) {
             this.tempOnboarding = { ...this.tempOnboarding, [field]: value };
         }
 
