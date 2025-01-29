@@ -9,7 +9,7 @@ export default class ProgramDetails extends LightningElement {
     @track currentStep = 1;
     @track program = {}; 
     @track certificates = [];
-    @track onboardings = []; 
+    @track onboardings = [{AssetValue: '' }]; 
     @track interns = []; 
     @track assets = [];
     @track trainings = []; 
@@ -41,6 +41,7 @@ export default class ProgramDetails extends LightningElement {
     isModalCertificate = false;
     isModalOnboarding = false;
     isModalIntern = false;
+    isModalAsset = false;
 
     @track programtypeOptions = [
         { label: '3 Months', value: '3 Months' },
@@ -53,8 +54,15 @@ export default class ProgramDetails extends LightningElement {
         { label: 'Amazon', value: 'Amazon' },
     ];
 
+    @track typeOptions = [
+        { label: 'Asset', value: 'Asset' },
+        { label: 'Contract', value: 'Contract' },
+        { label: 'Education Background', value: 'Education Background' },
+    ];
+
     tempCeritificates = [];
-    tempOnboarding = {};
+    tempOnboardings = [];
+    tempAssets = [];
     tempInterns = [];
 
     // Fetch program details from the Apex controller
@@ -89,7 +97,11 @@ export default class ProgramDetails extends LightningElement {
     // Handle category change and update selected category
     handleCategoryChange(event) {
       this.selectedCategory = event.target.closest('li').dataset.value;
-      this.dropdownOpen = false; // Close the dropdown after selection
+      this.dropdownOpen = false;
+    }
+
+    get isAssetSelected() {
+        return this.onboardings.some(onboarding => onboarding.Type__c === 'Asset');
     }
   
     // Get the correct class for dropdown visibility
@@ -247,15 +259,12 @@ export default class ProgramDetails extends LightningElement {
 
 
         // Update onboarding fields
-        if (this.tempOnboarding.id === parseInt(rowId)) {
-            this.tempOnboarding = { ...this.tempOnboarding, [field]: value };
+        if (this.onboardings[index] && this.onboardings[index].id === parseInt(rowId)) {
+            this.onboardings[index] = { ...this.onboardings[index], [field]: value, AssetValue: value };
         }
 
-        // Update nested assets if applicable
-        if (this.tempOnboarding.assets) {
-            this.tempOnboarding.assets = this.tempOnboarding.assets.map(asset =>
-                asset.id === parseInt(rowId) ? { ...asset, [field]: value } : asset
-            );
+        if (this.assets[index] && this.assets[index].id === parseInt(rowId)) {
+            this.assets[index] = { ...this.assets[index], [field]: value };
         }
 
         if (this.tempInterns[index] && this.tempInterns[index].id === parseInt(rowId)) {
@@ -268,9 +277,13 @@ export default class ProgramDetails extends LightningElement {
         );
 
         // Update onboarding fields
-        if (this.tempOnboarding.id === parseInt(rowId)) {
-            this.tempOnboarding = { ...this.tempOnboarding, [field]: value };
-        }
+        this.onboardings = this.onboardings.map(onboarding =>
+            onboarding.Id === rowId ? { ...onboarding, [field]: value } : onboarding
+        );
+
+        this.assets = this.assets.map(asset =>
+            asset.Id === rowId ? { ...asset, [field]: value } : asset
+        );
 
         this.interns = this.interns.map(intern =>
             intern.Id === rowId ? { ...intern, [field]: value } : intern
@@ -284,42 +297,23 @@ export default class ProgramDetails extends LightningElement {
     }
 
     // Add a new onboarding row dynamically
+    // addOnboarding() {
+    //     const newRow = { id: Date.now(), Name: '', Authority_By__c: '' };
+    //     this.tempOnboardings = [...this.tempOnboardings, newRow];
+    // }
+
     addAsset() {
         const newAsset = {
-            Name: '',
-            Checklist__c: '',
-            Received_Date__c: '',
-            assets: [
-                {
-                    id: Date.now(),
-                    Name: '',
-                    Serial_Number__c: '',
-                    Status__c: '',
-                    Assigned_Date__c: ''
-                }
-            ]
-        };
-        if (!this.tempOnboarding.assets) {
-            this.tempOnboarding.assets = [];
-        }
-    
-        this.tempOnboarding = {
-            ...this.tempOnboarding,
-            assets: [...this.tempOnboarding.assets, newAsset]
-        };
-        console.log('Added new asset:', newAsset.id);
-    }
-
-    // Initialize a new onboarding record
-    initializeOnboarding() {
-        this.tempOnboarding = {
             id: Date.now(),
             Name: '',
-            Checklist__c: '',
-            Received_Date__c: '',
-            assets: []
+            Serial_Number__c: '',
+            Status__c: '',
+            Assigned_Date__c: ''
+    
         };
-        console.log('Initialized new onboarding:', this.tempOnboarding.id);
+    
+        this.tempAssets = [...this.tempAssets, newAsset];
+        console.log('Added new asset:', newAsset.id);
     }
 
     // Add a new intern row dynamically
@@ -333,7 +327,7 @@ export default class ProgramDetails extends LightningElement {
         const rowId = parseInt(event.target.dataset.id, 10);
         console.error('Row ID:', rowId);
 
-        if (this.tempCeritificates.length === 1 && this.tempOnboardings.length === 1 && this.tempInterns.length === 1) {
+        if (this.tempCeritificates.length === 1 && this.tempOnboardings.length === 1 && this.tempAssets.length === 1 && this.tempInterns.length === 1) {
             console.error('Cannot delete the default row.');
             return;
         }
@@ -342,7 +336,8 @@ export default class ProgramDetails extends LightningElement {
         this.tempCeritificates = this.tempCeritificates.filter(cert => cert.id !== rowId);
         this.tempInterns = this.tempInterns.filter(intern => intern.id !== rowId);
 
-        this.tempOnboarding.assets = this.tempOnboarding.assets.filter(asset => asset.id !== assetId);
+        this.tempOnboardings = this.tempOnboardings.filter(onboarding => onboarding.id !== rowId);
+        this.tempAssets = this.tempAssets.filter(asset => asset.id !== rowId);
         console.log('Deleted asset:', assetId);
     }
 
@@ -350,6 +345,7 @@ export default class ProgramDetails extends LightningElement {
         this.isLoading = true;
         this.certificates = [...this.certificates, ...this.tempCeritificates];
         this.onboardings = [...this.onboardings, ...this.tempOnboardings];
+        this.assets = [...this.assets, ...this.tempAssets];
         this.interns = [...this.interns, ...this.tempInterns];
 
         const certificatesData = this.certificates.map((cert) => ({
@@ -366,30 +362,23 @@ export default class ProgramDetails extends LightningElement {
             Name: onboarding.Name,
             Checklist__c: onboarding.Checklist__c,
             Received_Date__c: onboarding.Received_Date__c,
-            assets: this.tempOnboarding.assets.map(asset => ({
-                Name: asset.Name,
-                Serial_Number__c: asset.Serial_Number__c,
-                Status__c: asset.Status__c,
-                Assigned_Date__c: asset.Assigned_Date__c
-            }))
-            
         }));
 
         // Format the assets
-        // const assetsData = this.assets.map((asset) => ({
-        //     Id: asset.Id || null, 
-        //     Name: asset.Name,
-        //     // Account__c: asset.Account__c,
-        //     // Assigned_Date__c: asset.Assigned_Date__c,
-        //     // Condition_After__c: asset.Condition_After__c,
-        //     // Condition_Before__c: asset.Condition_Before__c,
-        //     // Contact__c: asset.Contact__c,
-        //     // Returned_Date__c: asset.Returned_Date__c,
-        //     Serial_Number__c: asset.Serial_Number__c,
-        //     Status__c: asset.Status__c,
-        //     // Onboarding__c: asset.Onboarding__c
+        const assetsData = this.assets.map((asset) => ({
+            Id: asset.Id || null, 
+            Name: asset.Name,
+            // Account__c: asset.Account__c,
+            // Assigned_Date__c: asset.Assigned_Date__c,
+            // Condition_After__c: asset.Condition_After__c,
+            // Condition_Before__c: asset.Condition_Before__c,
+            // Contact__c: asset.Contact__c,
+            // Returned_Date__c: asset.Returned_Date__c,
+            Serial_Number__c: asset.Serial_Number__c,
+            Status__c: asset.Status__c,
+            // Onboarding__c: asset.Onboarding__c
             
-        // }));
+        }));
 
         const internsData = this.interns.map((intern) => ({
             Id: intern.Id || null,  
@@ -410,10 +399,10 @@ export default class ProgramDetails extends LightningElement {
         // Logging for debugging
         // console.log('Formatted Certificates:', JSON.stringify(certificatesData));
         // console.log('Formatted Onboardings:', JSON.stringify(onboardingsData));
-        console.log('Formatted Assets:', JSON.stringify(onboardingsData));
+        console.log('Formatted Assets:', JSON.stringify(assetsData));
         // console.log('Formatted Program:', JSON.stringify(internsData));
     
-        neworUpdate({certificates : certificatesData, onboardings : onboardingsData, interns : internsData, programId: this.recordId  })
+        neworUpdate({certificates : certificatesData, onboardings : onboardingsData, assets: assetsData, interns : internsData, programId: this.recordId  })
             .then(() => {
                 this.showToast('Success', 'Records created/updated successfully!', 'success');
                 this._editingStop();

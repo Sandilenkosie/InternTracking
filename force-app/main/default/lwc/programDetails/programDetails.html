@@ -727,23 +727,28 @@
                   
                   <!-- Modal Body -->
                   <div class="slds-modal__content slds-p-around_medium ">
-                      <div class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
+                    <template for:each={onboardings} for:item="onboarding" for:index="index">
+                      <div key={onboarding.id} class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
                         <!-- Certificate Name Input -->
                         <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
-                          <lightning-input label="Onboarding Name" name="Name" value={tempOnboarding.Name} onchange={handleObjectChanges} ></lightning-input>
+                          <lightning-input label="Onboarding Name" name="Name" data-index={index} value={onboarding.Name} onchange={handleObjectChanges} ></lightning-input>
                         </div>
                     
                         <!-- Authority By Combobox -->
                         <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
-                          <lightning-input label="Received Date" type="date" name="Received_Date__c" value={tempOnboarding.Received_Date__c} onchange={handleObjectChanges} ></lightning-input>
+                          <lightning-input label="Received Date" type="date" name="Received_Date__c" data-index={index} value={onboarding.Received_Date__c} onchange={handleObjectChanges} ></lightning-input>
                         </div>
 
                         <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
-                          <lightning-textarea label="Checklist" name="Checklist__c" value={tempOnboarding.Checklist__c}  onchange={handleObjectChanges} ></lightning-textarea>
+                          <lightning-combobox label="Onboarding type" required name="Type__c" data-index={index} options={typeOptions} value={onboarding.Type__c} onchange={handleObjectChanges} ></lightning-combobox>
+                        </div>
+
+                        <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
+                          <lightning-textarea label="Checklist" name="Checklist__c" data-index={index} value={onboarding.Checklist__c}  onchange={handleObjectChanges} ></lightning-textarea>
                         </div>
                     
                         <!-- Delete Button -->
-                        <!-- <div class="slds-col slds-size_2-of-13 slds-p-horizontal_x-small slds-flex slds-align-center">
+                        <div class="slds-col slds-size_2-of-13 slds-p-horizontal_x-small slds-flex slds-align-center">
                           <lightning-button-icon 
                             icon-name="utility:delete" 
                             variant="border-filled" 
@@ -752,19 +757,19 @@
                             data-id={onboarding.id} 
                             onclick={deleteRow}>
                           </lightning-button-icon>
-                        </div> -->
+                        </div>
                       </div>
+                    </template>
 
-                      <!-- </template> -->
-                      <template if:true={tempOnboarding.assets}>
-                        <template for:each={tempOnboarding.assets} for:item="asset">
+                      <template if:true={isAssetSelected}>
+                        <template for:each={tempAssets} for:item="asset" for:index="index">
                           <div key={asset.id} class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
                             <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
                               <lightning-input
                                   label="Asset Name"
                                   value={asset.Name}
                                   name="Name"
-                                  data-id={asset.id}
+                                  data-index={index}
                                   onchange={handleObjectChanges}>
                               </lightning-input>
                             </div>
@@ -773,7 +778,7 @@
                                   label="Serial Number"
                                   value={asset.Serial_Number__c}
                                   name="Serial_Number__c"
-                                  data-id={asset.id}
+                                  data-index={index}
                                   onchange={handleObjectChanges}>
                               </lightning-input>
                             </div>
@@ -782,7 +787,7 @@
                                   label="Status"
                                   value={asset.Status__c}
                                   name="Status__c"
-                                  data-id={asset.id}
+                                  data-index={index}
                                   onchange={handleObjectChanges}>
                               </lightning-input>
                             </div>
@@ -807,14 +812,16 @@
                       <lightning-button label="Cancel" variant="neutral" onclick={closeModel}></lightning-button>
                       <lightning-button label="Save" variant="brand" onclick={handleSubmit}></lightning-button>
                       <div class="slds-no-flex slds-grid">
-                        <lightning-button 
-                          label="Row"
-                          icon-name="utility:add"
-                          icon-position="left"
-                          variant="neutral"
-                          onclick={addAsset}
-                          class="slds-button">
-                        </lightning-button>
+                        <template if:true={isAssetSelected}>
+                          <lightning-button 
+                            label="Row"
+                            icon-name="utility:add"
+                            icon-position="left"
+                            variant="neutral"
+                            onclick={addAsset}
+                            class="slds-button">
+                          </lightning-button>
+                        </template>
                     </div>
                   </footer>
               </div>
