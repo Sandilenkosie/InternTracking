@@ -13,7 +13,9 @@ export default class ProgramDetails extends LightningElement {
     @track program = {}; 
     @track certificates = [];
     @track onboardings = []; 
+    @track onboarding = {}; 
     @track interns = []; 
+    @track contacts = []; 
     @track assets = [];
     @track trainings = []; 
     @track users = []; 
@@ -64,13 +66,14 @@ export default class ProgramDetails extends LightningElement {
     ];
 
     tempCeritificates = [];
-    tempOnboardings = [{ Name: '', Checklist__c: '', Received_Date__c: '' }];
+    tempOnboardings = [];
     tempAssets = [];
     tempInterns = [];
 
     // Fetch program details from the Apex controller
     @wire(getProgramDetails, { programId: '$recordId' })
     wiredProgramDetails({ error, data }) {
+        console.log(data)
         if (data) {
             this.program = data.program;
             this.certificates = data.certificates;
@@ -78,6 +81,7 @@ export default class ProgramDetails extends LightningElement {
             this.interns = data.interns;
             this.trainings = data.trainings;
             this.users = data.users;
+            this.contacts = data.contacts;
         } else if (error) {
             this.error = error;
         }
@@ -274,7 +278,8 @@ export default class ProgramDetails extends LightningElement {
     
         // Update all relevant arrays
         this.certificates = updateArray(this.certificates, this.tempCeritificates);
-        this.onboardings = updateArray(this.onboardings, this.tempOnboardings);
+        this.onboarding[field] = event.target.value;
+        this.assignedTo = event.detail.value;
         this.assets = updateArray(this.assets, this.tempAssets);
         this.interns = updateArray(this.interns, this.tempInterns);
     
@@ -337,6 +342,44 @@ export default class ProgramDetails extends LightningElement {
         console.log('Deleted asset:', assetId);
     }
 
+    @track selectedUsers = [];
+
+    handleUser(event) {
+        this.searchKey = event.target.value.toLowerCase();
+        console.log('Search Key:', this.searchKey);
+        if (this.searchKey) {
+            this.searchResults = this.users.filter(user => {
+                // Check if intern.User__r and Name are defined and contain searchKey
+                const nameMatches = user.Id && 
+                user.Name.toLowerCase().includes(this.searchKey );
+    
+                console.log('Name Match:', user.Name, nameMatches); // Debugging to check the filter logic
+    
+                return nameMatches;
+            });
+    
+            console.log('Filtered Results:', this.searchResults); // Debugging: Check the filtered results
+        } else {
+            this.searchResults = [...this.users];;
+        }
+    }
+    selectUser(event) {
+        this.assignedToId = event.target.closest('li').dataset.id;
+       const selectedUser = this.interns.find(user => user.Id === this.assignedToId);
+
+       if (selectedUser && !this.selectedUsers.some(user => user.Id === this.assignedToId)) {
+           this.selectedUsers = [...this.selectedUsers, selectedUser];
+       }
+
+       this.searchKey = '';
+       this.searchResults = [];
+   }
+
+   removeSelectedUser(event) {
+       this.assignedToId = event.target.closest('button').dataset.id;
+       this.selectedUsers = this.selectedUsers.filter(user => user.Id !== this.assignedToId);
+   }
+
     handleSubmit() {
         this.isLoading = true;
         this.certificates = [...this.certificates, ...this.tempCeritificates];
@@ -356,23 +399,21 @@ export default class ProgramDetails extends LightningElement {
         const onboardingsData = this.onboardings.map((onboarding) => ({
             Id: onboarding.Id || null, 
             Name: onboarding.Name,
-            Checklist__c: onboarding.Checklist__c,
-            Received_Date__c: onboarding.Received_Date__c,
         }));
 
         // Format the assets
         const assetsData = this.assets.map((asset) => ({
             Id: asset.Id || null, 
             Name: asset.Name,
-            // Account__c: asset.Account__c,
-            // Assigned_Date__c: asset.Assigned_Date__c,
-            // Condition_After__c: asset.Condition_After__c,
-            // Condition_Before__c: asset.Condition_Before__c,
-            // Contact__c: asset.Contact__c,
-            // Returned_Date__c: asset.Returned_Date__c,
+            Account__c: asset.Account__c,
+            Assigned_Date__c: asset.Assigned_Date__c,
+            Condition_After__c: asset.Condition_After__c,
+            Condition_Before__c: asset.Condition_Before__c,
+            Contact__c: asset.Contact__c,
+            Returned_Date__c: asset.Returned_Date__c,
             Serial_Number__c: asset.Serial_Number__c,
             Status__c: asset.Status__c,
-            // Onboarding__c: asset.Onboarding__c
+            Onboarding__c: asset.Onboarding__c
             
         }));
 
@@ -412,7 +453,7 @@ export default class ProgramDetails extends LightningElement {
             });
         } 
         else if(this.selectedCategory === 'Onboardings'){
-            createOnboardings({onboardings : onboardingsData, programId: this.recordId  })
+            createOnboardings({onboarding : this.onboarding, assignedTo: this.assignedTo, programId: this.recordId  })
             .then(() => {
                 return createAssets({assets: assetsData, programId: this.recordId  })
             })
@@ -446,9 +487,6 @@ export default class ProgramDetails extends LightningElement {
     
 
     }
-
-
-
 
     _handleSearch(event) {
         this._searchKey = event.target.value.toLowerCase();
@@ -549,6 +587,62 @@ export default class ProgramDetails extends LightningElement {
 
         if (trainingId && this.selectedTraining && this.selectedTraining.Id === trainingId) {
             this.selectedTraining = null;
+            this.isshow = false;
+            this.isFocus = false;
+        } 
+    }
+
+    @track searchAccount = '';
+    @track contactResults = [];
+    @track contactId = '';
+    @track selectedContact = '';
+
+    handleAccount(event) {
+        this.searchAccount = event.target.value.toLowerCase();
+        console.log('Search Key:', this.searchAccount);
+        if (this.searchAccount) {
+            this.contactResults = this.contacts.filter(contact => {
+                const nameMatches = contact.Id && contact.Name.toLowerCase().includes(this.searchAccount );
+    
+                console.log('Name Match:', contact.Name, nameMatches);
+    
+                return nameMatches;
+            });
+    
+            console.log('Filtered Results:', this.contactResults);
+        } else {
+            this.contactResults = [];
+            this.isfocus = false;
+        }
+    }
+
+
+    handleContactFocus() {
+        this.contactResults = [...this.contacts];
+        this.isfocus = true;
+    }
+
+    selectContact(event) {
+        this.contactId = event.target.closest('li').dataset.id;
+        const selectedContact = this.contacts.find(contact => contact.Id === this.contactId);
+    
+        if (selectedContact) {
+            this.selectedContact = selectedContact;
+        }
+
+       this.searchAccount = '';
+       this.contactResults = [];
+       this.isshow = true;
+       this.isfocus = false;
+   }
+
+    removeContact(event) {
+        const button = event.target.closest('button');
+        const contactId = button ? button.dataset.id : null;
+        console.log("training ID: ",contactId);
+
+        if (contactId && this.selectedContact && this.selectedContact.Id === contactId) {
+            this.selectedContact= null;
             this.isshow = false;
             this.isFocus = false;
         } 
