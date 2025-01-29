@@ -1,7 +1,10 @@
 import { LightningElement, api, track, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getProgramDetails from '@salesforce/apex/ProgramController.getProgramDetails';
-import neworUpdate from '@salesforce/apex/ProgramController.neworUpdate';
+import createCertificates from '@salesforce/apex/ProgramController.createCertificates';
+import createAssets from '@salesforce/apex/ProgramController.createAssets';
+import createOnboardings from '@salesforce/apex/ProgramController.createOnboardings';
+import createInterns from '@salesforce/apex/ProgramController.createInterns';
 
 
 export default class ProgramDetails extends LightningElement {
@@ -9,7 +12,7 @@ export default class ProgramDetails extends LightningElement {
     @track currentStep = 1;
     @track program = {}; 
     @track certificates = [];
-    @track onboardings = [{AssetValue: '' }]; 
+    @track onboardings = []; 
     @track interns = []; 
     @track assets = [];
     @track trainings = []; 
@@ -41,7 +44,7 @@ export default class ProgramDetails extends LightningElement {
     isModalCertificate = false;
     isModalOnboarding = false;
     isModalIntern = false;
-    isModalAsset = false;
+    @track isAssetSelected = false;
 
     @track programtypeOptions = [
         { label: '3 Months', value: '3 Months' },
@@ -61,7 +64,7 @@ export default class ProgramDetails extends LightningElement {
     ];
 
     tempCeritificates = [];
-    tempOnboardings = [];
+    tempOnboardings = [{ Name: '', Checklist__c: '', Received_Date__c: '' }];
     tempAssets = [];
     tempInterns = [];
 
@@ -245,50 +248,43 @@ export default class ProgramDetails extends LightningElement {
         this.program[fieldName] = value;
     }
 
-   // Handle Object field changes
-    handleObjectChanges(event) {
+     // Handle Object field changes
+     handleObjectChanges(event) {
         const field = event.target.name;
         const index = event.target.dataset.index;
         const rowId = event.target.dataset.id;
         const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-
-        // Handle field changes dynamically for tempCertificates, tempOnboardings, tempInterns
-        if (this.tempCeritificates[index] && this.tempCeritificates[index].id === parseInt(rowId)) {
-            this.tempCeritificates[index] = { ...this.tempCeritificates[index], [field]: value };
+    
+        // Helper function to update an array by index and rowId
+        const updateArray = (array, tempArray) => {
+            // Update the specific index of tempArray
+            tempArray[index] = {
+                ...tempArray[index],
+                [field]: value // Ensure the field is updated in the tempArray
+            };
+    
+            // Update the main array (certificates, onboardings, etc.)
+            return array.map(item => {
+                if (item.Id === rowId) {
+                    return { ...item, [field]: value };
+                }
+                return item;
+            });
+        };
+    
+        // Update all relevant arrays
+        this.certificates = updateArray(this.certificates, this.tempCeritificates);
+        this.onboardings = updateArray(this.onboardings, this.tempOnboardings);
+        this.assets = updateArray(this.assets, this.tempAssets);
+        this.interns = updateArray(this.interns, this.tempInterns);
+    
+        // Check if the field is Type__c and handle the isAssetSelected logic
+        if (field === 'Type__c') {
+            this.isAssetSelected = value === 'Asset';
+            console.log(this.isAssetSelected); // Log whether Asset is selected
         }
-
-
-        // Update onboarding fields
-        if (this.onboardings[index] && this.onboardings[index].id === parseInt(rowId)) {
-            this.onboardings[index] = { ...this.onboardings[index], [field]: value, AssetValue: value };
-        }
-
-        if (this.assets[index] && this.assets[index].id === parseInt(rowId)) {
-            this.assets[index] = { ...this.assets[index], [field]: value };
-        }
-
-        if (this.tempInterns[index] && this.tempInterns[index].id === parseInt(rowId)) {
-            this.tempInterns[index] = { ...this.tempInterns[index], [field]: value };
-        }
-
-        // Update the actual data collections
-        this.certificates = this.certificates.map(certificate =>
-            certificate.Id === rowId ? { ...certificate, [field]: value } : certificate
-        );
-
-        // Update onboarding fields
-        this.onboardings = this.onboardings.map(onboarding =>
-            onboarding.Id === rowId ? { ...onboarding, [field]: value } : onboarding
-        );
-
-        this.assets = this.assets.map(asset =>
-            asset.Id === rowId ? { ...asset, [field]: value } : asset
-        );
-
-        this.interns = this.interns.map(intern =>
-            intern.Id === rowId ? { ...intern, [field]: value } : intern
-        );
     }
+    
 
     // Add a new certificate row dynamically
     addCertificate() {
@@ -401,8 +397,9 @@ export default class ProgramDetails extends LightningElement {
         // console.log('Formatted Onboardings:', JSON.stringify(onboardingsData));
         console.log('Formatted Assets:', JSON.stringify(assetsData));
         // console.log('Formatted Program:', JSON.stringify(internsData));
-    
-        neworUpdate({certificates : certificatesData, onboardings : onboardingsData, assets: assetsData, interns : internsData, programId: this.recordId  })
+
+        if (this.selectedCategory === 'Certificates') {
+            createCertificates({certificates : certificatesData, programId: this.recordId  })
             .then(() => {
                 this.showToast('Success', 'Records created/updated successfully!', 'success');
                 this._editingStop();
@@ -413,7 +410,44 @@ export default class ProgramDetails extends LightningElement {
                 this.showToast('Error', 'An error occurred: ' + error.body.message, 'error');
                 this.isLoading = false;
             });
+        } 
+        else if(this.selectedCategory === 'Onboardings'){
+            createOnboardings({onboardings : onboardingsData, programId: this.recordId  })
+            .then(() => {
+                return createAssets({assets: assetsData, programId: this.recordId  })
+            })
+            .then(() => {
+                this.showToast('Success', 'Records created/updated successfully!', 'success');
+                this._editingStop();
+                this.isLoading = false;
+            })
+            .catch((error) => {
+                console.error('Error:', JSON.stringify(error));
+                this.showToast('Error', 'An error occurred: ' + error.body.message, 'error');
+                this.isLoading = false;
+            });
+        }
+        else if(this.selectedCategory === 'Interns'){
+            createInterns({certificates : certificatesData, onboardings : onboardingsData, assets: assetsData, interns : internsData, programId: this.recordId  })
+            .then(() => {
+                this.showToast('Success', 'Records created/updated successfully!', 'success');
+                this._editingStop();
+                this.isLoading = false;
+            })
+            .catch((error) => {
+                console.error('Error:', JSON.stringify(error));
+                this.showToast('Error', 'An error occurred: ' + error.body.message, 'error');
+                this.isLoading = false;
+            });
+        }
+        else {
+            return 0;
+        }
+    
+
     }
+
+
 
 
     _handleSearch(event) {
