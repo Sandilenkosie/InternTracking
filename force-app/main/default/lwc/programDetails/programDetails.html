@@ -50,24 +50,26 @@
                                             </div>
                                           </li>
                                           <template for:each={categories} for:item="category">
-                                            <li key={category.value} role="presentation" class="slds-listbox__item" data-value={category.value} onclick={handleCategoryChange}>
-                                              <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option" tabindex="0">
-                                                <span class="slds-media__figure slds-listbox__option-icon">
-                                                  <span class="slds-icon_container slds-icon-standard-account">
-                                                    <lightning-icon 
-                                                      icon-name={category.iconName} 
-                                                      size="small"
-                                                      class="slds-icon slds-icon_small">
-                                                    </lightning-icon>
-                                                  </span>
-                                                </span>
-                                                <span class="slds-media__body">
-                                                  <span class="slds-listbox__option-text slds-listbox__option-text_entity">{category.label}</span>
-                                                  <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">Account • Burlington, NC</span>
-                                                </span>
-                                              </div>
+                                            <li key={category.value} role="presentation" class={category.className} data-value={category.value} onclick={handleCategoryChange}>
+                                                <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option" tabindex="0">
+                                                    <span class="slds-media__figure slds-listbox__option-icon">
+                                                        <span class="slds-icon_container slds-icon-standard-account">
+                                                            <lightning-icon 
+                                                                icon-name={category.iconName} 
+                                                                size="small"
+                                                                class="slds-icon slds-icon_small">
+                                                            </lightning-icon>
+                                                        </span>
+                                                    </span>
+                                                    <span class="slds-media__body">
+                                                        <span class="slds-listbox__option-text slds-listbox__option-text_entity">{category.label}</span>
+                                                        <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">Account • Burlington, NC</span>
+                                                    </span>
+                                                </div>
                                             </li>
-                                          </template>
+                                        </template>
+                                        
+                                        
                                         </ul>
                                       </div>
                                     </div>
@@ -727,11 +729,10 @@
                   
                   <!-- Modal Body -->
                   <div class="slds-modal__content slds-p-around_medium ">
-                    <template for:each={tempOnboardings} for:item="onboarding" for:index="index">
-                      <div key={onboarding.id} class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
+                      <div class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
                         <!-- Certificate Name Input -->
                         <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
-                          <lightning-input label="Onboarding Name" name="Name" data-index={index} value={onboarding.Name} onchange={handleObjectChanges} ></lightning-input>
+                          <lightning-input label="Onboarding Name" name="Name" value={onboarding.Name} onchange={handleObjectChanges} ></lightning-input>
                         </div>
 
                         <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
@@ -746,19 +747,34 @@
                                             <lightning-input
                                                 label="Assigned To"
                                                 type="search"
-                                                placeholder="Search Users..."
-                                                onchange={handleUser}
+                                                placeholder="Search Interns..."
+                                                onchange={handleIntern}
+                                                onfocus={handleInternFocus}
                                                 value={searchKey}
                                             ></lightning-input>
                                         </div>
                                         
                                         <!-- Search Results Dropdown -->
-                                        <template if:true={searchKey}>
+                                        <template if:true={isfocus}>
                                             <template if:true={searchResults}>
                                                 <div id="listbox-id-4" class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
                                                     <ul class="slds-listbox slds-listbox_vertical" role="presentation">
-                                                        <template for:each={searchResults} for:item="user">
-                                                            <li key={user.Id} onclick={selectUser} data-id={user.Id} role="presentation" class="slds-listbox__item">
+                                                      <template if:true={searchKey}>
+                                                        <li role="presentation" class="slds-listbox__item">
+                                                          <div aria-selected="true" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_term slds-has-focus" role="option">
+                                                            <span class="slds-media__figure slds-listbox__option-icon">
+                                                              <span class="slds-icon_container slds-icon-utility-search" title="Search for term: ">
+                                                                  <lightning-icon icon-name="utility:search" size="x-small" class="slds-icon slds-icon_x-small slds-icon-text-default"></lightning-icon>
+                                                              </span>
+                                                            </span>
+                                                            <span class="slds-media__body">
+                                                              <span class="slds-listbox__option-text slds-listbox__option-text_entity">{searchKey}</span>
+                                                            </span>
+                                                          </div>
+                                                        </li>
+                                                      </template>
+                                                        <template for:each={searchResults} for:item="intern">
+                                                            <li key={intern.Id} onclick={selectIntern} data-id={intern.Id} role="presentation" class="slds-listbox__item">
                                                                 <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
                                                                     <span class="slds-media__figure slds-listbox__option-icon">
                                                                         <span class="slds-icon_container slds-icon-standard-account">
@@ -766,8 +782,7 @@
                                                                         </span>
                                                                     </span>
                                                                     <span class="slds-media__body">
-                                                                        <span class="slds-listbox__option-text slds-listbox__option-text_entity">{user.Name}</span>
-                                                                        <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">{user.Name} • </span>
+                                                                        <span class="slds-listbox__option-text slds-listbox__option-text_entity">{intern.User__r.Name}</span>
                                                                     </span>
                                                                 </div>
                                                             </li>
@@ -780,21 +795,21 @@
                                     </div>
                                 </div>
                                 <template if:true={assignedToId}>
-                                    <template if:true={selectedUsers}>
+                                    <template if:true={selectedInterns}>
                                         <div class="slds-listbox_selection-group">
                                             <ul class="slds-listbox slds-listbox_horizontal" aria-label="Selected Options:">
                                                 <template for:each={selectedInterns} for:item="intern">
-                                                    <li key={user.Id} class="slds-listbox-item">
+                                                    <li key={intern.User__c} class="slds-listbox-item">
                                                         <span class="slds-pill">
                                                             <span class="slds-icon_container slds-icon-standard-account slds-pill__icon_container" title="Account">
                                                                 <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
                                                             </span>
-                                                            <span class="slds-pill__label" title="Dickenson plc">{user.Name}</span>
+                                                            <span class="slds-pill__label" title="Dickenson plc">{intern.User__r.Name}</span>
                                                         <span class="slds-icon_container slds-pill__remove" title="Remove">
                                                             <button 
                                                                 class="slds-button slds-button_icon slds-button_icon slds-pill__remove" 
                                                                 onclick={removeSelectedUser}
-                                                                data-id={uset.Id}        
+                                                                data-id={intern.User__c}        
                                                                 title="Remove">
                                                                 <lightning-icon icon-name="utility:close" size="x-small" alternative-text="Remove"></lightning-icon>
                                                             </button>
@@ -811,11 +826,10 @@
                         </div>
 
                         <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
-                          <lightning-combobox label="Onboarding type" required name="Type__c" data-index={index} data-id={onboarding.id} options={typeOptions} value={onboarding.Type__c} onchange={handleObjectChanges} ></lightning-combobox>
+                          <lightning-combobox label="Onboarding type" required name="Type__c" data-id={onboarding.id} options={typeOptions} value={onboarding.Type__c} onchange={handleObjectChanges} ></lightning-combobox>
                         </div>
 
                       </div>
-                    </template>
                     <template if:true={isAssetSelected}>
                       <template for:each={tempAssets} for:item="asset" for:index="index">
                         <div key={asset.id} class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
@@ -827,13 +841,13 @@
                                 data-index={index}
                                 onchange={handleObjectChanges}>
                             </lightning-input>
-                            <lightning-input
-                              label="Asset Name"
+                            <lightning-textarea
+                              label="Condition Before"
                               value={asset.Condition_Before__c}
                               name="Condition_Before__c"
                               data-index={index}
                               onchange={handleObjectChanges}>
-                          </lightning-input>
+                          </lightning-textarea>
                           </div>
                           <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
                             <lightning-input
@@ -852,7 +866,7 @@
                                   <div class="slds-combobox_container">
                                     <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
                                       <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
-                                        <template if:false={_isshow}>
+                                        <template if:false={isshow}>
                                             <lightning-input
                                                 label="Contact"
                                                 type="search"
@@ -903,7 +917,7 @@
                                             </template>
                                         </template>
             
-                                        <template if:true={_isshow}>
+                                        <template if:true={isshow}>
                                             <template if:true={selectedContact}>
                                                 <div class="slds-form-element">
                                                     <label class="slds-form-element__label" for="combobox-id-5">Contact</label>

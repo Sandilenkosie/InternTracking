@@ -1,16 +1,5 @@
-.slds-dropdown {
-    position: absolute;  /* Ensure it's positioned correctly */
-    z-index: 9999;  /* Make sure it appears above other elements */
-    max-height: 300px; /* Adjust the height of the dropdown */
-    overflow-y: auto;  /* Allow scrolling if there are too many items */
-}
-
-.slds-modal__content {
-    position: relative;
-    padding-bottom: 50px;  /* Leave space for footer, adjust as needed */
-}
-
-.slds-dropdown_length-with-icon-7 {
-    max-height: 250px;  /* Optional: control the dropdown height */
-    overflow-y: auto;  /* Allow scroll if content is long */
+.disabled {
+    pointer-events: none !important;
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
 }
