@@ -96,13 +96,6 @@ export default class ProgramDetails extends LightningElement {
     updateCategoryData() {
         this.categories = [
             {
-                label: 'Program',
-                value: 'Program',
-                iconName: 'custom:custom25',
-                hasData: true, // Always has data
-                className: 'slds-listbox__item',
-            },
-            {
                 label: 'Certificates',
                 value: 'Certificates',
                 iconName: 'standard:education',
@@ -139,6 +132,8 @@ export default class ProgramDetails extends LightningElement {
         if (!category || (!category.hasData && category.value !== 'Program')) {
             // Prevent interaction for disabled categories
             event.preventDefault();
+            category.hasData = false;
+            category.error = true;
             return;
         }
 
