@@ -2,6 +2,7 @@ import { LightningElement, api, track, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getProgramDetails from '@salesforce/apex/ProgramController.getProgramDetails';
 import createCertificates from '@salesforce/apex/ProgramController.createCertificates';
+import updateProgram from '@salesforce/apex/ProgramController.updateProgram';
 import createAssets from '@salesforce/apex/ProgramController.createAssets';
 import createOnboardings from '@salesforce/apex/ProgramController.createOnboardings';
 import createInterns from '@salesforce/apex/ProgramController.createInterns';
@@ -88,7 +89,7 @@ export default class ProgramDetails extends LightningElement {
         this.updateCategoryData();
     }
 
-    selectedCategory = 'Program';  // Default category
+    selectedCategory = 'Adding Program Items';  // Default category
     dropdownOpen = false;
     categories = [];
     
@@ -144,11 +145,6 @@ export default class ProgramDetails extends LightningElement {
     // Toggle dropdown visibility
     toggleDropdown() {
       this.dropdownOpen = !this.dropdownOpen;
-    }
-  
-
-    get isAssetSelected() {
-        return this.onboardings.some(onboarding => onboarding.Type__c === 'Asset');
     }
   
     // Get the correct class for dropdown visibility
@@ -231,26 +227,11 @@ export default class ProgramDetails extends LightningElement {
                 return 0;
         }
     }
-    
-    get classDisabled() {
-        if (this.selectedCategory === 'Onboardings') {
-            return this.certificates?.length === 0
-                ? 'slds-listbox__item disabled'
-                : 'slds-listbox__item';
-        } else if (this.selectedCategory === 'Interns') {
-            return this.onboardings?.length === 0
-                ? 'slds-listbox__item disabled'
-                : 'slds-listbox__item';
-        } else {
-            return 'slds-listbox__item';
-        }
-    }
-    
-    
 
     // Toggle edit mode for Program, Certificate, Onboarding
     _editProgram() {
         this.isEditingProgram = true;
+        this.isEditing = true;
     }
 
     _editingButton(event) {
@@ -287,8 +268,8 @@ export default class ProgramDetails extends LightningElement {
             return { ...certificate, isSelected: false };
         });
 
-        this.onboardings = this.onboardings.map((onboarding) => {
-            return { ...onboarding, isSelected: false };
+        this.assets = this.assets.map((asset) => {
+            return { ...assets, isSelected: false };
         });
         
 
@@ -299,31 +280,23 @@ export default class ProgramDetails extends LightningElement {
         this.showProgram = true;
     }
 
-
-    // Handle program field changes
-    handleProgramChange(event) {
-        const fieldName = event.target.name;
-        const value = event.target.value;
-        this.program[fieldName] = value;
-    }
-
-     // Handle Object field changes
-     handleObjectChanges(event) {
+    // Handle Object field changes
+    handleObjectChanges(event) {
         const field = event.target.name;
         const index = event.target.dataset.index;
         const rowId = event.target.dataset.id;
         const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-    
+
         // Helper function to update an array by index and rowId
         const updateArray = (array, tempArray) => {
-            if (tempArray[index]) {
-                // Update the specific index of tempArray
+            // Update the specific index in tempArray
+            if (tempArray && tempArray[index]) {
                 tempArray[index] = {
                     ...tempArray[index],
-                    [field]: value, // Ensure the field is updated in the tempArray
+                    [field]: value, // Ensure the field is updated in tempArray
                 };
             }
-    
+
             // Update the main array (certificates, onboardings, etc.)
             return array.map((item) => {
                 if (item.Id === rowId) {
@@ -332,28 +305,36 @@ export default class ProgramDetails extends LightningElement {
                 return item;
             });
         };
-    
-        // Update all relevant arrays
-        this.certificates = updateArray(this.certificates, this.tempCertificates);
-        if (this.onboarding) {
-            this.onboarding[field] = value;
+
+        // Update program fields if the program exists
+        if (this.program && this.program.Id === rowId) {
+            this.program = { ...this.program, [field]: value };
         }
+
+        // Update arrays using the helper function
+        this.certificates = updateArray(this.certificates, this.tempCertificates);
         this.assets = updateArray(this.assets, this.tempAssets);
         this.interns = updateArray(this.interns, this.tempInterns);
-    
+
+        // Additional logic for onboarding
+        if (this.onboarding && this.onboarding.Id === rowId) {
+            this.onboarding = { ...this.onboarding, [field]: value };
+        }
+
         // Check if the field is Type__c and handle the isAssetSelected logic
         if (field === 'Type__c') {
             this.isAssetSelected = value === 'Asset';
-            console.log(this.isAssetSelected); // Log whether Asset is selected
+            console.log(`isAssetSelected: ${this.isAssetSelected}`); // Log whether Asset is selected
         }
     }
+
     
     
 
     // Add a new certificate row dynamically
     addCertificate() {
         const newRow = { id: Date.now(), Name: '', Authority_By__c: '' };
-        this.tempCertificates= [...this.tempCeritificates, newRow];
+        this.tempCertificates= [...this.tempCertificates, newRow];
     }
 
     // Add a new onboarding row dynamically
@@ -384,22 +365,25 @@ export default class ProgramDetails extends LightningElement {
 
     // Delete a row based on the ID
     deleteRow(event) {
-        const rowId = parseInt(event.target.dataset.id, 10);
-        console.error('Row ID:', rowId);
-
-        if (this.tempCeritificates.length === 1 && this.tempAssets.length === 1 && this.tempInterns.length === 1) {
-            console.error('Cannot delete the default row.');
+        const rowId = parseInt(event.target.dataset.id);
+        console.error('Row ID to delete:', rowId);
+    
+        // Prevent deletion if only one item exists in all collections
+        if (
+            this.tempCertificates.length === 1 ||
+            this.tempAssets.length === 1 ||
+            this.tempInterns.length === 1
+        ) {
+            this.showToast('Error', 'Cannot delete the last remaining row from all collections.', 'error');
             return;
         }
-
-        // Remove rows from respective temp collections
-        this.tempCertificates= this.tempCeritificates.filter(cert => cert.id !== rowId);
+    
+        // Remove the row from each collection where the ID matches
+        this.tempCertificates = this.tempCertificates.filter(cert => cert.id !== rowId);
         this.tempInterns = this.tempInterns.filter(intern => intern.id !== rowId);
-
-        // this.tempOnboardings = this.tempOnboardings.filter(onboarding => onboarding.id !== rowId);
         this.tempAssets = this.tempAssets.filter(asset => asset.id !== rowId);
-        console.log('Deleted asset:', assetId);
     }
+    
 
     @track selectedInterns = [];
     @track assignedToId = '';
@@ -444,7 +428,7 @@ export default class ProgramDetails extends LightningElement {
        this.isfocus = false;
    }
 
-   removeSelectedUser(event) {
+   removeSelectedIntern(event) {
        this.assignedToId = event.target.closest('button').dataset.id;
        this.selectedInterns = this.selectedInterns.filter(intern => intern.Id !== this.assignedToId);
    }
@@ -459,7 +443,15 @@ export default class ProgramDetails extends LightningElement {
     this.assets = [...this.assets, ...this.tempAssets];
     this.interns = [...this.interns, ...this.tempInterns];
 
-    const assignedTo = this.selectedUsers.map((intern) => intern.Id);
+    const assignedTo = this.selectedInterns.map((intern) => intern.Id);
+
+    const programData = {
+        Name: this.program.Name,
+        Program_Type__c: this.program.Program_Type__c,
+        Department__c: this.program.Department__c,
+        Start_Date__c: this.program.Start_Date__c,
+        End_Date__c: this.program.End_Date__c
+    };
 
     const certificatesData = this.certificates.map((cert) => ({
         Id: cert.Id || null,
@@ -494,20 +486,36 @@ export default class ProgramDetails extends LightningElement {
         Training_Program__c: intern.Training_Program__c || this.selectedTraining.Id,
     }));
 
-    console.log('Formatted Assets:', JSON.stringify(assetsData));
+    console.log('Formatted program:', JSON.stringify(programData));
+    console.log('Formatted certificates:', JSON.stringify(certificatesData));
     console.log('Formatted onboarding:', JSON.stringify(onboardingData));
+    console.log('Formatted assets:', JSON.stringify(assetsData));
+
+    if (this.selectedCategory === 'Certificates') {
+        updateProgram({program: programData})
+            .then(() => {
+                this.showToast('Success', 'Records updated successfully!', 'success');
+                this.closeModel();
+                this._editingStop();
+                this.isLoading = false;
+            })
+            .catch((error) => {
+                console.error('Error:', JSON.stringify(error));
+                this.isLoading = false;
+            });
+    }
 
     // Handle Certificates
     if (this.selectedCategory === 'Certificates') {
         createCertificates({ certificates: certificatesData, programId: this.recordId })
             .then(() => {
                 this.showToast('Success', 'Records created/updated successfully!', 'success');
+                this.closeModel();
                 this._editingStop();
                 this.isLoading = false;
             })
             .catch((error) => {
                 console.error('Error:', JSON.stringify(error));
-                this.showToast('Error', `An error occurred: ${error.body.message}`, 'error');
                 this.isLoading = false;
             });
     }
@@ -520,11 +528,11 @@ export default class ProgramDetails extends LightningElement {
             .then(() => {
                 this.showToast('Success', 'Records created/updated successfully!', 'success');
                 this._editingStop();
+                this.closeModel();
                 this.isLoading = false;
             })
             .catch((error) => {
                 console.error('Error:', JSON.stringify(error));
-                this.showToast('Error', `An error occurred: ${error.body.message}`, 'error');
                 this.isLoading = false;
             });
     }
@@ -533,6 +541,7 @@ export default class ProgramDetails extends LightningElement {
         createInterns({ interns: internsData, programId: this.recordId })
             .then(() => {
                 this.showToast('Success', 'Records created/updated successfully!', 'success');
+                this.closeModel();
                 this._editingStop();
                 this.isLoading = false;
             })
@@ -543,11 +552,11 @@ export default class ProgramDetails extends LightningElement {
             });
     }
     // Default case
-    else {
-        this.isLoading = false;
-        return 0;
+        else {
+            this.isLoading = false;
+            return 0;
+        }
     }
-}
 
 
     _handleSearch(event) {
@@ -718,6 +727,7 @@ export default class ProgramDetails extends LightningElement {
         this.tempCertificates= [];
         this.tempOnboarding = {};
         this.tempInterns = [];
+        this._editingStop();
         this.isModalCertificate = false;
         this.isModalOnboarding = false;
         this.isModalIntern = false;

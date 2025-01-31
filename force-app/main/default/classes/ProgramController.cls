@@ -70,26 +70,40 @@ public with sharing class ProgramController {
     }
     
     @AuraEnabled
-    public static void createProgramWithRelatedRecords(String programName, String department, String programtype, Date startDate, Date endDate) {
+    public static void updateProgram(Map<String, Object> program) {
         try {
-            Program__c program = [SELECT Id, Name, Department__c, Program_Type__c, Start_Date__c, End_Date__c 
-                                  FROM Program__c];
+            // Validate that the program map contains an Id
+            if (!program.containsKey('Id') || String.isBlank((String) program.get('Id'))) {
+                throw new AuraHandledException('Program Id is required for updating.');
+            }
     
-            program.Name = programName;
-            program.Department__c = department;
-            program.Program_Type__c = programtype;
-            program.Start_Date__c = startDate;
-            program.End_Date__c = endDate;
-            
-            // Update the program record
-            update program;
+            // Retrieve the program record to update
+            Program__c prog = [
+                SELECT Id, Name, Department__c, Program_Type__c, Start_Date__c, End_Date__c
+                FROM Program__c
+                WHERE Id = :((String) program.get('Id'))
+                LIMIT 1
+            ];
+    
+            // Update fields from the provided map
+            prog.Name = (String) program.get('Name');
+            prog.Department__c = (String) program.get('Department__c');
+            prog.Program_Type__c = (String) program.get('Program_Type__c');
+            prog.Start_Date__c = parseDate((String) program.get('Start_Date__c'));
+            prog.End_Date__c = parseDate((String) program.get('End_Date__c'));
+    
+            // Perform the update
+            update prog;
     
         } catch (QueryException qe) {
             throw new AuraHandledException('Program record with the provided Id does not exist.');
+        } catch (DmlException de) {
+            throw new AuraHandledException('Error while updating the Program record: ' + de.getMessage());
         } catch (Exception e) {
-            throw new AuraHandledException('Error while creating/updating records: ' + e.getMessage());
+            throw new AuraHandledException('Unexpected error: ' + e.getMessage());
         }
     }
+    
 
     @AuraEnabled
     public static void createCertificates(List<Map<String, Object>> certificates, Id programId) {

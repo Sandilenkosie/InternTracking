@@ -3,7 +3,6 @@ trigger EnforceUniqueUser on Exam_Schedule__c (before insert, before update) {
     Set<Id> certificateIds = new Set<Id>();
     Map<String, Exam_Schedule__c> existingCertifiedMap = new Map<String, Exam_Schedule__c>();
 
-    // Collect User__c and Certificate__c from incoming records
     for (Exam_Schedule__c certified : Trigger.new) {
         if (certified.Assigned_To__c != null && certified.Certificate__c != null) {
             userIds.add(certified.Assigned_To__c);
