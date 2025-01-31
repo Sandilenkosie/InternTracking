@@ -62,6 +62,7 @@ global class Task {
     global List<Task> RecurringTasks;
     global List<TaskFeed> Feeds;
     global List<TopicAssignment> TopicAssignments;
+    global List<UserDefinedLabelAssignment> UserDefinedLabelAssignments;
     global List<AIInsightValue> SobjectLookupValue;
     global List<AIRecordInsight> Target;
     global List<ContentDocumentLinkChangeEvent> LinkedEntity;

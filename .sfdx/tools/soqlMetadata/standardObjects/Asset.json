@@ -502,25 +502,6 @@
       "filterable": true,
       "groupable": true,
       "inlineHelpText": null,
-      "label": "Location ID",
-      "name": "LocationId",
-      "nillable": true,
-      "picklistValues": [],
-      "referenceTo": [
-        "Location"
-      ],
-      "relationshipName": "Location",
-      "sortable": true,
-      "type": "reference"
-    },
-    {
-      "aggregatable": true,
-      "custom": false,
-      "defaultValue": null,
-      "extraTypeInfo": null,
-      "filterable": true,
-      "groupable": true,
-      "inlineHelpText": null,
       "label": "Asset Provided By ID",
       "name": "AssetProvidedById",
       "nillable": true,
@@ -845,7 +826,7 @@
         {
           "active": true,
           "defaultValue": false,
-          "label": "NearAddress",
+          "label": "Near Address",
           "validFor": null,
           "value": "NearAddress"
         },
@@ -866,7 +847,7 @@
         {
           "active": true,
           "defaultValue": false,
-          "label": "ExtendedZip",
+          "label": "Extended Zip",
           "validFor": null,
           "value": "ExtendedZip"
         },
@@ -983,7 +964,7 @@
       "restrictedDelete": false
     },
     {
-      "cascadeDelete": true,
+      "cascadeDelete": false,
       "childSObject": "AIRecordInsight",
       "deprecatedAndHidden": false,
       "field": "TargetId",
@@ -1000,6 +981,16 @@
       "junctionIdListNames": [],
       "junctionReferenceTo": [],
       "relationshipName": "ActivityHistories",
+      "restrictedDelete": false
+    },
+    {
+      "cascadeDelete": true,
+      "childSObject": "AppUsageAssignment",
+      "deprecatedAndHidden": false,
+      "field": "RecordId",
+      "junctionIdListNames": [],
+      "junctionReferenceTo": [],
+      "relationshipName": "AppUsageAssignments",
       "restrictedDelete": false
     },
     {
@@ -1034,26 +1025,6 @@
     },
     {
       "cascadeDelete": false,
-      "childSObject": "AssetAttribute",
-      "deprecatedAndHidden": false,
-      "field": "AssetId",
-      "junctionIdListNames": [],
-      "junctionReferenceTo": [],
-      "relationshipName": "AssetAttributes",
-      "restrictedDelete": false
-    },
-    {
-      "cascadeDelete": false,
-      "childSObject": "AssetAttributeChangeEvent",
-      "deprecatedAndHidden": false,
-      "field": "AssetId",
-      "junctionIdListNames": [],
-      "junctionReferenceTo": [],
-      "relationshipName": null,
-      "restrictedDelete": false
-    },
-    {
-      "cascadeDelete": false,
       "childSObject": "AssetChangeEvent",
       "deprecatedAndHidden": false,
       "field": "ParentId",
@@ -1070,16 +1041,6 @@
       "junctionIdListNames": [],
       "junctionReferenceTo": [],
       "relationshipName": null,
-      "restrictedDelete": false
-    },
-    {
-      "cascadeDelete": true,
-      "childSObject": "AssetDowntimePeriod",
-      "deprecatedAndHidden": false,
-      "field": "AssetId",
-      "junctionIdListNames": [],
-      "junctionReferenceTo": [],
-      "relationshipName": "AssetDowntimePeriods",
       "restrictedDelete": false
     },
     {
@@ -1123,6 +1084,26 @@
       "restrictedDelete": true
     },
     {
+      "cascadeDelete": false,
+      "childSObject": "AssetRelationshipChangeEvent",
+      "deprecatedAndHidden": false,
+      "field": "AssetId",
+      "junctionIdListNames": [],
+      "junctionReferenceTo": [],
+      "relationshipName": null,
+      "restrictedDelete": false
+    },
+    {
+      "cascadeDelete": false,
+      "childSObject": "AssetRelationshipChangeEvent",
+      "deprecatedAndHidden": false,
+      "field": "RelatedAssetId",
+      "junctionIdListNames": [],
+      "junctionReferenceTo": [],
+      "relationshipName": null,
+      "restrictedDelete": false
+    },
+    {
       "cascadeDelete": true,
       "childSObject": "AssetShare",
       "deprecatedAndHidden": false,
@@ -1154,19 +1135,9 @@
     },
     {
       "cascadeDelete": true,
-      "childSObject": "AssetWarranty",
+      "childSObject": "AsyncOperationLog",
       "deprecatedAndHidden": false,
-      "field": "AssetId",
-      "junctionIdListNames": [],
-      "junctionReferenceTo": [],
-      "relationshipName": "WarrantyAssets",
-      "restrictedDelete": false
-    },
-    {
-      "cascadeDelete": false,
-      "childSObject": "AssetWarrantyChangeEvent",
-      "deprecatedAndHidden": false,
-      "field": "AssetId",
+      "field": "RelatedRecordId",
       "junctionIdListNames": [],
       "junctionReferenceTo": [],
       "relationshipName": null,
@@ -1205,6 +1176,26 @@
     {
       "cascadeDelete": false,
       "childSObject": "CaseChangeEvent",
+      "deprecatedAndHidden": false,
+      "field": "AssetId",
+      "junctionIdListNames": [],
+      "junctionReferenceTo": [],
+      "relationshipName": null,
+      "restrictedDelete": false
+    },
+    {
+      "cascadeDelete": true,
+      "childSObject": "ChangeRequestRelatedItem",
+      "deprecatedAndHidden": false,
+      "field": "AssetId",
+      "junctionIdListNames": [],
+      "junctionReferenceTo": [],
+      "relationshipName": "ChangeRequestRelatedItems",
+      "restrictedDelete": false
+    },
+    {
+      "cascadeDelete": false,
+      "childSObject": "ChangeRequestRelatedItemChangeEvent",
       "deprecatedAndHidden": false,
       "field": "AssetId",
       "junctionIdListNames": [],
@@ -1399,7 +1390,7 @@
       "field": "RelatedRecordId",
       "junctionIdListNames": [],
       "junctionReferenceTo": [],
-      "relationshipName": null,
+      "relationshipName": "FlowOrchestrationWorkItems",
       "restrictedDelete": false
     },
     {
@@ -1414,17 +1405,17 @@
     },
     {
       "cascadeDelete": true,
-      "childSObject": "MaintenanceAsset",
+      "childSObject": "IncidentRelatedItem",
       "deprecatedAndHidden": false,
       "field": "AssetId",
       "junctionIdListNames": [],
       "junctionReferenceTo": [],
-      "relationshipName": "MaintenanceAssets",
+      "relationshipName": "IncidentRelatedItems",
       "restrictedDelete": false
     },
     {
       "cascadeDelete": false,
-      "childSObject": "MaintenanceAssetChangeEvent",
+      "childSObject": "IncidentRelatedItemChangeEvent",
       "deprecatedAndHidden": false,
       "field": "AssetId",
       "junctionIdListNames": [],
@@ -1474,12 +1465,42 @@
     },
     {
       "cascadeDelete": true,
+      "childSObject": "ProblemRelatedItem",
+      "deprecatedAndHidden": false,
+      "field": "AssetId",
+      "junctionIdListNames": [],
+      "junctionReferenceTo": [],
+      "relationshipName": "ProblemRelatedItems",
+      "restrictedDelete": false
+    },
+    {
+      "cascadeDelete": false,
+      "childSObject": "ProblemRelatedItemChangeEvent",
+      "deprecatedAndHidden": false,
+      "field": "AssetId",
+      "junctionIdListNames": [],
+      "junctionReferenceTo": [],
+      "relationshipName": null,
+      "restrictedDelete": false
+    },
+    {
+      "cascadeDelete": true,
       "childSObject": "ProcessInstance",
       "deprecatedAndHidden": false,
       "field": "TargetObjectId",
       "junctionIdListNames": [],
       "junctionReferenceTo": [],
       "relationshipName": "ProcessInstances",
+      "restrictedDelete": false
+    },
+    {
+      "cascadeDelete": false,
+      "childSObject": "ProcessInstanceChangeEvent",
+      "deprecatedAndHidden": false,
+      "field": "TargetObjectId",
+      "junctionIdListNames": [],
+      "junctionReferenceTo": [],
+      "relationshipName": null,
       "restrictedDelete": false
     },
     {
@@ -1491,16 +1512,6 @@
       "junctionReferenceTo": [],
       "relationshipName": "ProcessSteps",
       "restrictedDelete": false
-    },
-    {
-      "cascadeDelete": false,
-      "childSObject": "ProductServiceCampaignItem",
-      "deprecatedAndHidden": false,
-      "field": "AssetId",
-      "junctionIdListNames": [],
-      "junctionReferenceTo": [],
-      "relationshipName": "ProductServiceCampaignItems",
-      "restrictedDelete": true
     },
     {
       "cascadeDelete": true,
@@ -1520,86 +1531,6 @@
       "junctionIdListNames": [],
       "junctionReferenceTo": [],
       "relationshipName": "RecordActionHistories",
-      "restrictedDelete": false
-    },
-    {
-      "cascadeDelete": true,
-      "childSObject": "RecordsetFltrCritMonitor",
-      "deprecatedAndHidden": false,
-      "field": "AssetId",
-      "junctionIdListNames": [],
-      "junctionReferenceTo": [],
-      "relationshipName": "RecordsetFltrCritMonitors",
-      "restrictedDelete": false
-    },
-    {
-      "cascadeDelete": false,
-      "childSObject": "RecordsetFltrCritMonitorChangeEvent",
-      "deprecatedAndHidden": false,
-      "field": "AssetId",
-      "junctionIdListNames": [],
-      "junctionReferenceTo": [],
-      "relationshipName": null,
-      "restrictedDelete": false
-    },
-    {
-      "cascadeDelete": true,
-      "childSObject": "ResourcePreference",
-      "deprecatedAndHidden": false,
-      "field": "RelatedRecordId",
-      "junctionIdListNames": [],
-      "junctionReferenceTo": [],
-      "relationshipName": "ResourcePreferences",
-      "restrictedDelete": false
-    },
-    {
-      "cascadeDelete": false,
-      "childSObject": "ReturnOrderLineItem",
-      "deprecatedAndHidden": false,
-      "field": "AssetId",
-      "junctionIdListNames": [],
-      "junctionReferenceTo": [],
-      "relationshipName": "ReturnOrderLineItems",
-      "restrictedDelete": false
-    },
-    {
-      "cascadeDelete": false,
-      "childSObject": "ReturnOrderLineItemChangeEvent",
-      "deprecatedAndHidden": false,
-      "field": "AssetId",
-      "junctionIdListNames": [],
-      "junctionReferenceTo": [],
-      "relationshipName": null,
-      "restrictedDelete": false
-    },
-    {
-      "cascadeDelete": false,
-      "childSObject": "SerializedProduct",
-      "deprecatedAndHidden": false,
-      "field": "AssetId",
-      "junctionIdListNames": [],
-      "junctionReferenceTo": [],
-      "relationshipName": "SerializedProducts",
-      "restrictedDelete": false
-    },
-    {
-      "cascadeDelete": true,
-      "childSObject": "ServiceAppointment",
-      "deprecatedAndHidden": false,
-      "field": "ParentRecordId",
-      "junctionIdListNames": [],
-      "junctionReferenceTo": [],
-      "relationshipName": "ServiceAppointments",
-      "restrictedDelete": false
-    },
-    {
-      "cascadeDelete": false,
-      "childSObject": "ServiceAppointmentChangeEvent",
-      "deprecatedAndHidden": false,
-      "field": "ParentRecordId",
-      "junctionIdListNames": [],
-      "junctionReferenceTo": [],
-      "relationshipName": null,
       "restrictedDelete": false
     },
     {
@@ -1665,26 +1596,6 @@
     {
       "cascadeDelete": false,
       "childSObject": "WorkOrderLineItemChangeEvent",
-      "deprecatedAndHidden": false,
-      "field": "AssetId",
-      "junctionIdListNames": [],
-      "junctionReferenceTo": [],
-      "relationshipName": null,
-      "restrictedDelete": false
-    },
-    {
-      "cascadeDelete": false,
-      "childSObject": "WorkPlanSelectionRule",
-      "deprecatedAndHidden": false,
-      "field": "AssetId",
-      "junctionIdListNames": [],
-      "junctionReferenceTo": [],
-      "relationshipName": "WorkPlanSelectionRules",
-      "restrictedDelete": false
-    },
-    {
-      "cascadeDelete": false,
-      "childSObject": "WorkPlanSelectionRuleChangeEvent",
       "deprecatedAndHidden": false,
       "field": "AssetId",
       "junctionIdListNames": [],

@@ -277,7 +277,7 @@
       "restrictedDelete": false
     },
     {
-      "cascadeDelete": true,
+      "cascadeDelete": false,
       "childSObject": "AIRecordInsight",
       "deprecatedAndHidden": false,
       "field": "TargetId",
@@ -338,6 +338,16 @@
     },
     {
       "cascadeDelete": false,
+      "childSObject": "OpportunityLineItemChangeEvent",
+      "deprecatedAndHidden": false,
+      "field": "PricebookEntryId",
+      "junctionIdListNames": [],
+      "junctionReferenceTo": [],
+      "relationshipName": null,
+      "restrictedDelete": false
+    },
+    {
+      "cascadeDelete": false,
       "childSObject": "OrderItem",
       "deprecatedAndHidden": false,
       "field": "PricebookEntryId",
@@ -364,26 +374,6 @@
       "junctionIdListNames": [],
       "junctionReferenceTo": [],
       "relationshipName": "Histories",
-      "restrictedDelete": false
-    },
-    {
-      "cascadeDelete": false,
-      "childSObject": "ProductConsumed",
-      "deprecatedAndHidden": false,
-      "field": "PricebookEntryId",
-      "junctionIdListNames": [],
-      "junctionReferenceTo": [],
-      "relationshipName": "ProductsConsumed",
-      "restrictedDelete": true
-    },
-    {
-      "cascadeDelete": false,
-      "childSObject": "ProductConsumedChangeEvent",
-      "deprecatedAndHidden": false,
-      "field": "PricebookEntryId",
-      "junctionIdListNames": [],
-      "junctionReferenceTo": [],
-      "relationshipName": null,
       "restrictedDelete": false
     },
     {

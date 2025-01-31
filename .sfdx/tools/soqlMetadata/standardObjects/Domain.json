@@ -101,7 +101,7 @@
       "filterable": true,
       "groupable": true,
       "inlineHelpText": null,
-      "label": "Current HTTPS Option",
+      "label": "Current Domain Configuration Option",
       "name": "HttpsOption",
       "nillable": true,
       "picklistValues": [
@@ -153,6 +153,13 @@
           "label": "Salesforce Sites Domain",
           "validFor": null,
           "value": "SitesAlt"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Redirected Legacy Domain",
+          "validFor": null,
+          "value": "LegacyDomain"
         },
         {
           "active": true,

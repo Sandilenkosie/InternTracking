@@ -1,0 +1,1067 @@
+{
+  "fields": [
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Change Event ID",
+      "name": "Id",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "id"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Replay ID",
+      "name": "ReplayId",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "string"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Change Event Header",
+      "name": "ChangeEventHeader",
+      "nillable": false,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "complexvalue"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Owner ID",
+      "name": "OwnerId",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [
+        "User"
+      ],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "reference"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Messaging Session Name",
+      "name": "Name",
+      "nillable": false,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "string"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Created Date",
+      "name": "CreatedDate",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "datetime"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Created By ID",
+      "name": "CreatedById",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [
+        "User"
+      ],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "reference"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Last Modified Date",
+      "name": "LastModifiedDate",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "datetime"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Last Modified By ID",
+      "name": "LastModifiedById",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [
+        "User"
+      ],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "reference"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Messaging Channel ID",
+      "name": "MessagingChannelId",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [
+        "MessagingChannel"
+      ],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "reference"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Messaging User ID",
+      "name": "MessagingEndUserId",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [
+        "MessagingEndUser"
+      ],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "reference"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Status",
+      "name": "Status",
+      "nillable": true,
+      "picklistValues": [
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Active",
+          "validFor": null,
+          "value": "Active"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Ended",
+          "validFor": null,
+          "value": "Ended"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Waiting",
+          "validFor": null,
+          "value": "Waiting"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "New",
+          "validFor": null,
+          "value": "New"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Consent",
+          "validFor": null,
+          "value": "Consent"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Inactive",
+          "validFor": null,
+          "value": "Inactive"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Error",
+          "validFor": null,
+          "value": "Error"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Paused",
+          "validFor": null,
+          "value": "Paused"
+        }
+      ],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "picklist"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Case ID",
+      "name": "CaseId",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [
+        "Case"
+      ],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "reference"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Lead ID",
+      "name": "LeadId",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [
+        "Lead"
+      ],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "reference"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Opportunity ID",
+      "name": "OpportunityId",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [
+        "Opportunity"
+      ],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "reference"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Accept Time",
+      "name": "AcceptTime",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "datetime"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Start Time",
+      "name": "StartTime",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "datetime"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "End Time",
+      "name": "EndTime",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "datetime"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": "InboundInitiated",
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Origin",
+      "name": "Origin",
+      "nillable": true,
+      "picklistValues": [
+        {
+          "active": true,
+          "defaultValue": true,
+          "label": "Inbound Initiated",
+          "validFor": null,
+          "value": "InboundInitiated"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Triggered Outbound",
+          "validFor": null,
+          "value": "TriggeredOutbound"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Opt-Out Status Change",
+          "validFor": null,
+          "value": "OptOut"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Opt In Status Change",
+          "validFor": null,
+          "value": "OptIn"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Conversation Closed",
+          "validFor": null,
+          "value": "ConversationClose"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Agent Initiated",
+          "validFor": null,
+          "value": "AgentInitiated"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Help",
+          "validFor": null,
+          "value": "Help"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Conversation Control Transferred",
+          "validFor": null,
+          "value": "ConversationControlLost"
+        }
+      ],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "picklist"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": "Agent",
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Agent Type",
+      "name": "AgentType",
+      "nillable": true,
+      "picklistValues": [
+        {
+          "active": true,
+          "defaultValue": true,
+          "label": "Agent",
+          "validFor": null,
+          "value": "Agent"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Bot",
+          "validFor": null,
+          "value": "Bot"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Bot & Agent",
+          "validFor": null,
+          "value": "BotToAgent"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "System",
+          "validFor": null,
+          "value": "System"
+        }
+      ],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "picklist"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Session Key",
+      "name": "SessionKey",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "string"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "User ID",
+      "name": "TargetUserId",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [
+        "User"
+      ],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "reference"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Group",
+      "name": "ChannelGroup",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "string"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Intent",
+      "name": "ChannelIntent",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "string"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Locale",
+      "name": "ChannelLocale",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "string"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Messaging User Language",
+      "name": "EndUserLanguage",
+      "nillable": true,
+      "picklistValues": [
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "English",
+          "validFor": null,
+          "value": "en_US"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "German",
+          "validFor": null,
+          "value": "de"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Spanish",
+          "validFor": null,
+          "value": "es"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "French",
+          "validFor": null,
+          "value": "fr"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Italian",
+          "validFor": null,
+          "value": "it"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Japanese",
+          "validFor": null,
+          "value": "ja"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Swedish",
+          "validFor": null,
+          "value": "sv"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Korean",
+          "validFor": null,
+          "value": "ko"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Chinese (Traditional)",
+          "validFor": null,
+          "value": "zh_TW"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Chinese (Simplified)",
+          "validFor": null,
+          "value": "zh_CN"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Portuguese (Brazil)",
+          "validFor": null,
+          "value": "pt_BR"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Dutch",
+          "validFor": null,
+          "value": "nl_NL"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Danish",
+          "validFor": null,
+          "value": "da"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Thai",
+          "validFor": null,
+          "value": "th"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Finnish",
+          "validFor": null,
+          "value": "fi"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Russian",
+          "validFor": null,
+          "value": "ru"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Spanish (Mexico)",
+          "validFor": null,
+          "value": "es_MX"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Norwegian",
+          "validFor": null,
+          "value": "no"
+        }
+      ],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "picklist"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Conversation ID",
+      "name": "ConversationId",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [
+        "Conversation"
+      ],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "reference"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Account ID",
+      "name": "EndUserAccountId",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [
+        "Account"
+      ],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "reference"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Contact ID",
+      "name": "EndUserContactId",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [
+        "Contact"
+      ],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "reference"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Channel Type",
+      "name": "ChannelType",
+      "nillable": true,
+      "picklistValues": [
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Text",
+          "validFor": null,
+          "value": "Text"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Facebook",
+          "validFor": null,
+          "value": "Facebook"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Line",
+          "validFor": null,
+          "value": "Line"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Google Home",
+          "validFor": null,
+          "value": "GoogleHome"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Alexa",
+          "validFor": null,
+          "value": "Alexa"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Omega",
+          "validFor": null,
+          "value": "Omega"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Apple Messages for Business",
+          "validFor": null,
+          "value": "AppleBusinessChat"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "WeChat",
+          "validFor": null,
+          "value": "WeChat"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Chat",
+          "validFor": null,
+          "value": "WebChat"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "WhatsApp",
+          "validFor": null,
+          "value": "WhatsApp"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Phone",
+          "validFor": null,
+          "value": "Phone"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Embedded Messaging",
+          "validFor": null,
+          "value": "EmbeddedMessaging"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Voice",
+          "validFor": null,
+          "value": "Voice"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Custom",
+          "validFor": null,
+          "value": "Custom"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Internal Copilot",
+          "validFor": null,
+          "value": "InternalCopilot"
+        }
+      ],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "picklist"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Channel Name",
+      "name": "ChannelName",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "string"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Channel Key",
+      "name": "ChannelKey",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "string"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Preview Details",
+      "name": "PreviewDetails",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "string"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "End User Message Count",
+      "name": "EndUserMessageCount",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "int"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Agent Message Count",
+      "name": "AgentMessageCount",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "int"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Ended By Type",
+      "name": "EndedByType",
+      "nillable": true,
+      "picklistValues": [
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Agent",
+          "validFor": null,
+          "value": "Agent"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Bot",
+          "validFor": null,
+          "value": "Bot"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "End User",
+          "validFor": null,
+          "value": "EndUser"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "System",
+          "validFor": null,
+          "value": "System"
+        }
+      ],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "picklist"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Concatenated Messaging Channel and Messaging User",
+      "name": "ChannelEndUserFormula",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "string"
+    }
+  ],
+  "label": "Messaging Session Change Event",
+  "childRelationships": [],
+  "custom": false,
+  "name": "MessagingSessionChangeEvent",
+  "queryable": false
+}

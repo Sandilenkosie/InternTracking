@@ -70,10 +70,17 @@ global class Lead {
     global Datetime EmailBouncedDate;
     global Individual Individual;
     global Id IndividualId;
+    global Boolean IsPriorityRecord;
+    global String SICCode__c;
+    global String ProductInterest__c;
+    global String Primary__c;
+    global String CurrentGenerators__c;
+    global Double NumberofLocations__c;
     global List<AcceptedEventRelation> AcceptedEventRelations;
     global List<ActivityHistory> ActivityHistories;
     global List<AttachedContentDocument> AttachedContentDocuments;
     global List<Attachment> Attachments;
+    global List<AuthorizationFormConsent> AuthorizationFormConsents;
     global List<CampaignMember> CampaignMembers;
     global List<CollaborationGroupRecord> RecordAssociatedGroups;
     global List<CombinedAttachment> CombinedAttachments;
@@ -86,10 +93,12 @@ global class Lead {
     global List<EntitySubscription> FeedSubscriptionsForEntity;
     global List<Event> Events;
     global List<EventRelation> EventRelations;
+    global List<FlowOrchestrationWorkItem> FlowOrchestrationWorkItems;
     global List<LeadCleanInfo> LeadCleanInfos;
     global List<LeadFeed> Feeds;
     global List<LeadHistory> Histories;
     global List<LeadShare> Shares;
+    global List<ListEmail> ListEmails;
     global List<ListEmailIndividualRecipient> ListEmailIndividualRecipients;
     global List<MessagingEndUser> MessagingEndUsers;
     global List<MessagingSession> MessagingSessions;
@@ -101,26 +110,34 @@ global class Lead {
     global List<ProcessInstanceHistory> ProcessSteps;
     global List<RecordAction> RecordActions;
     global List<RecordActionHistory> RecordActionHistories;
-    global List<ServiceAppointment> ServiceAppointments;
     global List<Task> Tasks;
     global List<TopicAssignment> TopicAssignments;
     global List<UndecidedEventRelation> UndecidedEventRelations;
+    global List<UserDefinedLabelAssignment> UserDefinedLabelAssignments;
     global List<UserEmailPreferredPerson> PersonRecord;
     global List<AIInsightValue> SobjectLookupValue;
     global List<AIRecordInsight> Target;
+    global List<AuthorizationFormConsentChangeEvent> ConsentGiver;
     global List<CampaignMember> LeadOrContact;
     global List<CampaignMemberChangeEvent> Lead;
+    global List<CollaborationGroupRecordChangeEvent> Record;
     global List<ContentDistribution> RelatedRecord;
     global List<ContentDocumentLinkChangeEvent> LinkedEntity;
     global List<ContentVersion> FirstPublishLocation;
+    global List<EmailBounceEvent> BouncedObject;
+    global List<EmailMessage> From;
     global List<EventChangeEvent> Who;
     global List<EventRelationChangeEvent> Relation;
     global List<FeedComment> Parent;
     global List<FlowExecutionErrorEvent> ContextRecord;
-    global List<FlowOrchestrationWorkItem> RelatedRecord;
+    global List<FlowRecordRelation> RelatedRecord;
+    global List<ListEmailChangeEvent> RelatedTo;
+    global List<MessagingEndUserChangeEvent> Lead;
     global List<OutgoingEmail> Who;
-    global List<ServiceAppointmentChangeEvent> ParentRecord;
+    global List<ProcessInstanceChangeEvent> TargetObject;
     global List<TaskChangeEvent> Who;
+    global List<UserEmailPreferredPersonChangeEvent> PersonRecord;
+    global List<UserPrioritizedRecord> Target;
 
     global Lead () 
     {

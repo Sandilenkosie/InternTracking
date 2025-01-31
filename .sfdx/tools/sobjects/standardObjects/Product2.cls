@@ -20,7 +20,6 @@ global class Product2 {
     global Id LastModifiedById;
     global Datetime SystemModstamp;
     global String Family;
-    global Boolean IsSerialized;
     global ExternalDataSource ExternalDataSource;
     global Id ExternalDataSourceId;
     global String ExternalId;
@@ -42,7 +41,10 @@ global class Product2 {
     global List<EmailMessage> Emails;
     global List<EntitySubscription> FeedSubscriptionsForEntity;
     global List<Event> Events;
+    global List<FlowOrchestrationWorkItem> FlowOrchestrationWorkItems;
+    global List<IncidentRelatedItem> IncidentRelatedItems;
     global List<InvoiceLine> InvoiceLines;
+    global List<ListEmail> ListEmails;
     global List<Note> Notes;
     global List<NoteAndAttachment> NotesAndAttachments;
     global List<OpenActivity> OpenActivities;
@@ -51,23 +53,11 @@ global class Product2 {
     global List<ProcessInstanceHistory> ProcessSteps;
     global List<Product2Feed> Feeds;
     global List<Product2History> Histories;
-    global List<ProductConsumed> ProductsConsumed;
     global List<ProductConsumptionSchedule> ProductConsumptionSchedules;
-    global List<ProductItem> ProductItems;
-    global List<ProductRequestLineItem> ProductRequestLineItems;
-    global List<ProductRequired> ProductsRequired;
-    global List<ProductServiceCampaign> ProductServiceCampaignProducts;
-    global List<ProductServiceCampaignItem> ProductServiceCampaignItems;
-    global List<ProductTransfer> ProductTransfers;
-    global List<ProductWarrantyTerm> ProductWarrantyTermProducts;
     global List<RecordAction> RecordActions;
     global List<RecordActionHistory> RecordActionHistories;
-    global List<ReturnOrderLineItem> ReturnOrderLineItems;
-    global List<SerializedProduct> SerializedProducts;
-    global List<ShipmentItem> ShipmentItems;
     global List<Task> Tasks;
     global List<WorkOrderLineItem> WorkOrderLineItems;
-    global List<WorkPlanSelectionRule> WorkPlanSelectionRules;
     global List<AIInsightValue> SobjectLookupValue;
     global List<AIRecordInsight> Target;
     global List<AssetChangeEvent> Product2;
@@ -78,10 +68,14 @@ global class Product2 {
     global List<EventRelationChangeEvent> Relation;
     global List<FeedComment> Parent;
     global List<FlowExecutionErrorEvent> ContextRecord;
-    global List<FlowOrchestrationWorkItem> RelatedRecord;
+    global List<FlowRecordRelation> RelatedRecord;
+    global List<IncidentRelatedItemChangeEvent> Product2;
+    global List<ListEmailChangeEvent> RelatedTo;
     global List<OpportunityLineItem> Product2;
     global List<OutgoingEmail> RelatedTo;
     global List<PricebookEntryChangeEvent> Product2;
+    global List<ProcessInstanceChangeEvent> TargetObject;
+    global List<ProductEntitlementTemplate> Product2;
     global List<TaskChangeEvent> What;
     global List<WorkOrderLineItemChangeEvent> Product2;
 

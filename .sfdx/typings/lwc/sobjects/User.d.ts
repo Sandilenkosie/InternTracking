@@ -410,6 +410,14 @@ declare module "@salesforce/schema/User.UserPreferencesDisableSharePostEmail" {
   const UserPreferencesDisableSharePostEmail:boolean;
   export default UserPreferencesDisableSharePostEmail;
 }
+declare module "@salesforce/schema/User.UserPreferencesActionLauncherEinsteinGptConsent" {
+  const UserPreferencesActionLauncherEinsteinGptConsent:boolean;
+  export default UserPreferencesActionLauncherEinsteinGptConsent;
+}
+declare module "@salesforce/schema/User.UserPreferencesAssistiveActionsEnabledInActionLauncher" {
+  const UserPreferencesAssistiveActionsEnabledInActionLauncher:boolean;
+  export default UserPreferencesAssistiveActionsEnabledInActionLauncher;
+}
 declare module "@salesforce/schema/User.UserPreferencesEnableAutoSubForFeeds" {
   const UserPreferencesEnableAutoSubForFeeds:boolean;
   export default UserPreferencesEnableAutoSubForFeeds;
@@ -486,17 +494,13 @@ declare module "@salesforce/schema/User.UserPreferencesShowCountryToGuestUsers" 
   const UserPreferencesShowCountryToGuestUsers:boolean;
   export default UserPreferencesShowCountryToGuestUsers;
 }
-declare module "@salesforce/schema/User.UserPreferencesDisableFeedbackEmail" {
-  const UserPreferencesDisableFeedbackEmail:boolean;
-  export default UserPreferencesDisableFeedbackEmail;
-}
-declare module "@salesforce/schema/User.UserPreferencesDisableWorkEmail" {
-  const UserPreferencesDisableWorkEmail:boolean;
-  export default UserPreferencesDisableWorkEmail;
-}
 declare module "@salesforce/schema/User.UserPreferencesShowForecastingChangeSignals" {
   const UserPreferencesShowForecastingChangeSignals:boolean;
   export default UserPreferencesShowForecastingChangeSignals;
+}
+declare module "@salesforce/schema/User.UserPreferencesLiveAgentMiawSetupDeflection" {
+  const UserPreferencesLiveAgentMiawSetupDeflection:boolean;
+  export default UserPreferencesLiveAgentMiawSetupDeflection;
 }
 declare module "@salesforce/schema/User.UserPreferencesHideS1BrowserUI" {
   const UserPreferencesHideS1BrowserUI:boolean;
@@ -626,10 +630,6 @@ declare module "@salesforce/schema/User.UserPreferencesReverseOpenActivitiesView
   const UserPreferencesReverseOpenActivitiesView:boolean;
   export default UserPreferencesReverseOpenActivitiesView;
 }
-declare module "@salesforce/schema/User.UserPreferencesShowTerritoryTimeZoneShifts" {
-  const UserPreferencesShowTerritoryTimeZoneShifts:boolean;
-  export default UserPreferencesShowTerritoryTimeZoneShifts;
-}
 declare module "@salesforce/schema/User.UserPreferencesHasSentWarningEmail" {
   const UserPreferencesHasSentWarningEmail:boolean;
   export default UserPreferencesHasSentWarningEmail;
@@ -646,9 +646,9 @@ declare module "@salesforce/schema/User.UserPreferencesNativeEmailClient" {
   const UserPreferencesNativeEmailClient:boolean;
   export default UserPreferencesNativeEmailClient;
 }
-declare module "@salesforce/schema/User.UserPreferencesSendListEmailThroughExternalService" {
-  const UserPreferencesSendListEmailThroughExternalService:boolean;
-  export default UserPreferencesSendListEmailThroughExternalService;
+declare module "@salesforce/schema/User.UserPreferencesShowForecastingRoundedAmounts" {
+  const UserPreferencesShowForecastingRoundedAmounts:boolean;
+  export default UserPreferencesShowForecastingRoundedAmounts;
 }
 declare module "@salesforce/schema/User.Contact" {
   const Contact:any;
@@ -749,4 +749,16 @@ declare module "@salesforce/schema/User.Individual" {
 declare module "@salesforce/schema/User.IndividualId" {
   const IndividualId:any;
   export default IndividualId;
+}
+declare module "@salesforce/schema/User.inov8__PMT_Manager_Name__c" {
+  const inov8__PMT_Manager_Name__c:string;
+  export default inov8__PMT_Manager_Name__c;
+}
+declare module "@salesforce/schema/User.inov8__Is_PMT_User_consider_for_Availability__c" {
+  const inov8__Is_PMT_User_consider_for_Availability__c:boolean;
+  export default inov8__Is_PMT_User_consider_for_Availability__c;
+}
+declare module "@salesforce/schema/User.ID_Number__c" {
+  const ID_Number__c:string;
+  export default ID_Number__c;
 }

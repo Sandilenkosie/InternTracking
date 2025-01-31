@@ -70,6 +70,14 @@ declare module "@salesforce/schema/Case.Type" {
   const Type:string;
   export default Type;
 }
+declare module "@salesforce/schema/Case.RecordType" {
+  const RecordType:any;
+  export default RecordType;
+}
+declare module "@salesforce/schema/Case.RecordTypeId" {
+  const RecordTypeId:any;
+  export default RecordTypeId;
+}
 declare module "@salesforce/schema/Case.Status" {
   const Status:string;
   export default Status;
@@ -169,4 +177,36 @@ declare module "@salesforce/schema/Case.LastViewedDate" {
 declare module "@salesforce/schema/Case.LastReferencedDate" {
   const LastReferencedDate:any;
   export default LastReferencedDate;
+}
+declare module "@salesforce/schema/Case.EngineeringReqNumber__c" {
+  const EngineeringReqNumber__c:string;
+  export default EngineeringReqNumber__c;
+}
+declare module "@salesforce/schema/Case.SLAViolation__c" {
+  const SLAViolation__c:string;
+  export default SLAViolation__c;
+}
+declare module "@salesforce/schema/Case.Product__c" {
+  const Product__c:string;
+  export default Product__c;
+}
+declare module "@salesforce/schema/Case.PotentialLiability__c" {
+  const PotentialLiability__c:string;
+  export default PotentialLiability__c;
+}
+declare module "@salesforce/schema/Case.inov8__PMT_Days_Open__c" {
+  const inov8__PMT_Days_Open__c:number;
+  export default inov8__PMT_Days_Open__c;
+}
+declare module "@salesforce/schema/Case.inov8__PMT_Program__c" {
+  const inov8__PMT_Program__c:string;
+  export default inov8__PMT_Program__c;
+}
+declare module "@salesforce/schema/Case.inov8__PMT_Project__r" {
+  const inov8__PMT_Project__r:any;
+  export default inov8__PMT_Project__r;
+}
+declare module "@salesforce/schema/Case.inov8__PMT_Project__c" {
+  const inov8__PMT_Project__c:any;
+  export default inov8__PMT_Project__c;
 }

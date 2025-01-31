@@ -30,7 +30,6 @@ global class PricebookEntry {
     global List<OpportunityLineItem> OpportunityLineItems;
     global List<OrderItem> OrderItems;
     global List<PricebookEntryHistory> Histories;
-    global List<ProductConsumed> ProductsConsumed;
     global List<RecordAction> RecordActions;
     global List<RecordActionHistory> RecordActionHistories;
     global List<WorkOrderLineItem> WorkOrderLineItems;
@@ -39,7 +38,7 @@ global class PricebookEntry {
     global List<ContractLineItemChangeEvent> PricebookEntry;
     global List<FlowExecutionErrorEvent> ContextRecord;
     global List<FlowRecordRelation> RelatedRecord;
-    global List<OrderItemChangeEvent> PricebookEntry;
+    global List<OpportunityLineItemChangeEvent> PricebookEntry;
 
     global PricebookEntry () 
     {

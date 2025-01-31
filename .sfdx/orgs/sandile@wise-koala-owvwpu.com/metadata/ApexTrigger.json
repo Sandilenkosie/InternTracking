@@ -1,0 +1,85 @@
+{
+  "status": 0,
+  "result": [
+    {
+      "createdById": "005WU000006wMHeYAM",
+      "createdByName": "Sandile Nkosi",
+      "createdDate": "2025-01-21T13:15:25.000Z",
+      "fileName": "triggers/EnforceUniqueUserCertificate.trigger",
+      "fullName": "EnforceUniqueUserCertificate",
+      "id": "01qWU000001oSJtYAM",
+      "lastModifiedById": "005WU000006wMHeYAM",
+      "lastModifiedByName": "Sandile Nkosi",
+      "lastModifiedDate": "2025-01-21T13:20:29.000Z",
+      "manageableState": "unmanaged",
+      "type": "ApexTrigger"
+    },
+    {
+      "createdById": "005WU000006wMHeYAM",
+      "createdByName": "Sandile Nkosi",
+      "createdDate": "2024-10-23T23:41:13.000Z",
+      "fileName": "triggers/PMT_ResourceAllocationTrigger.trigger",
+      "fullName": "PMT_ResourceAllocationTrigger",
+      "id": "01qWU000000apFJYAY",
+      "lastModifiedById": "005WU000006wMHeYAM",
+      "lastModifiedByName": "Sandile Nkosi",
+      "lastModifiedDate": "2024-11-12T12:13:34.000Z",
+      "manageableState": "unmanaged",
+      "type": "ApexTrigger"
+    },
+    {
+      "createdById": "005WU000006wMHeYAM",
+      "createdByName": "Sandile Nkosi",
+      "createdDate": "2025-01-21T09:15:29.000Z",
+      "fileName": "triggers/EnforceUniqueUser.trigger",
+      "fullName": "EnforceUniqueUser",
+      "id": "01qWU000001oGx3YAE",
+      "lastModifiedById": "005WU000006wMHeYAM",
+      "lastModifiedByName": "Sandile Nkosi",
+      "lastModifiedDate": "2025-01-21T13:15:57.000Z",
+      "manageableState": "unmanaged",
+      "type": "ApexTrigger"
+    },
+    {
+      "createdById": "005WU000006wMHeYAM",
+      "createdByName": "Sandile Nkosi",
+      "createdDate": "2025-01-21T14:01:49.000Z",
+      "fileName": "triggers/EnforceUniqueUserIntern.trigger",
+      "fullName": "EnforceUniqueUserIntern",
+      "id": "01qWU000001oSTaYAM",
+      "lastModifiedById": "005WU000006wMHeYAM",
+      "lastModifiedByName": "Sandile Nkosi",
+      "lastModifiedDate": "2025-01-21T14:28:40.000Z",
+      "manageableState": "unmanaged",
+      "type": "ApexTrigger"
+    },
+    {
+      "createdById": "005WU000006wMHeYAM",
+      "createdByName": "Sandile Nkosi",
+      "createdDate": "2024-10-29T15:11:29.000Z",
+      "fileName": "triggers/inov8__PMT_ResourceAllocationTrigger.trigger",
+      "fullName": "inov8__PMT_ResourceAllocationTrigger",
+      "id": "01qWU000000e26LYAQ",
+      "lastModifiedById": "005WU000006wMHeYAM",
+      "lastModifiedByName": "Sandile Nkosi",
+      "lastModifiedDate": "2024-10-29T15:11:29.000Z",
+      "manageableState": "installed",
+      "namespacePrefix": "inov8",
+      "type": "ApexTrigger"
+    },
+    {
+      "createdById": "005WU000006wMHeYAM",
+      "createdByName": "Sandile Nkosi",
+      "createdDate": "2024-10-31T07:39:10.000Z",
+      "fileName": "triggers/trailheadapp__TrailmixAssignmentTrigger.trigger",
+      "fullName": "trailheadapp__TrailmixAssignmentTrigger",
+      "id": "01qWU000000fjNlYAI",
+      "lastModifiedById": "005WU000006wMHeYAM",
+      "lastModifiedByName": "Sandile Nkosi",
+      "lastModifiedDate": "2024-10-31T07:39:10.000Z",
+      "manageableState": "installed",
+      "namespacePrefix": "trailheadapp",
+      "type": "ApexTrigger"
+    }
+  ]
+}

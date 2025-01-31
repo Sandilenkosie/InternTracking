@@ -57,6 +57,11 @@ global class Opportunity {
     global Id LastAmountChangedHistoryId;
     global OpportunityHistory LastCloseDateChangedHistory;
     global Id LastCloseDateChangedHistoryId;
+    global String DeliveryInstallationStatus__c;
+    global String TrackingNumber__c;
+    global String OrderNumber__c;
+    global String CurrentGenerators__c;
+    global String MainCompetitors__c;
     global List<AccountPartner> AccountPartners;
     global List<ActivityHistory> ActivityHistories;
     global List<AttachedContentDocument> AttachedContentDocuments;
@@ -68,6 +73,8 @@ global class Opportunity {
     global List<EmailMessage> Emails;
     global List<EntitySubscription> FeedSubscriptionsForEntity;
     global List<Event> Events;
+    global List<FlowOrchestrationWorkItem> FlowOrchestrationWorkItems;
+    global List<ListEmail> ListEmails;
     global List<MessagingSession> MessagingSessions;
     global List<Note> Notes;
     global List<NoteAndAttachment> NotesAndAttachments;
@@ -79,19 +86,19 @@ global class Opportunity {
     global List<OpportunityHistory> OpportunityHistories;
     global List<OpportunityLineItem> OpportunityLineItems;
     global List<OpportunityPartner> OpportunityPartnersFrom;
+    global List<OpportunityRelatedDeleteLog> OpportunityRelatedDeleteLogs;
     global List<OpportunityShare> Shares;
     global List<Partner> Partners;
     global List<ProcessInstance> ProcessInstances;
     global List<ProcessInstanceHistory> ProcessSteps;
     global List<RecordAction> RecordActions;
     global List<RecordActionHistory> RecordActionHistories;
-    global List<ServiceAppointment> ServiceAppointments;
-    global List<Swarm> Swarms;
-    global List<SwarmMember> SwarmMembers;
     global List<Task> Tasks;
     global List<TopicAssignment> TopicAssignments;
+    global List<UserDefinedLabelAssignment> UserDefinedLabelAssignments;
     global List<AIInsightValue> SobjectLookupValue;
     global List<AIRecordInsight> Target;
+    global List<CollaborationGroupRecordChangeEvent> Record;
     global List<ContentDistribution> RelatedRecord;
     global List<ContentDocumentLinkChangeEvent> LinkedEntity;
     global List<ContentVersion> FirstPublishLocation;
@@ -100,12 +107,14 @@ global class Opportunity {
     global List<EventRelationChangeEvent> Relation;
     global List<FeedComment> Parent;
     global List<FlowExecutionErrorEvent> ContextRecord;
-    global List<FlowOrchestrationWorkItem> RelatedRecord;
+    global List<FlowRecordRelation> RelatedRecord;
     global List<Lead> ConvertedOpportunity;
-    global List<OpportunityContactRoleChangeEvent> Opportunity;
+    global List<ListEmailChangeEvent> RelatedTo;
+    global List<MessagingSessionChangeEvent> Opportunity;
     global List<OutgoingEmail> RelatedTo;
-    global List<ServiceAppointmentChangeEvent> ParentRecord;
+    global List<ProcessInstanceChangeEvent> TargetObject;
     global List<TaskChangeEvent> What;
+    global List<UserPrioritizedRecord> Target;
 
     global Opportunity () 
     {

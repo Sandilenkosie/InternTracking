@@ -256,30 +256,10 @@
       "restrictedDelete": false
     },
     {
-      "cascadeDelete": true,
+      "cascadeDelete": false,
       "childSObject": "AIRecordInsight",
       "deprecatedAndHidden": false,
       "field": "TargetId",
-      "junctionIdListNames": [],
-      "junctionReferenceTo": [],
-      "relationshipName": null,
-      "restrictedDelete": false
-    },
-    {
-      "cascadeDelete": false,
-      "childSObject": "AssetWarranty",
-      "deprecatedAndHidden": false,
-      "field": "Pricebook2Id",
-      "junctionIdListNames": [],
-      "junctionReferenceTo": [],
-      "relationshipName": "AssetWarrantyPricebooks",
-      "restrictedDelete": false
-    },
-    {
-      "cascadeDelete": false,
-      "childSObject": "AssetWarrantyChangeEvent",
-      "deprecatedAndHidden": false,
-      "field": "Pricebook2Id",
       "junctionIdListNames": [],
       "junctionReferenceTo": [],
       "relationshipName": null,
@@ -428,26 +408,6 @@
     {
       "cascadeDelete": false,
       "childSObject": "ServiceContractChangeEvent",
-      "deprecatedAndHidden": false,
-      "field": "Pricebook2Id",
-      "junctionIdListNames": [],
-      "junctionReferenceTo": [],
-      "relationshipName": null,
-      "restrictedDelete": false
-    },
-    {
-      "cascadeDelete": false,
-      "childSObject": "WarrantyTerm",
-      "deprecatedAndHidden": false,
-      "field": "Pricebook2Id",
-      "junctionIdListNames": [],
-      "junctionReferenceTo": [],
-      "relationshipName": "Pricebook2",
-      "restrictedDelete": false
-    },
-    {
-      "cascadeDelete": false,
-      "childSObject": "WarrantyTermChangeEvent",
       "deprecatedAndHidden": false,
       "field": "Pricebook2Id",
       "junctionIdListNames": [],

@@ -290,7 +290,7 @@
         {
           "active": true,
           "defaultValue": false,
-          "label": "NearAddress",
+          "label": "Near Address",
           "validFor": null,
           "value": "NearAddress"
         },
@@ -311,7 +311,7 @@
         {
           "active": true,
           "defaultValue": false,
-          "label": "ExtendedZip",
+          "label": "Extended Zip",
           "validFor": null,
           "value": "ExtendedZip"
         },
@@ -913,6 +913,25 @@
       "relationshipName": null,
       "sortable": true,
       "type": "datetime"
+    },
+    {
+      "aggregatable": true,
+      "custom": true,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": true,
+      "groupable": true,
+      "inlineHelpText": null,
+      "label": "Project",
+      "name": "Project__c",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [
+        "Project__c"
+      ],
+      "relationshipName": "Project__r",
+      "sortable": true,
+      "type": "reference"
     }
   ],
   "label": "Contract",
@@ -928,7 +947,7 @@
       "restrictedDelete": false
     },
     {
-      "cascadeDelete": true,
+      "cascadeDelete": false,
       "childSObject": "AIRecordInsight",
       "deprecatedAndHidden": false,
       "field": "TargetId",
@@ -945,6 +964,16 @@
       "junctionIdListNames": [],
       "junctionReferenceTo": [],
       "relationshipName": "ActivityHistories",
+      "restrictedDelete": false
+    },
+    {
+      "cascadeDelete": true,
+      "childSObject": "AppUsageAssignment",
+      "deprecatedAndHidden": false,
+      "field": "RecordId",
+      "junctionIdListNames": [],
+      "junctionReferenceTo": [],
+      "relationshipName": "AppUsageAssignments",
       "restrictedDelete": false
     },
     {
@@ -975,6 +1004,16 @@
       "junctionIdListNames": [],
       "junctionReferenceTo": [],
       "relationshipName": "RecordAssociatedGroups",
+      "restrictedDelete": false
+    },
+    {
+      "cascadeDelete": false,
+      "childSObject": "CollaborationGroupRecordChangeEvent",
+      "deprecatedAndHidden": false,
+      "field": "RecordId",
+      "junctionIdListNames": [],
+      "junctionReferenceTo": [],
+      "relationshipName": null,
       "restrictedDelete": false
     },
     {
@@ -1154,7 +1193,7 @@
       "field": "RelatedRecordId",
       "junctionIdListNames": [],
       "junctionReferenceTo": [],
-      "relationshipName": null,
+      "relationshipName": "FlowOrchestrationWorkItems",
       "restrictedDelete": false
     },
     {
@@ -1185,6 +1224,16 @@
       "junctionIdListNames": [],
       "junctionReferenceTo": [],
       "relationshipName": "NotesAndAttachments",
+      "restrictedDelete": false
+    },
+    {
+      "cascadeDelete": false,
+      "childSObject": "Onboarding__c",
+      "deprecatedAndHidden": false,
+      "field": "Contract__c",
+      "junctionIdListNames": [],
+      "junctionReferenceTo": [],
+      "relationshipName": "Onboardings__r",
       "restrictedDelete": false
     },
     {
@@ -1235,6 +1284,16 @@
       "junctionIdListNames": [],
       "junctionReferenceTo": [],
       "relationshipName": "ProcessInstances",
+      "restrictedDelete": false
+    },
+    {
+      "cascadeDelete": false,
+      "childSObject": "ProcessInstanceChangeEvent",
+      "deprecatedAndHidden": false,
+      "field": "TargetObjectId",
+      "junctionIdListNames": [],
+      "junctionReferenceTo": [],
+      "relationshipName": null,
       "restrictedDelete": false
     },
     {

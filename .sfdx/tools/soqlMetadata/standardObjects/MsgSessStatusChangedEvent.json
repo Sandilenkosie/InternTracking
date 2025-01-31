@@ -1,0 +1,414 @@
+{
+  "fields": [
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Replay Id",
+      "name": "ReplayId",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "string"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Created Date",
+      "name": "CreatedDate",
+      "nillable": false,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "datetime"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Created By ID",
+      "name": "CreatedById",
+      "nillable": false,
+      "picklistValues": [],
+      "referenceTo": [
+        "User"
+      ],
+      "relationshipName": "CreatedBy",
+      "sortable": false,
+      "type": "reference"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Event Uuid",
+      "name": "EventUuid",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "string"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Identifier of the session",
+      "name": "Session",
+      "nillable": false,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "string"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Conversation Identifier associated with the session",
+      "name": "Conversation",
+      "nillable": false,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "string"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Id of the session's channel",
+      "name": "Channel",
+      "nillable": false,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "string"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Id of the session's MessagingEndUser",
+      "name": "MessagingEndUser",
+      "nillable": false,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "string"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "The previous status of the session",
+      "name": "PreviousSessionStatus",
+      "nillable": true,
+      "picklistValues": [
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Active",
+          "validFor": null,
+          "value": "Active"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Ended",
+          "validFor": null,
+          "value": "Ended"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Waiting",
+          "validFor": null,
+          "value": "Waiting"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "New",
+          "validFor": null,
+          "value": "New"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Consent",
+          "validFor": null,
+          "value": "Consent"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Inactive",
+          "validFor": null,
+          "value": "Inactive"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Error",
+          "validFor": null,
+          "value": "Error"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Paused",
+          "validFor": null,
+          "value": "Paused"
+        }
+      ],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "picklist"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "The status of the session",
+      "name": "SessionStatus",
+      "nillable": false,
+      "picklistValues": [
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Active",
+          "validFor": null,
+          "value": "Active"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Ended",
+          "validFor": null,
+          "value": "Ended"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Waiting",
+          "validFor": null,
+          "value": "Waiting"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "New",
+          "validFor": null,
+          "value": "New"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Consent",
+          "validFor": null,
+          "value": "Consent"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Inactive",
+          "validFor": null,
+          "value": "Inactive"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Error",
+          "validFor": null,
+          "value": "Error"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Paused",
+          "validFor": null,
+          "value": "Paused"
+        }
+      ],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "picklist"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Time the session was started",
+      "name": "StartTime",
+      "nillable": false,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "datetime"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Time the session ended",
+      "name": "EndTime",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "datetime"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": "InboundInitiated",
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "How the session originated",
+      "name": "SessionOrigin",
+      "nillable": false,
+      "picklistValues": [
+        {
+          "active": true,
+          "defaultValue": true,
+          "label": "Inbound Initiated",
+          "validFor": null,
+          "value": "InboundInitiated"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Triggered Outbound",
+          "validFor": null,
+          "value": "TriggeredOutbound"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Opt-Out Status Change",
+          "validFor": null,
+          "value": "OptOut"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Opt In Status Change",
+          "validFor": null,
+          "value": "OptIn"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Conversation Closed",
+          "validFor": null,
+          "value": "ConversationClose"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Agent Initiated",
+          "validFor": null,
+          "value": "AgentInitiated"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Help",
+          "validFor": null,
+          "value": "Help"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Conversation Control Transferred",
+          "validFor": null,
+          "value": "ConversationControlLost"
+        }
+      ],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "picklist"
+    }
+  ],
+  "label": "Messaging Session Status Changed Event",
+  "childRelationships": [
+    {
+      "cascadeDelete": false,
+      "childSObject": "AsyncOperationEvent",
+      "deprecatedAndHidden": false,
+      "field": "SourceEvent",
+      "junctionIdListNames": [],
+      "junctionReferenceTo": [],
+      "relationshipName": null,
+      "restrictedDelete": false
+    }
+  ],
+  "custom": false,
+  "name": "MsgSessStatusChangedEvent",
+  "queryable": false
+}

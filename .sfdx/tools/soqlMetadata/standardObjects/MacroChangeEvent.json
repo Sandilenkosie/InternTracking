@@ -1,0 +1,1140 @@
+{
+  "fields": [
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Change Event ID",
+      "name": "Id",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "id"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Replay ID",
+      "name": "ReplayId",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "string"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Change Event Header",
+      "name": "ChangeEventHeader",
+      "nillable": false,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "complexvalue"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Owner ID",
+      "name": "OwnerId",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [
+        "User"
+      ],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "reference"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Macro Name",
+      "name": "Name",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "string"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Created Date",
+      "name": "CreatedDate",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "datetime"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Created By ID",
+      "name": "CreatedById",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [
+        "User"
+      ],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "reference"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Last Modified Date",
+      "name": "LastModifiedDate",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "datetime"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Last Modified By ID",
+      "name": "LastModifiedById",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [
+        "User"
+      ],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "reference"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": "richtextarea",
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Description",
+      "name": "Description",
+      "nillable": true,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "textarea"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": false,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Supports Classic",
+      "name": "IsAlohaSupported",
+      "nillable": false,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "boolean"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": false,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Supports Lightning",
+      "name": "IsLightningSupported",
+      "nillable": false,
+      "picklistValues": [],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "boolean"
+    },
+    {
+      "aggregatable": false,
+      "custom": false,
+      "defaultValue": null,
+      "extraTypeInfo": null,
+      "filterable": false,
+      "groupable": false,
+      "inlineHelpText": null,
+      "label": "Apply To",
+      "name": "StartingContext",
+      "nillable": true,
+      "picklistValues": [
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Account",
+          "validFor": null,
+          "value": "Account"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Alternative Payment Method",
+          "validFor": null,
+          "value": "AlternativePaymentMethod"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "API Anomaly Event Store",
+          "validFor": null,
+          "value": "ApiAnomalyEventStore"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Asset",
+          "validFor": null,
+          "value": "Asset"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Asset",
+          "validFor": null,
+          "value": "Asset__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Asset Relationship",
+          "validFor": null,
+          "value": "AssetRelationship"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Authorization Form",
+          "validFor": null,
+          "value": "AuthorizationForm"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Authorization Form Consent",
+          "validFor": null,
+          "value": "AuthorizationFormConsent"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Authorization Form Data Use",
+          "validFor": null,
+          "value": "AuthorizationFormDataUse"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Authorization Form Text",
+          "validFor": null,
+          "value": "AuthorizationFormText"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Badge",
+          "validFor": null,
+          "value": "trailheadapp__Badge__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Card Payment Method",
+          "validFor": null,
+          "value": "CardPaymentMethod"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Case",
+          "validFor": null,
+          "value": "Case"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Case Related Issue",
+          "validFor": null,
+          "value": "CaseRelatedIssue"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Certificate",
+          "validFor": null,
+          "value": "Certificate__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Certified",
+          "validFor": null,
+          "value": "Certified__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Change Request",
+          "validFor": null,
+          "value": "ChangeRequest"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Change Request Related Issue",
+          "validFor": null,
+          "value": "ChangeRequestRelatedIssue"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Change Request Related Item",
+          "validFor": null,
+          "value": "ChangeRequestRelatedItem"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Client",
+          "validFor": null,
+          "value": "Client__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Communication Subscription",
+          "validFor": null,
+          "value": "CommSubscription"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Communication Subscription Channel Type",
+          "validFor": null,
+          "value": "CommSubscriptionChannelType"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Communication Subscription Consent",
+          "validFor": null,
+          "value": "CommSubscriptionConsent"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Communication Subscription Timing",
+          "validFor": null,
+          "value": "CommSubscriptionTiming"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Consultant",
+          "validFor": null,
+          "value": "Consultant__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Consumption Schedule",
+          "validFor": null,
+          "value": "ConsumptionSchedule"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Contact",
+          "validFor": null,
+          "value": "Contact"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Contact Point Address",
+          "validFor": null,
+          "value": "ContactPointAddress"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Contact Point Email",
+          "validFor": null,
+          "value": "ContactPointEmail"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Contact Point Phone",
+          "validFor": null,
+          "value": "ContactPointPhone"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Contract",
+          "validFor": null,
+          "value": "Contract"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Contract Line Item",
+          "validFor": null,
+          "value": "ContractLineItem"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Credential Stuffing Event Store",
+          "validFor": null,
+          "value": "CredentialStuffingEventStore"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Credit Memo",
+          "validFor": null,
+          "value": "CreditMemo"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Credit Memo Invoice Application",
+          "validFor": null,
+          "value": "CreditMemoInvApplication"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Credit Memo Line",
+          "validFor": null,
+          "value": "CreditMemoLine"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Cunsultant",
+          "validFor": null,
+          "value": "Cunsultant__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Data Use Purpose",
+          "validFor": null,
+          "value": "DataUsePurpose"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Debug Log",
+          "validFor": null,
+          "value": "trailheadapp__Debug_Log__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Digital Wallet",
+          "validFor": null,
+          "value": "DigitalWallet"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Education",
+          "validFor": null,
+          "value": "Education__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Engagement Channel Type",
+          "validFor": null,
+          "value": "EngagementChannelType"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Event",
+          "validFor": null,
+          "value": "Event"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Exam Schedule",
+          "validFor": null,
+          "value": "Exam_Schedule__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Feed Item",
+          "validFor": null,
+          "value": "FeedItem"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Finance Balance Snapshot",
+          "validFor": null,
+          "value": "FinanceBalanceSnapshot"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Finance Transaction",
+          "validFor": null,
+          "value": "FinanceTransaction"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Group",
+          "validFor": null,
+          "value": "CollaborationGroup"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Image",
+          "validFor": null,
+          "value": "Image"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Incident",
+          "validFor": null,
+          "value": "Incident"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Incident Related Item",
+          "validFor": null,
+          "value": "IncidentRelatedItem"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Individual",
+          "validFor": null,
+          "value": "Individual"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Intern",
+          "validFor": null,
+          "value": "Intern__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Intern Journey",
+          "validFor": null,
+          "value": "Intern_Journey__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Interview",
+          "validFor": null,
+          "value": "Interview__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Invoice",
+          "validFor": null,
+          "value": "Invoice"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Invoice Line",
+          "validFor": null,
+          "value": "InvoiceLine"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Lead",
+          "validFor": null,
+          "value": "Lead"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Legal Entity",
+          "validFor": null,
+          "value": "LegalEntity"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Location",
+          "validFor": null,
+          "value": "Location"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Location Group",
+          "validFor": null,
+          "value": "LocationGroup"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Messaging Session",
+          "validFor": null,
+          "value": "MessagingSession"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Messaging User",
+          "validFor": null,
+          "value": "MessagingEndUser"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Module",
+          "validFor": null,
+          "value": "Module__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Object Milestone",
+          "validFor": null,
+          "value": "EntityMilestone"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Offer",
+          "validFor": null,
+          "value": "Offer__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Onboarding",
+          "validFor": null,
+          "value": "Onboarding__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Opportunity",
+          "validFor": null,
+          "value": "Opportunity"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Opportunity Contact Role",
+          "validFor": null,
+          "value": "OpportunityContactRole"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Order",
+          "validFor": null,
+          "value": "Order"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Party Consent",
+          "validFor": null,
+          "value": "PartyConsent"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Payment",
+          "validFor": null,
+          "value": "Payment"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Payment Authorization",
+          "validFor": null,
+          "value": "PaymentAuthorization"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Payment Authorization Adjustment",
+          "validFor": null,
+          "value": "PaymentAuthAdjustment"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Payment Gateway",
+          "validFor": null,
+          "value": "PaymentGateway"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Payment Gateway Log",
+          "validFor": null,
+          "value": "PaymentGatewayLog"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Payment Line Invoice",
+          "validFor": null,
+          "value": "PaymentLineInvoice"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Phase",
+          "validFor": null,
+          "value": "Phase__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "PMT Error Log",
+          "validFor": null,
+          "value": "inov8__PMT_Error_Log__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "PMT Error Log",
+          "validFor": null,
+          "value": "PMT_Error_Log__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "PMT Phase",
+          "validFor": null,
+          "value": "inov8__PMT_Phase__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "PMT Phase",
+          "validFor": null,
+          "value": "PMT_Phase__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "PMT Program",
+          "validFor": null,
+          "value": "inov8__PMT_Program__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "PMT Program",
+          "validFor": null,
+          "value": "PMT_Program__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "PMT Project",
+          "validFor": null,
+          "value": "inov8__PMT_Project__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "PMT Project",
+          "validFor": null,
+          "value": "PMT_Project__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "PMT Resource Allocation",
+          "validFor": null,
+          "value": "inov8__PMT_Resource_Allocation__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "PMT Resource Allocation",
+          "validFor": null,
+          "value": "PMT_Resource_Allocation__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "PMT Resource Availability",
+          "validFor": null,
+          "value": "inov8__PMT_Resource_Availability__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "PMT Resource Availability",
+          "validFor": null,
+          "value": "PMT_Resource_Availability__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "PMT Task",
+          "validFor": null,
+          "value": "inov8__PMT_Task__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "PMT Task",
+          "validFor": null,
+          "value": "PMT_Task__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Privacy RTBF Request",
+          "validFor": null,
+          "value": "PrivacyRTBFRequest"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Problem",
+          "validFor": null,
+          "value": "Problem"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Problem Related Item",
+          "validFor": null,
+          "value": "ProblemRelatedItem"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Process Exception",
+          "validFor": null,
+          "value": "ProcessException"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Product",
+          "validFor": null,
+          "value": "Product2"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Program",
+          "validFor": null,
+          "value": "Program__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Project",
+          "validFor": null,
+          "value": "Project__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Project Team",
+          "validFor": null,
+          "value": "Project_Team__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Quip Document from List View",
+          "validFor": null,
+          "value": "ContentDocumentListViewMapping"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Rebate Payout Snapshot",
+          "validFor": null,
+          "value": "RebatePayoutSnapshot"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Refund",
+          "validFor": null,
+          "value": "Refund"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Refund Line Payment",
+          "validFor": null,
+          "value": "RefundLinePayment"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Related Problem and Incident",
+          "validFor": null,
+          "value": "ProblemIncident"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Report Anomaly Event Store",
+          "validFor": null,
+          "value": "ReportAnomalyEventStore"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Review",
+          "validFor": null,
+          "value": "Review__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Service Contract",
+          "validFor": null,
+          "value": "ServiceContract"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Session Hijacking Event Store",
+          "validFor": null,
+          "value": "SessionHijackingEventStore"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Task",
+          "validFor": null,
+          "value": "Tasks__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Task",
+          "validFor": null,
+          "value": "Task"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Test",
+          "validFor": null,
+          "value": "Test__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Threat Detection Feedback",
+          "validFor": null,
+          "value": "ThreatDetectionFeedback"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Trail",
+          "validFor": null,
+          "value": "trailheadapp__Trail__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Trailhead User Data",
+          "validFor": null,
+          "value": "trailheadapp__Trailhead_User_Data__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Trailmix",
+          "validFor": null,
+          "value": "trailheadapp__Trailmix__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Trailmix Assignment",
+          "validFor": null,
+          "value": "trailheadapp__Trailmix_Assignment__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Training Program",
+          "validFor": null,
+          "value": "Training_Program__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "User",
+          "validFor": null,
+          "value": "User"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "User Badge",
+          "validFor": null,
+          "value": "trailheadapp__User_Badge__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "User Trailmix",
+          "validFor": null,
+          "value": "trailheadapp__User_Trailmix__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Web Cart Document",
+          "validFor": null,
+          "value": "WebCartDocument"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Work Order",
+          "validFor": null,
+          "value": "WorkOrder"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Work Order Line Item",
+          "validFor": null,
+          "value": "WorkOrderLineItem"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Work Plan",
+          "validFor": null,
+          "value": "WorkPlan"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Work Plan Template",
+          "validFor": null,
+          "value": "WorkPlanTemplate"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Work Plan Template Entry",
+          "validFor": null,
+          "value": "WorkPlanTemplateEntry"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Work Step",
+          "validFor": null,
+          "value": "WorkStep"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Work Step Template",
+          "validFor": null,
+          "value": "WorkStepTemplate"
+        }
+      ],
+      "referenceTo": [],
+      "relationshipName": null,
+      "sortable": false,
+      "type": "picklist"
+    }
+  ],
+  "label": "Macro Change Event",
+  "childRelationships": [],
+  "custom": false,
+  "name": "MacroChangeEvent",
+  "queryable": false
+}

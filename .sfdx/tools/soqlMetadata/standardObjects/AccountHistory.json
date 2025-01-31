@@ -153,6 +153,13 @@
         {
           "active": true,
           "defaultValue": false,
+          "label": "Active",
+          "validFor": null,
+          "value": "Active__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
           "label": "Annual Revenue",
           "validFor": null,
           "value": "AnnualRevenue"
@@ -240,6 +247,20 @@
           "label": "Created by lead convert",
           "validFor": null,
           "value": "accountCreatedFromLead"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Customer Priority",
+          "validFor": null,
+          "value": "CustomerPriority__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Custom Person Merged",
+          "validFor": null,
+          "value": "customPersonMerged"
         },
         {
           "active": true,
@@ -335,9 +356,9 @@
         {
           "active": true,
           "defaultValue": false,
-          "label": "Operating Hours",
+          "label": "Number of Locations",
           "validFor": null,
-          "value": "OperatingHours"
+          "value": "NumberofLocations__c"
         },
         {
           "active": true,
@@ -475,6 +496,27 @@
         {
           "active": true,
           "defaultValue": false,
+          "label": "SLA",
+          "validFor": null,
+          "value": "SLA__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "SLA Expiration Date",
+          "validFor": null,
+          "value": "SLAExpirationDate__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "SLA Serial Number",
+          "validFor": null,
+          "value": "SLASerialNumber__c"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
           "label": "Ticker Symbol",
           "validFor": null,
           "value": "TickerSymbol"
@@ -492,6 +534,13 @@
           "label": "Type",
           "validFor": null,
           "value": "Type"
+        },
+        {
+          "active": true,
+          "defaultValue": false,
+          "label": "Upsell Opportunity",
+          "validFor": null,
+          "value": "UpsellOpportunity__c"
         },
         {
           "active": true,

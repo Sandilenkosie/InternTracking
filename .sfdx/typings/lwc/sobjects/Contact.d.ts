@@ -262,3 +262,19 @@ declare module "@salesforce/schema/Contact.IndividualId" {
   const IndividualId:any;
   export default IndividualId;
 }
+declare module "@salesforce/schema/Contact.IsPriorityRecord" {
+  const IsPriorityRecord:boolean;
+  export default IsPriorityRecord;
+}
+declare module "@salesforce/schema/Contact.ContactSource" {
+  const ContactSource:string;
+  export default ContactSource;
+}
+declare module "@salesforce/schema/Contact.Level__c" {
+  const Level__c:string;
+  export default Level__c;
+}
+declare module "@salesforce/schema/Contact.Languages__c" {
+  const Languages__c:string;
+  export default Languages__c;
+}

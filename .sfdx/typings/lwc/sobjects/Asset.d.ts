@@ -134,14 +134,6 @@ declare module "@salesforce/schema/Asset.OwnerId" {
   const OwnerId:any;
   export default OwnerId;
 }
-declare module "@salesforce/schema/Asset.Location" {
-  const Location:any;
-  export default Location;
-}
-declare module "@salesforce/schema/Asset.LocationId" {
-  const LocationId:any;
-  export default LocationId;
-}
 declare module "@salesforce/schema/Asset.AssetProvidedBy" {
   const AssetProvidedBy:any;
   export default AssetProvidedBy;

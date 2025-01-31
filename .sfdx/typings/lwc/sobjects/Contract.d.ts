@@ -186,3 +186,11 @@ declare module "@salesforce/schema/Contract.LastReferencedDate" {
   const LastReferencedDate:any;
   export default LastReferencedDate;
 }
+declare module "@salesforce/schema/Contract.Project__r" {
+  const Project__r:any;
+  export default Project__r;
+}
+declare module "@salesforce/schema/Contract.Project__c" {
+  const Project__c:any;
+  export default Project__c;
+}
