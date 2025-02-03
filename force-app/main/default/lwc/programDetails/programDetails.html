@@ -146,11 +146,11 @@
                           <a href="#" role="option" class="slds-split-view__list-item-action slds-grow slds-has-flexi-truncate" tabindex="0">
                             <div class="slds-grid slds-wrap">
                               <span class="slds-truncate slds-text-body_regular slds-text-color_default" title={onboarding.Name}>{onboarding.Name}</span>
-                              <span class="slds-truncate slds-col_bump-left" title="Received Date">Received Date</span>
+                              <span class="slds-truncate slds-col_bump-left" title="Received Date">Assigned To</span>
                             </div>
                             <div class="slds-grid slds-wrap">
                               <span class="slds-truncate" title=""></span>
-                              <span class="slds-truncate slds-col_bump-left" title={onboarding.Received_Date__c}>{onboarding.Received_Date__c}</span>
+                              <span class="slds-truncate slds-col_bump-left" title={onboarding.Received_Date__c}>{onboarding.Assigned_To__r.Name}</span>
                             </div>
                           </a>
                         </li>
@@ -349,16 +349,135 @@
                               <div class="slds-form__item" role="listitem">
                                 <div class="slds-form-element slds-form-element_stacked ">
                                   <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
-                                    <lightning-input label="Checklist" name="Checklist__c" value={onboarding.Checklist__c} data-id={onboarding.Id} onchange={handleObjectChanges} ></lightning-input>
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="slds-form__item" role="listitem">
-                                  <div class="slds-form-element slds-form-element_stacked ">
-                                    <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
-                                      <lightning-input label="Received Date" type="date" name="Received_Date__c" value={onboarding.Received_Date__c} data-id={onboarding.Id} onchange={handleObjectChanges} ></lightning-input>
+                                    <div class="slds-form-element">
+                                      <div class="slds-form-element__control">
+                                        <div class="slds-combobox_container">
+                                          <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
+                                            <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                              <template if:false={_isshow}>
+                                                <template if:false={onboarding.selectedUser}>
+                                                  <lightning-input
+                                                      label="Intern"
+                                                      type="search"
+                                                      placeholder="Search Interns..."
+                                                      onchange={handleIntern}
+                                                      onfocus={handleInternFocus}
+                                                      value={internKey}>
+                                                    </lightning-input>
+                                                  </template>
+
+                                                  <template if:true={onboarding.selectedUser}>
+                                                      <div class="slds-form-element">
+                                                          <label class="slds-form-element__label" for="combobox-id-5">Intern</label>
+                                                          <div class="slds-form-element__control">
+                                                              <div class="slds-combobox_container slds-has-selection">
+                                                                  <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                                                                      <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right" role="none">
+                                                                          <span class="slds-icon_container slds-icon-standard-account slds-combobox__input-entity-icon" title="Intern">
+                                                                              <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                                          </span>
+                                                                          <div role="combobox" tabindex="0" class="slds-input_faux slds-combobox__input slds-combobox__input-value" aria-labelledby="combobox-label-id-68" aria-controls="listbox-id-5" aria-expanded="false" aria-haspopup="listbox">
+                                                                              <span class="slds-truncate">{onboarding.Assigned_To__r.Name}</span>
+                                                                          </div>
+                                                                          <!-- Remove Button -->
+                                                                          <button 
+                                                                              class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" 
+                                                                              data-id={onboarding.Assigned_To__c} 
+                                                                              onclick={removeSelectedIntern} 
+                                                                              title="Remove"
+                                                                          >
+                                                                              <lightning-icon 
+                                                                                  icon-name="utility:close" 
+                                                                                  size="x-small" 
+                                                                                  alternative-text="Remove">
+                                                                              </lightning-icon>
+                                                                          </button>
+                                                                      </div>
+                                                                  </div>
+                                                              </div>
+                                                          </div>
+                                                      </div>
+                                                </template>
+                                              </template>
+                                            </div>
+                                              <template if:true={isfocus}>
+                                                  <template if:true={internResults}>
+                                                      <div class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
+                                                          <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                          <template if:true={internKey}>
+                                                            <li role="presentation" class="slds-listbox__item">
+                                                              <div aria-selected="true" id="option0" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_term slds-has-focus" role="option">
+                                                                <span class="slds-media__figure slds-listbox__option-icon">
+                                                                  <span class="slds-icon_container slds-icon-utility-search" title="Search for term: ">
+                                                                      <lightning-icon icon-name="utility:search" size="x-small" class="slds-icon slds-icon_x-small slds-icon-text-default"></lightning-icon>
+                                                                  </span>
+                                                                </span>
+                                                                <span class="slds-media__body">
+                                                                  <span class="slds-listbox__option-text slds-listbox__option-text_entity">{_searchKey}</span>
+                                                                </span>
+                                                              </div>
+                                                            </li>
+                                                          </template>
+                                                            <template for:each={internResults} for:item="intern">
+                                                                  <li key={intern.User__c} onclick={selectIntern} data-id={intern.User__c} role="presentation" class="slds-listbox__item">
+                                                                      <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
+                                                                      <span class="slds-media__figure slds-listbox__option-icon">
+                                                                          <span class="slds-icon_container slds-icon-standard-account">
+                                                                              <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                                          </span>
+                                                                      </span>
+                                                                      <span class="slds-media__body">
+                                                                          <span class="slds-listbox__option-text slds-listbox__option-text_entity">{intern.User__r.Name}</span>
+                                                                          <!-- <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">Profile • {user.Profile.Name}</span> -->
+                                                                      </span>
+                                                                      </div>
+                                                                  </li>
+                                                              </template>
+                                                          </ul>
+                                                      </div>
+                                                  </template>
+                                              </template>
+                  
+                                              <template if:true={_isshow}>
+                                                  <template if:true={selectedIntern}>
+                                                      <div class="slds-form-element">
+                                                          <label class="slds-form-element__label" for="combobox-id-5">Intern</label>
+                                                          <div class="slds-form-element__control">
+                                                              <div class="slds-combobox_container slds-has-selection">
+                                                                  <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                                                                      <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right" role="none">
+                                                                          <span class="slds-icon_container slds-icon-standard-account slds-combobox__input-entity-icon" title="Intern">
+                                                                              <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                                          </span>
+                                                                          <div role="combobox" tabindex="0" class="slds-input_faux slds-combobox__input slds-combobox__input-value" aria-labelledby="combobox-label-id-68" aria-controls="listbox-id-5" aria-expanded="false" aria-haspopup="listbox">
+                                                                              <span class="slds-truncate">{selectedIntern.User__r.Name}</span>
+                                                                          </div>
+                                                                          <!-- Remove Button -->
+                                                                          <button 
+                                                                              class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" 
+                                                                              data-id={selectedIntern.User__c} 
+                                                                              onclick={removeSelectedIntern} 
+                                                                              title="Remove"
+                                                                          >
+                                                                              <lightning-icon 
+                                                                                  icon-name="utility:close" 
+                                                                                  size="x-small" 
+                                                                                  alternative-text="Remove">
+                                                                              </lightning-icon>
+                                                                          </button>
+                                                                      </div>
+                                                                  </div>
+                                                              </div>
+                                                          </div>
+                                                      </div>
+                                                  </template>
+                                              </template>
+                                          </div>
+                                        </div>
+                                      </div>
                                     </div>
                                   </div>
+                                </div>
                               </div>
                             </template>
                           </template>
@@ -441,7 +560,7 @@
                                                           <ul class="slds-listbox slds-listbox_vertical" role="presentation">
                                                           <template if:true={_searchKey}>
                                                             <li role="presentation" class="slds-listbox__item">
-                                                              <div aria-selected="true" id="option0" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_term slds-has-focus" role="option">
+                                                              <div aria-selected="true" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_term slds-has-focus" role="option">
                                                                 <span class="slds-media__figure slds-listbox__option-icon">
                                                                   <span class="slds-icon_container slds-icon-utility-search" title="Search for term: ">
                                                                       <lightning-icon icon-name="utility:search" size="x-small" class="slds-icon slds-icon_x-small slds-icon-text-default"></lightning-icon>
@@ -758,16 +877,16 @@
                                                 placeholder="Search Interns..."
                                                 onchange={handleIntern}
                                                 onfocus={handleInternFocus}
-                                                value={searchKey}
+                                                value={internKey}
                                             ></lightning-input>
                                         </div>
                                         
                                         <!-- Search Results Dropdown -->
                                         <template if:true={isfocus}>
-                                            <template if:true={searchResults}>
+                                            <template if:true={internResults}>
                                                 <div id="listbox-id-4" class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
                                                     <ul class="slds-listbox slds-listbox_vertical" role="presentation">
-                                                      <template if:true={searchKey}>
+                                                      <template if:true={internKey}>
                                                         <li role="presentation" class="slds-listbox__item">
                                                           <div aria-selected="true" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_term slds-has-focus" role="option">
                                                             <span class="slds-media__figure slds-listbox__option-icon">
@@ -776,13 +895,13 @@
                                                               </span>
                                                             </span>
                                                             <span class="slds-media__body">
-                                                              <span class="slds-listbox__option-text slds-listbox__option-text_entity">{searchKey}</span>
+                                                              <span class="slds-listbox__option-text slds-listbox__option-text_entity">{internKey}</span>
                                                             </span>
                                                           </div>
                                                         </li>
                                                       </template>
-                                                        <template for:each={searchResults} for:item="intern">
-                                                            <li key={intern.Id} onclick={selectIntern} data-id={intern.Id} role="presentation" class="slds-listbox__item">
+                                                        <template for:each={internResults} for:item="intern">
+                                                            <li key={intern.User__c} onclick={selectIntern} data-id={intern.User__c} role="presentation" class="slds-listbox__item">
                                                                 <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
                                                                     <span class="slds-media__figure slds-listbox__option-icon">
                                                                         <span class="slds-icon_container slds-icon-standard-account">
@@ -802,33 +921,35 @@
                                     </div>
                                     </div>
                                 </div>
-                                <template if:true={assignedToId}>
-                                  <template if:true={selectedInterns}>
-                                      <div class="slds-listbox_selection-group">
-                                          <ul class="slds-listbox slds-listbox_horizontal" aria-label="Selected Options:">
-                                              <template for:each={selectedInterns} for:item="intern">
-                                                  <li key={intern.User__c} class="slds-listbox-item">
-                                                      <span class="slds-pill">
-                                                          <span class="slds-icon_container slds-icon-standard-account slds-pill__icon_container" title="Account">
-                                                              <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                <template if:false={isfocus}>
+                                  <template if:true={assignedToId}>
+                                      <template if:true={selectedInterns}>
+                                          <div class="slds-listbox_selection-group">
+                                              <ul class="slds-listbox slds-listbox_horizontal" aria-label="Selected Options:">
+                                                  <template for:each={selectedInterns} for:item="intern">
+                                                      <li key={intern.User__c} class="slds-listbox-item">
+                                                          <span class="slds-pill">
+                                                              <span class="slds-icon_container slds-icon-standard-account slds-pill__icon_container" title="Account">
+                                                                  <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                              </span>
+                                                              <span class="slds-pill__label" title="Dickenson plc">{intern.User__r.Name}</span>
+                                                          <span class="slds-icon_container slds-pill__remove" title="Remove">
+                                                              <button 
+                                                                  class="slds-button slds-button_icon slds-button_icon slds-pill__remove" 
+                                                                  onclick={removeSelectedIntern}
+                                                                  data-id={intern.User__c}        
+                                                                  title="Remove">
+                                                                  <lightning-icon icon-name="utility:close" size="x-small" alternative-text="Remove"></lightning-icon>
+                                                              </button>
                                                           </span>
-                                                          <span class="slds-pill__label" title="Dickenson plc">{intern.Name}</span>
-                                                      <span class="slds-icon_container slds-pill__remove" title="Remove">
-                                                          <button 
-                                                              class="slds-button slds-button_icon slds-button_icon slds-pill__remove" 
-                                                              onclick={removeSelectedIntern}
-                                                              data-id={intern.User__c}        
-                                                              title="Remove">
-                                                              <lightning-icon icon-name="utility:close" size="x-small" alternative-text="Remove"></lightning-icon>
-                                                          </button>
-                                                      </span>
-                                                      </span>
-                                                  </li>
-                                              </template>
-                                          </ul>
-                                      </div>
+                                                          </span>
+                                                      </li>
+                                                  </template>
+                                              </ul>
+                                          </div>
+                                      </template>
                                   </template>
-                              </template>
+                                </template>
                             </div>
                         </div>
                         </div>
@@ -1081,7 +1202,7 @@
                                                                   </span>
                                                                   <span class="slds-media__body">
                                                                       <span class="slds-listbox__option-text slds-listbox__option-text_entity">{user.Name}</span>
-                                                                      <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">Profile • {user.Profile.Name}</span>
+                                                                      <!-- <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">Profile • {user.Profile.Name}</span> -->
                                                                   </span>
                                                                   </div>
                                                               </li>
@@ -1110,8 +1231,7 @@
                                                                           class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" 
                                                                           data-id={selectedUser.Id} 
                                                                           onclick={_removeSelected} 
-                                                                          title="Remove"
-                                                                      >
+                                                                          title="Remove">
                                                                           <lightning-icon 
                                                                               icon-name="utility:close" 
                                                                               size="x-small" 

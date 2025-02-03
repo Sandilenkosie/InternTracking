@@ -1,4 +1,6 @@
 import { LightningElement, api, track, wire } from 'lwc';
+import { NavigationMixin } from 'lightning/navigation';
+import { CurrentPageReference } from 'lightning/navigation';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getProgramDetails from '@salesforce/apex/ProgramController.getProgramDetails';
 import createCertificates from '@salesforce/apex/ProgramController.createCertificates';
@@ -6,9 +8,10 @@ import updateProgram from '@salesforce/apex/ProgramController.updateProgram';
 import createAssets from '@salesforce/apex/ProgramController.createAssets';
 import createOnboardings from '@salesforce/apex/ProgramController.createOnboardings';
 import createInterns from '@salesforce/apex/ProgramController.createInterns';
+import { getRecordNotifyChange } from 'lightning/uiRecordApi';
 
 
-export default class ProgramDetails extends LightningElement {
+export default class ProgramDetails extends NavigationMixin(LightningElement) {
     @api recordId;
     @track currentStep = 1;
     @track program = {}; 
@@ -246,7 +249,8 @@ export default class ProgramDetails extends LightningElement {
         this.onboardings = this.onboardings.map(onboarding => {
             return {
                 ...onboarding,
-                isSelected: onboarding.Id === rowId
+                isSelected: onboarding.Id === rowId,
+                selectedUser: onboarding.Id === rowId,
             };
         });
         this.interns = this.interns.map(intern => {
@@ -337,12 +341,6 @@ export default class ProgramDetails extends LightningElement {
         this.tempCertificates= [...this.tempCertificates, newRow];
     }
 
-    // Add a new onboarding row dynamically
-    // addOnboarding() {
-    //     const newRow = { id: Date.now(), Name: '', Authority_By__c: '' };
-    //     this.tempOnboardings = [...this.tempOnboardings, newRow];
-    // }
-
     addAsset() {
         const newAsset = {
             id: Date.now(),
@@ -389,174 +387,171 @@ export default class ProgramDetails extends LightningElement {
     @track assignedToId = '';
 
     handleIntern(event) {
-        this.searchKey = event.target.value.toLowerCase();
-        console.log('Search Key:', this.searchKey);
-        if (this.searchKey) {
-            this.searchResults = this.program.Interns__r.filter(intern => {
+        this.internKey = event.target.value.toLowerCase();
+        console.log('Search Key:', this.internKey);
+        if (this.internKey) {
+            this.internResults = this.program.Interns__r.filter(intern => {
                 // Check if intern.User__r and Name are defined and contain searchKey
                 const nameMatches = intern.Name && 
-                intern.User__r.Name.toLowerCase().includes(this.searchKey );
+                intern.User__r.Name.toLowerCase().includes(this.internKey );
     
                 console.log('Name Match:', intern.User__r.Name, nameMatches); // Debugging to check the filter logic
     
                 return nameMatches;
             });
     
-            console.log('Filtered Results:', this.searchResults); // Debugging: Check the filtered results
+            console.log('Filtered Results:', this.internResults); // Debugging: Check the filtered results
         } else {
-            this.searchResults = [...this.program.Interns__r];;
+            this.internResults = [];;
         }
     }
 
     handleInternFocus() {
-        this.searchResults = [...this.program.Interns__r];
+        this.internResults = [...this.program.Interns__r];
         this.isfocus = true;
     }
 
     selectIntern(event) {
         this.assignedToId = event.target.closest('li').dataset.id;
-       const selectedIntern = this.program.Interns__r.find(intern => intern.Id === this.assignedToId);
+        console.log('assignedToId: ', this.assignedToId);
+       const selectedIntern = this.program.Interns__r.find(intern => intern.User__c === this.assignedToId);
 
-       console.log(selectedUser);
 
-       if (selectedIntern && !this.selectedInterns.some(intern => intern.Id === this.assignedToId)) {
+       if (selectedIntern && !this.selectedInterns.some(intern => intern.User__c === this.assignedToId)) {
            this.selectedInterns = [...this.selectedInterns, selectedIntern];
        }
 
-       this.searchKey = '';
-       this.searchResults = [];
+       this.internKey = '';
+       this.internResults = [];
        this.isfocus = false;
    }
 
    removeSelectedIntern(event) {
        this.assignedToId = event.target.closest('button').dataset.id;
-       this.selectedInterns = this.selectedInterns.filter(intern => intern.Id !== this.assignedToId);
+       this.selectedInterns = this.selectedInterns.filter(intern => intern.User__c !== this.assignedToId);
    }
 
-   handleSubmit() {
-    this.isLoading = true;
+    handleSubmit() {
+        this.isLoading = true;
 
-    // Correcting variable names
-    // const onboardingName = this.template.querySelector('[data-value="Name"]').value;
-    // const type = this.template.querySelector('[data-value="Type__c"]').value;
-    this.certificates = [...this.certificates, ...this.tempCertificates];
-    this.assets = [...this.assets, ...this.tempAssets];
-    this.interns = [...this.interns, ...this.tempInterns];
+        // Prepare data for each category
+        this.certificates = [...this.certificates, ...this.tempCertificates];
+        this.assets = [...this.assets, ...this.tempAssets];
+        this.interns = [...this.interns, ...this.tempInterns];
 
-    const assignedTo = this.selectedInterns.map((intern) => intern.Id);
+        const assignedTo = this.selectedInterns.map(intern => intern.User__c);
 
-    const programData = {
-        Name: this.program.Name,
-        Program_Type__c: this.program.Program_Type__c,
-        Department__c: this.program.Department__c,
-        Start_Date__c: this.program.Start_Date__c,
-        End_Date__c: this.program.End_Date__c
-    };
+        const programData = {
+            Name: this.program.Name,
+            Program_Type__c: this.program.Program_Type__c,
+            Department__c: this.program.Department__c,
+            Start_Date__c: this.program.Start_Date__c,
+            End_Date__c: this.program.End_Date__c
+        };
 
-    const certificatesData = this.certificates.map((cert) => ({
-        Id: cert.Id || null,
-        Name: cert.Name,
-        Authority_By__c: cert.Authority_By__c,
-    }));
+        const certificatesData = this.certificates.map(cert => ({
+            Id: cert.Id || null,
+            Name: cert.Name,
+            Authority_By__c: cert.Authority_By__c,
+        }));
 
-    // Format the onboardings
-    const onboardingData = {
-        Id: this.onboarding.Id || null,
-        Name: this.onboarding.Name,
-        Type__c: this.onboarding.Type__c,
-    };
+        // Format the onboardings
+        const onboardingData = {
+            Id: this.onboarding.Id || null,
+            Name: this.onboarding.Name,
+            Type__c: this.onboarding.Type__c,
+        };
 
-    // Format the assets
-    const assetsData = this.assets.map((asset) => ({
-        Id: asset.Id || null,
-        Name: asset.Name,
-        Assigned_Date__c: asset.Assigned_Date__c,
-        Condition_After__c: asset.Condition_After__c,
-        Condition_Before__c: asset.Condition_Before__c,
-        Contact__c: asset.Contact__c || this.selectContact.Id,
-        Returned_Date__c: asset.Returned_Date__c,
-        Serial_Number__c: asset.Serial_Number__c,
-        Status__c: asset.Status__c,
-    }));
+        // Format the assets
+        const assetsData = this.assets.map(asset => ({
+            Id: asset.Id || null,
+            Name: asset.Name,
+            Assigned_Date__c: asset.Assigned_Date__c,
+            Condition_After__c: asset.Condition_After__c,
+            Condition_Before__c: asset.Condition_Before__c,
+            Contact__c: asset.Contact__c || this.selectContact.Id,
+            Returned_Date__c: asset.Returned_Date__c,
+            Serial_Number__c: asset.Serial_Number__c,
+            Status__c: asset.Status__c,
+        }));
 
-    // Format the interns
-    const internsData = this.interns.map((intern) => ({
-        Id: intern.Id || null,
-        User__c: intern.User__c || this.selectedUser.Id,
-        Training_Program__c: intern.Training_Program__c || this.selectedTraining.Id,
-    }));
+        // Format the interns
+        const internsData = this.interns.map(intern => ({
+            Id: intern.Id || null,
+            User__c: intern.User__c || this.selectedUser.Id,
+            Training_Program__c: intern.Training_Program__c || this.selectedTraining.Id,
+        }));
 
-    console.log('Formatted program:', JSON.stringify(programData));
-    console.log('Formatted certificates:', JSON.stringify(certificatesData));
-    console.log('Formatted onboarding:', JSON.stringify(onboardingData));
-    console.log('Formatted assets:', JSON.stringify(assetsData));
 
-    if (this.selectedCategory === 'Certificates') {
-        updateProgram({program: programData})
+        // Handle Program Update
+        updateProgram({ program: programData })
             .then(() => {
-                this.showToast('Success', 'Records updated successfully!', 'success');
+                this.showToast('Success', 'Program updated successfully!', 'success');
+                this.refreshPage();
                 this.closeModel();
                 this._editingStop();
                 this.isLoading = false;
             })
             .catch((error) => {
-                console.error('Error:', JSON.stringify(error));
+                console.error('Error updating program:', error);
                 this.isLoading = false;
             });
-    }
 
-    // Handle Certificates
-    if (this.selectedCategory === 'Certificates') {
-        createCertificates({ certificates: certificatesData, programId: this.recordId })
+        // Handle Certificates
+        if (this.selectedCategory === 'Certificates') {
+            createCertificates({ certificates: certificatesData, programId: this.recordId })
             .then(() => {
-                this.showToast('Success', 'Records created/updated successfully!', 'success');
+                this.refreshPage();
+                this.showToast('Success', 'Certificates created/updated successfully!', 'success');
                 this.closeModel();
                 this._editingStop();
                 this.isLoading = false;
             })
             .catch((error) => {
-                console.error('Error:', JSON.stringify(error));
+                console.error('Error creating certificates:', error);
                 this.isLoading = false;
             });
-    }
-    // Handle Onboardings
-    else if (this.selectedCategory === 'Onboardings') {
-        createOnboardings({ onboarding: onboardingData, assignedTo, programId: this.recordId })
+        }
+        // Handle Onboardings and Assets
+        else if (this.selectedCategory === 'Onboardings') {
+            createOnboardings({ onboarding: onboardingData, assignedTo, programId: this.recordId })
             .then(() => {
                 return createAssets({ assets: assetsData, onboardingId: this.onboarding.Id });
             })
             .then(() => {
-                this.showToast('Success', 'Records created/updated successfully!', 'success');
-                this._editingStop();
+                this.refreshPage();
+                this.showToast('Success', 'Onboardings and assets created/updated successfully!', 'success');
                 this.closeModel();
+                this._editingStop();
                 this.isLoading = false;
             })
             .catch((error) => {
-                console.error('Error:', JSON.stringify(error));
+                console.error('Error creating onboardings and assets:', error);
                 this.isLoading = false;
             });
-    }
-    // Handle Interns
-    else if (this.selectedCategory === 'Interns') {
-        createInterns({ interns: internsData, programId: this.recordId })
+        }
+        // Handle Interns
+        else if (this.selectedCategory === 'Interns') {
+            createInterns({ interns: internsData, programId: this.recordId })
             .then(() => {
-                this.showToast('Success', 'Records created/updated successfully!', 'success');
+                this.refreshPage();
+                this.showToast('Success', 'Interns created/updated successfully!', 'success');
                 this.closeModel();
                 this._editingStop();
                 this.isLoading = false;
             })
             .catch((error) => {
-                console.error('Error:', JSON.stringify(error));
                 this.showToast('Error', `An error occurred: ${error.body.message}`, 'error');
                 this.isLoading = false;
             });
-    }
-    // Default case
+        }
+        // Default case
         else {
             this.isLoading = false;
             return 0;
         }
     }
+
 
 
     _handleSearch(event) {
@@ -731,6 +726,18 @@ export default class ProgramDetails extends LightningElement {
         this.isModalCertificate = false;
         this.isModalOnboarding = false;
         this.isModalIntern = false;
+    }
+
+    refreshPage() {
+        // Reloads the current page by navigating to it again
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: {
+                recordId: this.recordId,   // Record ID of the current page
+                objectApiName: 'Program__c',  // Object name of the current record
+                actionName: 'view'         // Action to perform (view)
+            }
+        });
     }
 
     // Display a toast message for success or error
