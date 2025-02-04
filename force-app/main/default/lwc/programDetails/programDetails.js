@@ -13,7 +13,7 @@ import { getRecordNotifyChange } from 'lightning/uiRecordApi';
 
 export default class ProgramDetails extends NavigationMixin(LightningElement) {
     @api recordId;
-    @track currentStep = 1;
+    @track currentPage = 1;
     @track program = {}; 
     @track certificates = [];
     @track onboardings = []; 
@@ -40,6 +40,8 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     @track _isfocus = false;
     @track showButton = false;
 
+    
+
     isEditingProgram = false;
     editingRowId = null;
     isEditing = false;
@@ -47,6 +49,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     showProgram = true;
     error;
 
+    isModalProgram = false;
     isModalCertificate = false;
     isModalOnboarding = false;
     isModalIntern = false;
@@ -67,6 +70,15 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         { label: 'Asset', value: 'Asset' },
         { label: 'Contract', value: 'Contract' },
         { label: 'Education Background', value: 'Education Background' },
+    ];
+
+    @track progress = 0;
+    @track steps = [
+        { id: 1, className: 'slds-progress__item slds-is-active', icon: false },
+        { id: 2, className: 'slds-progress__item', icon: false },
+        { id: 3, className: 'slds-progress__item', icon: false },
+        { id: 4, className: 'slds-progress__item', icon: false },
+        { id: 5, className: 'slds-progress__item', icon: false }
     ];
 
     tempCertificates= [];
@@ -92,7 +104,55 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         this.updateCategoryData();
     }
 
-    selectedCategory = 'Adding Program Items';  // Default category
+    handleProgressNext() {
+        if (this.progress < 100) {
+            this.progress += 25;
+            this.currentPage++;
+            this.updateStepClasses();
+        }
+    }
+
+    handleProgressPrev() {
+        if (this.progress > 0) {
+            this.progress -= 25;
+            this.currentPage--
+            this.updateStepClasses();
+        }
+    }
+
+    get isCertificates() { 
+        return this.currentPage === 1; 
+    }
+    get isInterns() { 
+        return this.currentPage === 2; 
+    }
+    get isOnboardings() { 
+        return this.currentPage === 3; 
+        }
+    get isTraining() { return this.currentPage === 4; }
+    get isModules() { return this.currentPage === 5; }
+
+    updateStepClasses() {
+        const currentStep = this.progress / 25;
+        this.steps.forEach((step, index) => {
+            if (index < currentStep) {
+                step.className = 'slds-progress__item slds-is-completed';
+                step.icon = true;
+            } else if (index === currentStep) {
+                step.className = 'slds-progress__item slds-is-active';
+                step.icon = false;
+            } else {
+                step.className = 'slds-progress__item';
+                step.icon = false;
+            }
+        });
+    }
+
+    get progressStyle() {
+        return `width:${this.progress}%`;
+    }
+
+    selectedCategory = 'Program';
     dropdownOpen = false;
     categories = [];
     
@@ -178,36 +238,34 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     }
 
     get isProgramSelected() {
-        this.showButton = false;
-        this.showProgram = true;
         return this.selectedCategory === 'Program';
       }
 
     get isCertificatesSelected() {
-        this.showButton = true;
         return this.selectedCategory === 'Certificates';
     }
 
     get isOnboardingSelected() {
-        this.showButton = true;
         return this.selectedCategory === 'Onboardings';
     }
 
     get isInternsSelected() {
-        this.showButton = true; 
         return this.selectedCategory === 'Interns';
     }
-
     handleButtonClick() {
-        if (this.selectedCategory === 'Certificates') {
+        if (this.selectedCategory === 'Program' || this.currentPage === 1) {
+            this.tempCertificates= [{ id: Date.now()}];
+            this.isModalProgram = true;
+        } 
+        else if (this.selectedCategory === 'Certificates' || this.currentPage === 2) {
             this.tempCertificates= [{ id: Date.now()}];
             this.isModalCertificate = true;
         } 
-        else if(this.selectedCategory === 'Onboardings'){
+        else if(this.selectedCategory === 'Onboardings' || this.currentPage === 3){
             this.tempAssets = [{ id: Date.now()}];
             this.isModalOnboarding = true;
         }
-        else if(this.selectedCategory === 'Interns'){
+        else if(this.selectedCategory === 'Interns' || this.currentPage === 4){
             this.tempInterns = [{ id: Date.now()}];
             this.isModalIntern = true;
         }
@@ -273,7 +331,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         });
 
         this.assets = this.assets.map((asset) => {
-            return { ...assets, isSelected: false };
+            return { ...asset, isSelected: false };
         });
         
 
@@ -331,9 +389,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
             console.log(`isAssetSelected: ${this.isAssetSelected}`); // Log whether Asset is selected
         }
     }
-
-    
-    
 
     // Add a new certificate row dynamically
     addCertificate() {
@@ -726,6 +781,8 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         this.isModalCertificate = false;
         this.isModalOnboarding = false;
         this.isModalIntern = false;
+        this.isModalProgram = false;
+        
     }
 
     refreshPage() {
