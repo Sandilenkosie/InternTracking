@@ -10,9 +10,10 @@ import createOnboardings from '@salesforce/apex/ProgramController.createOnboardi
 import createInterns from '@salesforce/apex/ProgramController.createInterns';
 import { getRecordNotifyChange } from 'lightning/uiRecordApi';
 
-
 export default class ProgramDetails extends NavigationMixin(LightningElement) {
     @api recordId;
+
+    @track errorMessage = '';
     @track currentPage = 1;
     @track program = {}; 
     @track certificates = [];
@@ -89,7 +90,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     // Fetch program details from the Apex controller
     @wire(getProgramDetails, { programId: '$recordId' })
     wiredProgramDetails({ error, data }) {
-        console.log(data)
         if (data) {
             this.program = data.program;
             this.certificates = data.certificates;
@@ -98,6 +98,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
             this.trainings = data.trainings;
             this.users = data.users;
             this.contacts = data.contacts;
+
         } else if (error) {
             this.error = error;
         }
@@ -105,10 +106,12 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     }
 
     handleProgressNext() {
-        if (this.progress < 100) {
-            this.progress += 25;
-            this.currentPage++;
-            this.updateStepClasses();
+        if (this.validateStep()) {
+            if (this.progress < 100) {
+                this.progress += 25;
+                this.currentPage++;
+                this.updateStepClasses();
+            }
         }
     }
 
@@ -342,7 +345,22 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         this.showProgram = true;
     }
 
-    // Handle Object field changes
+    // Method to validate inputs on the current step
+    validateStep() {
+        let isValid = true;
+        const inputs = this.template.querySelectorAll('lightning-input');
+
+        // Validate all inputs on the current step before moving to the next one
+        inputs.forEach(input => {
+            if (!input.checkValidity()) {
+                isValid = false;
+                input.reportValidity(); // Shows validation error if invalid
+            }
+        });
+
+        return isValid;
+    }
+
     handleObjectChanges(event) {
         const field = event.target.name;
         const index = event.target.dataset.index;
@@ -350,22 +368,33 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
 
         // Helper function to update an array by index and rowId
-        const updateArray = (array, tempArray) => {
-            // Update the specific index in tempArray
-            if (tempArray && tempArray[index]) {
-                tempArray[index] = {
-                    ...tempArray[index],
-                    [field]: value, // Ensure the field is updated in tempArray
-                };
-            }
+        // const updateArray = (array, tempArray, key) => {
+        //     tempArray[index] = {
+        //         ...tempArray[index],
+        //         [field]: value,
+        //     };
 
-            // Update the main array (certificates, onboardings, etc.)
-            return array.map((item) => {
-                if (item.Id === rowId) {
-                    return { ...item, [field]: value };
-                }
-                return item;
-            });
+        //     const updatedArray = array.map((item) => {
+        //         if (item.Id === rowId) {
+        //             return { ...item, [field]: value };
+        //         }
+        //         return item;
+        //     });
+
+        //     // Save the updated array to sessionStorage
+        //     sessionStorage.setItem(key, JSON.stringify(updatedArray));
+
+        //     return updatedArray;
+        // };
+
+        this.tempCertificates[index] = {
+            ...this.tempCertificates[index],
+            [field]: value,
+        };
+
+        this.tempInterns[index] = {
+            ...this.tempInterns[index],
+            [field]: value,
         };
 
         // Update program fields if the program exists
@@ -373,27 +402,33 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
             this.program = { ...this.program, [field]: value };
         }
 
-        // Update arrays using the helper function
-        this.certificates = updateArray(this.certificates, this.tempCertificates);
-        this.assets = updateArray(this.assets, this.tempAssets);
-        this.interns = updateArray(this.interns, this.tempInterns);
+        localStorage.setItem('certificates', JSON.stringify(this.tempCertificates));
+        // localStorage.setItem('assets', JSON.stringify(this.assets));
+        localStorage.setItem('interns', JSON.stringify(this.tempInterns));
 
-        // Additional logic for onboarding
+        // Handle onboarding separately
         if (this.onboarding && this.onboarding.Id === rowId) {
             this.onboarding = { ...this.onboarding, [field]: value };
+            // sessionStorage.setItem('onboarding', JSON.stringify(this.onboarding));
         }
 
         // Check if the field is Type__c and handle the isAssetSelected logic
         if (field === 'Type__c') {
             this.isAssetSelected = value === 'Asset';
-            console.log(`isAssetSelected: ${this.isAssetSelected}`); // Log whether Asset is selected
         }
     }
 
+    
+
     // Add a new certificate row dynamically
     addCertificate() {
-        const newRow = { id: Date.now(), Name: '', Authority_By__c: '' };
-        this.tempCertificates= [...this.tempCertificates, newRow];
+        const newCertificate = { 
+            id: Date.now(), 
+            Name: '', 
+            Authority_By__c: '' 
+        };
+        this.tempCertificates = [...this.tempCertificates, newCertificate];
+
     }
 
     addAsset() {
@@ -407,12 +442,15 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         };
     
         this.tempAssets = [...this.tempAssets, newAsset];
-        console.log('Added new asset:', newAsset.id);
     }
 
     // Add a new intern row dynamically
     addIntern() {
-        const newRow = { id: Date.now(), User__c: '', Training_Program__c: '' };
+        const newRow = { 
+            id: Date.now(), 
+            User__c: '', 
+            // Training_Program__c: '' 
+        };
         this.tempInterns = [...this.tempInterns, newRow];
     }
 
@@ -443,19 +481,15 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
 
     handleIntern(event) {
         this.internKey = event.target.value.toLowerCase();
-        console.log('Search Key:', this.internKey);
         if (this.internKey) {
             this.internResults = this.program.Interns__r.filter(intern => {
                 // Check if intern.User__r and Name are defined and contain searchKey
                 const nameMatches = intern.Name && 
                 intern.User__r.Name.toLowerCase().includes(this.internKey );
     
-                console.log('Name Match:', intern.User__r.Name, nameMatches); // Debugging to check the filter logic
-    
                 return nameMatches;
             });
     
-            console.log('Filtered Results:', this.internResults); // Debugging: Check the filtered results
         } else {
             this.internResults = [];;
         }
@@ -468,7 +502,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
 
     selectIntern(event) {
         this.assignedToId = event.target.closest('li').dataset.id;
-        console.log('assignedToId: ', this.assignedToId);
        const selectedIntern = this.program.Interns__r.find(intern => intern.User__c === this.assignedToId);
 
 
@@ -487,6 +520,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
    }
 
     handleSubmit() {
+        this.errorMessage = '';
         this.isLoading = true;
 
         // Prepare data for each category
@@ -534,9 +568,8 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         const internsData = this.interns.map(intern => ({
             Id: intern.Id || null,
             User__c: intern.User__c || this.selectedUser.Id,
-            Training_Program__c: intern.Training_Program__c || this.selectedTraining.Id,
+            // Training_Program__c: intern.Training_Program__c || this.selectedTraining.Id,
         }));
-
 
         // Handle Program Update
         updateProgram({ program: programData })
@@ -548,80 +581,91 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
                 this.isLoading = false;
             })
             .catch((error) => {
-                console.error('Error updating program:', error);
-                this.isLoading = false;
+                if (error.body && error.body.message) {
+                    this.errorMessage = error.body.message;
+                } else {
+                    this.errorMessage = 'An unexpected error occurred.';
+                }
             });
 
-        // Handle Certificates
-        if (this.selectedCategory === 'Certificates') {
-            createCertificates({ certificates: certificatesData, programId: this.recordId })
-            .then(() => {
-                this.refreshPage();
-                this.showToast('Success', 'Certificates created/updated successfully!', 'success');
-                this.closeModel();
-                this._editingStop();
+
+        if (this.validateStep()) {
+            // Handle Certificates
+            if (this.currentStep === 1) {
+                createCertificates({ certificates: certificatesData, programId: this.recordId })
+                .then(() => {
+                    this.refreshPage();
+                    this.showToast('Success', 'Certificates created/updated successfully!', 'success');
+                    this.closeModel();
+                    this._editingStop();
+                    this.isLoading = false;
+                })
+                .catch((error) => {
+                    if (error.body && error.body.message) {
+                        this.errorMessage = error.body.message;
+                    } else {
+                        this.errorMessage = 'An unexpected error occurred.';
+                    }
+                });
+            }
+            
+            // Handle Onboardings and Assets
+            else if (this.currentStep === 2) {
+                createOnboardings({ onboarding: onboardingData, assignedTo, programId: this.recordId })
+                .then(() => {
+                    return createAssets({ assets: assetsData, onboardingId: this.onboarding.Id });
+                })
+                .then(() => {
+                    this.refreshPage();
+                    this.showToast('Success', 'Onboardings and assets created/updated successfully!', 'success');
+                    this.closeModel();
+                    this._editingStop();
+                    this.isLoading = false;
+                })
+                .catch((error) => {
+                if (error.body && error.body.message) {
+                        this.errorMessage = error.body.message;
+                    } else {
+                        this.errorMessage = 'An unexpected error occurred.';
+                    }
+                });
+            }
+            // Handle Interns
+            else if (this.currentStep === 3) {
+                createInterns({ interns: internsData, programId: this.recordId })
+                .then(() => {
+                    this.refreshPage();
+                    this.showToast('Success', 'Interns created/updated successfully!', 'success');
+                    this.closeModel();
+                    this._editingStop();
+                    this.isLoading = false;
+                })
+                .catch((error) => {
+                if (error.body && error.body.message) {
+                        this.errorMessage = error.body.message;
+                    } else {
+                        this.errorMessage = 'An unexpected error occurred.';
+                    }
+                });
+            }
+            // Default case
+            else {
                 this.isLoading = false;
-            })
-            .catch((error) => {
-                console.error('Error creating certificates:', error);
-                this.isLoading = false;
-            });
+                return 0;
+            }
         }
-        // Handle Onboardings and Assets
-        else if (this.selectedCategory === 'Onboardings') {
-            createOnboardings({ onboarding: onboardingData, assignedTo, programId: this.recordId })
-            .then(() => {
-                return createAssets({ assets: assetsData, onboardingId: this.onboarding.Id });
-            })
-            .then(() => {
-                this.refreshPage();
-                this.showToast('Success', 'Onboardings and assets created/updated successfully!', 'success');
-                this.closeModel();
-                this._editingStop();
-                this.isLoading = false;
-            })
-            .catch((error) => {
-                console.error('Error creating onboardings and assets:', error);
-                this.isLoading = false;
-            });
-        }
-        // Handle Interns
-        else if (this.selectedCategory === 'Interns') {
-            createInterns({ interns: internsData, programId: this.recordId })
-            .then(() => {
-                this.refreshPage();
-                this.showToast('Success', 'Interns created/updated successfully!', 'success');
-                this.closeModel();
-                this._editingStop();
-                this.isLoading = false;
-            })
-            .catch((error) => {
-                this.showToast('Error', `An error occurred: ${error.body.message}`, 'error');
-                this.isLoading = false;
-            });
-        }
-        // Default case
-        else {
-            this.isLoading = false;
-            return 0;
-        }
+        
     }
-
-
 
     _handleSearch(event) {
         this._searchKey = event.target.value.toLowerCase();
-        console.log('_Search Key:', this._searchKey);
         if (this._searchKey) {
             this._searchResults = this.users.filter(user => {
                 const nameMatches = user.Id && user.Name.toLowerCase().includes(this._searchKey );
     
-                console.log('_Name Match:', user.Name, nameMatches);
-    
                 return nameMatches;
             });
     
-            console.log('_Filtered Results:', this._searchResults);
         } else {
             this._searchResults = [];
             this._isfocus = false;
@@ -652,8 +696,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         const button = event.target.closest('button');
         const userId = button ? button.dataset.id : null;
 
-        console.log("User ID: ",userId)
-
         if (userId && this.selectedUser && this.selectedUser.Id === userId) {
             this.selectedUser = null;
             this.interns = [];
@@ -664,17 +706,13 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
 
     handleSearch(event) {
         this.searchKey = event.target.value.toLowerCase();
-        console.log('Search Key:', this.searchKey);
         if (this.searchKey) {
             this.searchResults = this.trainings.filter(training => {
                 const nameMatches = training.Id && training.Name.toLowerCase().includes(this.searchKey );
     
-                console.log('Name Match:', training.Name, nameMatches);
-    
                 return nameMatches;
             });
     
-            console.log('Filtered Results:', this.searchResults);
         } else {
             this.searchResults = [];
             this.isfocus = false;
@@ -704,7 +742,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     removeSelected(event) {
         const button = event.target.closest('button');
         const trainingId = button ? button.dataset.id : null;
-        console.log("training ID: ",trainingId);
 
         if (trainingId && this.selectedTraining && this.selectedTraining.Id === trainingId) {
             this.selectedTraining = null;
@@ -720,17 +757,12 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
 
     handleAccount(event) {
         this.searchAccount = event.target.value.toLowerCase();
-        console.log('Search Key:', this.searchAccount);
         if (this.searchAccount) {
             this.contactResults = this.contacts.filter(contact => {
                 const nameMatches = contact.Id && contact.Name.toLowerCase().includes(this.searchAccount );
     
-                console.log('Name Match:', contact.Name, nameMatches);
-    
                 return nameMatches;
             });
-    
-            console.log('Filtered Results:', this.contactResults);
         } else {
             this.contactResults = [];
             this.isfocus = false;
@@ -760,7 +792,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     removeContact(event) {
         const button = event.target.closest('button');
         const contactId = button ? button.dataset.id : null;
-        console.log("training ID: ",contactId);
 
         if (contactId && this.selectedContact && this.selectedContact.Id === contactId) {
             this.selectedContact= null;

@@ -112,6 +112,17 @@ public with sharing class ProgramController {
             List<Certificate__c> certificateRecords = new List<Certificate__c>();
             for (Map<String, Object> cert : certificates) {
                 Certificate__c certificate = new Certificate__c();
+
+                if (String.isBlank((String) cert.get('Name'))) {
+                    throw new AuraHandledException('Certificate name is required.');
+                }
+                if (String.isBlank((String) cert.get('Authority_By__c'))) {
+                    throw new AuraHandledException('Authority By is required.');
+                }
+                if (programId == null) {
+                    throw new AuraHandledException('program ID is required.');
+                }
+  
                 certificate.Id = (Id) cert.get('Id');
                 certificate.Name = (String) cert.get('Name');
                 certificate.Authority_By__c = (String) cert.get('Authority_By__c');
