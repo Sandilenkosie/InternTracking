@@ -59,7 +59,7 @@ public with sharing class ProgramController {
             FROM User 
             WHERE IsActive = true
             AND CreatedById = :UserInfo.getUserId()
-			AND Profile.Name IN ('Intern')
+			// AND Profile.Name IN ('Intern')
         ];
         
         wrapper.contacts = [
@@ -112,19 +112,9 @@ public with sharing class ProgramController {
             List<Certificate__c> certificateRecords = new List<Certificate__c>();
             for (Map<String, Object> cert : certificates) {
                 Certificate__c certificate = new Certificate__c();
-
-                if (String.isBlank((String) cert.get('Name'))) {
-                    throw new AuraHandledException('Certificate name is required.');
-                }
-                if (String.isBlank((String) cert.get('Authority_By__c'))) {
-                    throw new AuraHandledException('Authority By is required.');
-                }
-                if (programId == null) {
-                    throw new AuraHandledException('program ID is required.');
-                }
   
                 certificate.Id = (Id) cert.get('Id');
-                certificate.Name = (String) cert.get('Name');
+                certificate.Name = (String) cert.get('certName');
                 certificate.Authority_By__c = (String) cert.get('Authority_By__c');
                 certificate.Program__c = programId;
     
@@ -150,7 +140,7 @@ public with sharing class ProgramController {
                 // Create or update Onboarding record
                 Onboarding__c onboard = new Onboarding__c();
                 onboard.Id = (Id) onboarding.get('Id');
-                onboard.Name = (String) onboarding.get('Name');
+                onboard.Name = (String) onboarding.get('onboardName');
                 onboard.Assigned_To__c = userId;
                 onboard.Type__c = (String) onboarding.get('Type__c');
                 onboard.Program__c = programId;
@@ -170,14 +160,14 @@ public with sharing class ProgramController {
     }
     
     @AuraEnabled
-    public static void createAssets(List<Map<String, Object>> assets, Id onboardingId) {
+    public static void createAssets(List<Map<String, Object>> assets) {
         try {
             List<Asset__c> assetRecords = new List<Asset__c>();
             
             for (Map<String, Object> assetRow : assets) {
                 Asset__c asset = new Asset__c();
                 asset.Id = (Id) assetRow.get('Id');
-                asset.Name = (String) assetRow.get('Name');
+                asset.Name = (String) assetRow.get('assetName');
                 asset.Assigned_Date__c = parseDate((String) assetRow.get('Assigned_Date__c'));
                 asset.Condition_After__c = (String) assetRow.get('Condition_After__c');
                 asset.Condition_Before__c = (String) assetRow.get('Condition_Before__c');
@@ -185,7 +175,7 @@ public with sharing class ProgramController {
                 asset.Returned_Date__c = parseDate((String) assetRow.get('Returned_Date__c'));
                 asset.Serial_Number__c = (String) assetRow.get('Serial_Number__c');
                 asset.Status__c = (String) assetRow.get('Status__c');
-                asset.Onboarding__c = onboardingId;
+                asset.Onboarding__c = (Id) assetRow.get('Onboarding__c');
                 
                 assetRecords.add(asset);
             }
@@ -202,17 +192,16 @@ public with sharing class ProgramController {
     }
     
     @AuraEnabled
-    public static void createInterns(List<Map<String, Object>> interns, Id programId) {
+    public static void createInterns(List<Id> assignedTo, Id programId) {
         try {
-            // Process Intern records
+            // Iterate through the dynamic list of maps for Onboarding
             List<Intern__c> internRecords = new List<Intern__c>();
-            for (Map<String, Object> intern : interns) {
+            for (Id userId : assignedTo) {
                 Intern__c newIntern = new Intern__c();
-                newIntern.Id = (Id) intern.get('Id'); // Null-safe assignment
+                // newIntern.Id = (Id) intern.get('Id');
                 newIntern.Status__c = 'Active';
                 newIntern.Stage__c = 'Not Started';
-                newIntern.User__c = (Id) intern.get('User__c');
-                newIntern.Training_Program__c = (Id) intern.get('Training_Program__c');
+                newIntern.User__c = userId;
                 newIntern.Program__c = programId;
     
                 internRecords.add(newIntern);
@@ -226,6 +215,7 @@ public with sharing class ProgramController {
             throw new AuraHandledException('An error occurred while processing Intern records: ' + e.getMessage());
         }
     }
+    
 
     private static Date parseDate(String dateStr) {
         if (String.isNotBlank(dateStr)) {
