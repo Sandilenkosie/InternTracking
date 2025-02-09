@@ -17,7 +17,7 @@ public with sharing class ProgramController {
         
         ProgramWrapper wrapper = new ProgramWrapper();
         wrapper.program = [
-            SELECT Id, Name, Department__c, Program_Type__c, Start_Date__c, End_Date__c,
+            SELECT Id, Name, Department__c, Program_Type__c, Start_Date__c, Duration__c, Training__c,
             (SELECT Id, Name, User__c, User__r.Name FROM Interns__r)
             FROM Program__c WHERE Id = :programId
         ];

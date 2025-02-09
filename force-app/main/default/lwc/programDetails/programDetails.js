@@ -109,30 +109,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         }
         this.updateCategoryData();
     }
-
-    connectedCallback() {
-        try {
-            const certificates = JSON.parse(localStorage.getItem('certificates')) || [];
-            const assets = JSON.parse(localStorage.getItem('assets')) || [];
-            const onboarding = JSON.parse(localStorage.getItem('onboarding')) || [];
-            const selectedUsers = JSON.parse(localStorage.getItem('selectedUsers')) || [];
-    
-            // Ensure reactivity by using spread operators
-            this.tempCertificates = [...certificates]; 
-            this.assets = [...assets];
-            this.selectedUsers = [...selectedUsers];
-    
-            // Handle onboarding if it's an object instead of an array
-            this.onboarding = Array.isArray(onboarding) ? [...onboarding] : onboarding ? { ...onboarding } : null;
-    
-            console.log('Certificates:', this.tempCertificates);
-            console.log('Assets:', this.assets);
-            console.log('Onboarding:', this.onboarding);
-            console.log('Selected Users:', this.selectedUsers);
-        } catch (error) {
-            console.error('Error parsing localStorage data:', error);
-        }
-    }
     
 
     handleProgressNext() {
@@ -252,6 +228,27 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
   
     // Close dropdown if clicking outside
     connectedCallback() {
+        try {
+            const certificates = JSON.parse(localStorage.getItem('certificates')) || [];
+            const assets = JSON.parse(localStorage.getItem('assets')) || [];
+            const onboarding = JSON.parse(localStorage.getItem('onboarding')) || [];
+            const selectedUsers = JSON.parse(localStorage.getItem('selectedUsers')) || [];
+    
+            // Ensure reactivity by using spread operators
+            this.tempCertificates = [...certificates]; 
+            this.tempAssets = [...assets];
+            this.selectedUsers = [...selectedUsers];
+    
+            // Handle onboarding if it's an object instead of an array
+            this.tempOnboarding = Array.isArray(onboarding) ? [...onboarding] : onboarding ? { ...onboarding } : null;
+    
+            console.log('Certificates:', this.tempCertificates);
+            console.log('Assets:', this.tempAssets);
+            console.log('Onboarding:', this.tempOnboarding);
+            console.log('Selected Users:', this.selectedUsers);
+        } catch (error) {
+            console.error('Error parsing localStorage data:', error);
+        }
       document.addEventListener('click', this.handleClickOutside);
     }
   
@@ -276,13 +273,17 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         return this.selectedCategory === 'Program';
       }
 
-    // get isCertificatesSelected() {
-    //     return this.selectedCategory === 'Certificates';
-    // }
+    get isCertificatesSelected() {
+        return this.selectedCategory === 'Certificates';
+    }
 
-    // get isOnboardingSelected() {
-    //     return this.selectedCategory === 'Onboardings';
-    // }
+    get isOnboardingSelected() {
+        return this.selectedCategory === 'Onboardings';
+    }
+
+    get isInternsSelected() {
+        return this.selectedCategory === 'Interns';
+    }
 
     handleButtonClick() {
         this.tempCertificates= [{ id: Date.now()}];
@@ -306,34 +307,43 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
                 return 0;
         }
     }
-
-    _editingButton(event) {
+    handleRowCertificate(event) {
         const rowId = event.currentTarget.dataset.row;
-
-        this.certificates = this.certificates.map(certificate => {
-            return {
-                ...certificate,
-                isSelected: certificate.Id === rowId
-            };
-        })
-        this.onboardings = this.onboardings.map(onboarding => {
-            return {
-                ...onboarding,
-                isSelected: onboarding.Id === rowId,
-                selectedUser: onboarding.Id === rowId,
-            };
+    
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: {
+                recordId: rowId,
+                objectApiName: 'Certificate__c', 
+                actionName: 'view'
+            }
         });
-        this.interns = this.interns.map(intern => {
-            return {
-                ...intern,
-                
-                isSelected: intern.Id === rowId,
-                selectedUser: intern.Id === rowId,
-            };
-        })
-        this.isEditing = true;
-        this.showProgram = false;
+    }
 
+    handleRowOnboarding(event) {
+        const rowId = event.currentTarget.dataset.row;
+    
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: {
+                recordId: rowId,
+                objectApiName: 'Onboarding__c', 
+                actionName: 'view'
+            }
+        });
+    }
+
+    handleRowIntern(event) {
+        const rowId = event.currentTarget.dataset.row;
+    
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: {
+                recordId: rowId,
+                objectApiName: 'Intern__c', 
+                actionName: 'view'
+            }
+        });
     }
 
     _editingStop() {
