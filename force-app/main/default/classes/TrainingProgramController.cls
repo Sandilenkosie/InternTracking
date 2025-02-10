@@ -20,20 +20,14 @@ public with sharing class TrainingProgramController {
                 FROM Tasks1__r) 
             FROM Phase__c 
             WHERE Training_Program__c = :trainingProgramId
-        ];
-
-        // Fetch Interns related to the Training Program and Intern__c lookup for the specific user
-        wrapper.interns = [
-            SELECT Id, Name, Asset_assign__c, User__c, User__r.Name, Department__c, Program__r.Name, Program_Duration__c,
-                Training_Progress__c,Goals_Achieved__c
-            
-            FROM Intern__c
-            WHERE Training_Program__c = :trainingProgramId
-        ];  
+        ]; 
         
-        wrapper.programs = [SELECT Id, Name,
-                          (SELECT Id, Name, (SELECT Id, Name FROM Certifieds__r) FROM Certificates__r)
-                          FROM Program__c];
+        wrapper.program = [
+            SELECT Id, Name, Department__c, Program_Type__c, Start_Date__c, Duration__c, Training__c,
+            (SELECT Id, Name, User__c, User__r.Name FROM Interns__r),
+            (SELECT Id, Name, (SELECT Id, Name FROM Certifieds__r) FROM Certificates__r)
+            FROM Program__c WHERE Training__c = :trainingProgramId
+        ];
         
         wrapper.certificates = [SELECT Id, Name,
                           (SELECT Id, Name, User__c, Expiration_Date__c, Status__c, Issued_Date__c, Score__c, Issuing_Authority__c FROM Certifieds__r)
@@ -50,10 +44,10 @@ public with sharing class TrainingProgramController {
         return wrapper;
     }
     
-    @AuraEnabled(cacheable=true)
-    public static List<Training_Program__c> getTraining() {
-        return [SELECT Id, Name FROM Training_Program__c];
-    }
+    // @AuraEnabled(cacheable=true)
+    // public static List<Training_Program__c> getTraining() {
+    //     return [SELECT Id, Name FROM Training_Program__c];
+    // }
    
     
     @AuraEnabled
@@ -168,9 +162,8 @@ public with sharing class TrainingProgramController {
     public class TrainingProgramWrapper {
         @AuraEnabled public Training_Program__c trainingProgram;
         @AuraEnabled public List<Phase__c> phases;
-        @AuraEnabled public List<Intern__c> interns;
         @AuraEnabled public List<Exam_Schedule__c> examSchedules;
-        @AuraEnabled public List<Program__c> programs;
+        @AuraEnabled public Program__c program;
         @AuraEnabled public List<Certificate__c> certificates;
     }
 }

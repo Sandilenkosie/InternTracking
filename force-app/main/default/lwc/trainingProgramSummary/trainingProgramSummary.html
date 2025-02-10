@@ -46,18 +46,16 @@
                                     <div id="listbox-id-2" class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
                                         <ul class="slds-listbox slds-listbox_vertical" role="presentation">
                                             <template for:each={searchResults} for:item="intern">
-                                                <li key={intern.User__c} onclick={selectIntern} data-id={intern.User__c} role="presentation" class="slds-listbox__item">
+                                                <li key={intern.Id} onclick={selectIntern} data-id={intern.Id} role="presentation" class="slds-listbox__item">
                                                     <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
                                                     <span class="slds-media__figure slds-listbox__option-icon">
-                                                        <span class="slds-icon_container slds-icon-standard-account">
-                                                        <svg class="slds-icon slds-icon_small" aria-hidden="true">
-                                                            <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#account"></use>
-                                                        </svg>
+                                                        <span class="slds-icon_container slds-icon-standard-user">
+                                                        <lightning-icon icon-name="standard:user" size="small" class="slds-icon slds-icon_small"></lightning-icon>
                                                         </span>
                                                     </span>
                                                     <span class="slds-media__body">
                                                         <span class="slds-listbox__option-text slds-listbox__option-text_entity">{intern.User__r.Name}</span>
-                                                        <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">Account • Burlington, NC</span>
+                                                        <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">Intern • Burlington, NC</span>
                                                     </span>
                                                     </div>
                                                 </li>
@@ -84,7 +82,7 @@
                                                         <!-- Remove Button -->
                                                         <button 
                                                             class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" 
-                                                            data-id={selectedIntern.User__c} 
+                                                            data-id={selectedIntern.Id} 
                                                             onclick={removeSelectedIntern} 
                                                             title="Remove">
 
@@ -134,11 +132,11 @@
                 <div class="slds-grid slds-wrap slds-gutters ">
                     <div class="slds-col slds-size_1-of-8 slds-p-around_x-small">
                         <p class="slds-text-title_bold">Program Duration</p>
-                        <p class="slds-text-body_regular">{selectedIntern.Program_Duration__c}</p>
+                        <p class="slds-text-body_regular">{program.Program_Type__c}</p>
                     </div>
                     <div class="slds-col slds-size_1-of-8 slds-p-around_x-small">
                         <p class="slds-text-title_bold">Program Name</p>
-                        <p class="slds-text-body_regular">{selectedIntern.Program__r.Name}</p>
+                        <p class="slds-text-body_regular">{program.Name}</p>
                     </div>
 
                     <div class="slds-col slds-size_1-of-8 slds-p-around_x-small">

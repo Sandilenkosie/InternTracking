@@ -31,15 +31,13 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
     ];
 
     trainingOptions = [];
-    interns = [];
-    certificates = [];
-    programs = [];
+    program = {};
 
     @wire(getTrainingProgramDetails, { trainingProgramId: '$recordId' })
     wiredTrainingProgram({ error, data }) {
         if (data) {
             this.interns = data.interns;
-            this.programs = data.programs;
+            this.program = data.program;
 
         } else if (error) {
             console.error('Error fetching data:', error);
@@ -62,7 +60,7 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
         this.searchKey = event.target.value.toLowerCase();
         console.log('Search Key:', this.searchKey);
         if (this.searchKey) {
-            this.searchResults = this.interns.filter(intern => {
+            this.searchResults = this.program.Interns__r.filter(intern => {
                 // Check if intern.User__r and Name are defined and contain searchKey
                 const nameMatches = intern.User__r && intern.Name && 
                     intern.User__r.Name.toLowerCase().includes(this.searchKey );
@@ -80,9 +78,9 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
 
     selectIntern(event) {
          this.assignedToId = event.target.closest('li').dataset.id;
-        const selectedIntern = this.interns.find(intern => intern.User__c === this.assignedToId);
+        const selectedIntern = this.program.Interns__r.find(intern => intern.Id === this.assignedToId);
 
-        if (selectedIntern && !this.selectedInterns.some(intern => intern.User__c === this.assignedToId)) {
+        if (selectedIntern && !this.selectedInterns.some(intern => intern.Id === this.assignedToId)) {
             this.selectedInterns = [...this.selectedInterns, selectedIntern];
         }
 
@@ -92,7 +90,7 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
 
     removeSelectedIntern(event) {
         this.assignedToId = event.target.closest('button').dataset.id;
-        this.selectedInterns = this.selectedInterns.filter(intern => intern.User__c !== this.assignedToId);
+        this.selectedInterns = this.selectedInterns.filter(intern => intern.Id !== this.assignedToId);
     }
 
     _handleSearch(event) {
@@ -100,17 +98,9 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
         console.log('Search Key:', this._searchKey);
     
         if (this._searchKey) {
-            // Flatten all certificates from programs
-            let allCertificates = [];
-            this.programs.forEach(program => {
-                if (program.Certificates__r) {
-                    allCertificates = allCertificates.concat(program.Certificates__r);
-                }
-            });
-            this.certificates = allCertificates;
     
             // Filter certificates based on search key
-            this._searchResults = this.certificates.filter(certificate => {
+            this._searchResults = this.program.Certificates__r.filter(certificate => {
                 return certificate.Name.toLowerCase().includes(this._searchKey);
             });
     
@@ -123,7 +113,7 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
 
     selectCertificate(event) {
         this.certificateId = event.target.closest('li').dataset.id;
-        this.selectedCertificate = this.certificates.find(certificate => certificate.Id === this.certificateId);
+        this.selectedCertificate = this.program.Certificates__r.find(certificate => certificate.Id === this.certificateId);
 
         if (this.selectedCertificate) {
             this._searchResults = [];

@@ -19,7 +19,7 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
     @track isshow = false;
 
     phases = [];
-    interns = [];
+    program = {};
 
     @wire(getTrainingProgramDetails, { trainingProgramId: '$recordId' })
     wiredTrainingProgram({ error, data }) {
@@ -27,7 +27,7 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
             console.log('Training Program Data:', data);  // Log the data to check if interns are fetched
             this.trainingProgram = data.trainingProgram;
             this.phases = data.phases;
-            this.interns = data.interns;
+            this.program = data.program;
 
         } else if (error) {
             console.error('Error fetching data:', error);  // Log the error if there's an issue
@@ -40,7 +40,7 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
         this.searchKey = event.target.value.toLowerCase();
         console.log('Search Key:', this.searchKey);
         if (this.searchKey) {
-            this.searchResults = this.interns.filter(intern => {
+            this.searchResults = this.program.Interns__r.filter(intern => {
                 // Check if intern.User__r and Name are defined and contain searchKey
                 const nameMatches = intern.User__r && intern.Name && 
                     intern.User__r.Name.toLowerCase().includes(this.searchKey );
@@ -57,9 +57,9 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
     }
     selectIntern(event) {
         this.assignedToId = event.target.closest('li').dataset.id;
-       const selectedIntern = this.interns.find(intern => intern.User__c === this.assignedToId);
+       const selectedIntern = this.program.Interns__r.find(intern => intern.Id === this.assignedToId);
 
-       if (selectedIntern && !this.selectedInterns.some(intern => intern.User__c === this.assignedToId)) {
+       if (selectedIntern && !this.selectedInterns.some(intern => intern.Id === this.assignedToId)) {
            this.selectedInterns = [...this.selectedInterns, selectedIntern];
        }
 
@@ -69,7 +69,7 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
 
    removeSelectedIntern(event) {
        this.assignedToId = event.target.closest('button').dataset.id;
-       this.selectedInterns = this.selectedInterns.filter(intern => intern.User__c !== this.assignedToId);
+       this.selectedInterns = this.selectedInterns.filter(intern => intern.Id !== this.assignedToId);
    }
 
 
@@ -78,7 +78,6 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
         console.log('Search Key:', this.searchphase);
         if (this.searchphase) {
             this.searchResults = this.phases.filter(phase => {
-                // Check if intern.User__r and Name are defined and contain searchKey
                 const nameMatches = phase.Name.toLowerCase().includes(this.searchphase );
     
                 console.log('Name Match:', phase.Name, nameMatches); // Debugging to check the filter logic
@@ -88,7 +87,7 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
     
             console.log('Filtered Results:', this.searchResults); // Debugging: Check the filtered results
         } else {
-            this.searchResults = [...this.interns];;
+            this.searchResults = [];;
         }
     }
 

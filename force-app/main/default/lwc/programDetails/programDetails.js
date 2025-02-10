@@ -6,8 +6,6 @@ import createCertificates from '@salesforce/apex/ProgramController.createCertifi
 import createAssets from '@salesforce/apex/ProgramController.createAssets';
 import createOnboardings from '@salesforce/apex/ProgramController.createOnboardings';
 import createInterns from '@salesforce/apex/ProgramController.createInterns';
-import { getRecordNotifyChange } from 'lightning/uiRecordApi';
-
 
 export default class ProgramDetails extends NavigationMixin(LightningElement) {
     @api recordId;
@@ -91,6 +89,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     tempCertificates= [];
     tempOnboarding= {};
     tempAssets= [];
+    isCompleted = false;
 
     // Fetch program details from the Apex controller
     @wire(getProgramDetails, { programId: '$recordId' })
@@ -104,10 +103,18 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
             this.users = data.users;
             this.contacts = data.contacts;
 
+            this.checkCompletion();
         } else if (error) {
             this.error = error;
         }
         this.updateCategoryData();
+    }
+
+    checkCompletion() {
+        this.isCompleted = this.certificates.length > 0 && this.onboardings.length > 0 && this.interns.length > 0;
+        if (!this.isCompleted) {
+            this.showToast('Incomplete Program', 'Please complete Certificates, Interns, and Onboarding by pressing "New +" button.', 'error');
+        }
     }
     
 
@@ -226,30 +233,8 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
       return this.dropdownOpen ? 'slds-popover slds-nubbin_top-left slds-dynamic-menu slds-show' : 'slds-popover slds-nubbin_top-left slds-dynamic-menu slds-hide';
     }
   
-    // Close dropdown if clicking outside
     connectedCallback() {
-        try {
-            const certificates = JSON.parse(localStorage.getItem('certificates')) || [];
-            const assets = JSON.parse(localStorage.getItem('assets')) || [];
-            const onboarding = JSON.parse(localStorage.getItem('onboarding')) || [];
-            const selectedUsers = JSON.parse(localStorage.getItem('selectedUsers')) || [];
-    
-            // Ensure reactivity by using spread operators
-            this.tempCertificates = [...certificates]; 
-            this.tempAssets = [...assets];
-            this.selectedUsers = [...selectedUsers];
-    
-            // Handle onboarding if it's an object instead of an array
-            this.tempOnboarding = Array.isArray(onboarding) ? [...onboarding] : onboarding ? { ...onboarding } : null;
-    
-            console.log('Certificates:', this.tempCertificates);
-            console.log('Assets:', this.tempAssets);
-            console.log('Onboarding:', this.tempOnboarding);
-            console.log('Selected Users:', this.selectedUsers);
-        } catch (error) {
-            console.error('Error parsing localStorage data:', error);
-        }
-      document.addEventListener('click', this.handleClickOutside);
+        document.addEventListener('click', this.handleClickOutside);
     }
   
     disconnectedCallback() {
@@ -538,9 +523,9 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     
         // Execute API calls sequentially to prevent partial saving
         createCertificates({ certificates: certificatesData, programId: this.recordId })
+            .then(() => createInterns({ assignedTo, programId: this.recordId }))
             .then(() => createOnboardings({ onboarding: onboardingData, assignedTo, programId: this.recordId }))
             .then(() => createAssets({ assets: assetsData}))
-            .then(() => createInterns({ assignedTo, programId: this.recordId }))
             .then(() => {
                 this.showToast('Success', 'All data saved successfully!', 'success');
                 this.refreshPage();
@@ -664,6 +649,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     
     handingClose() {
         this._editingStop();
+        this.isCompleted;
     }
 
     closeModel() {

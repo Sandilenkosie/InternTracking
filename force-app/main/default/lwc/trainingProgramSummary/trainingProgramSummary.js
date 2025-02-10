@@ -10,7 +10,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     @api selectedSchedule;
     trainingProgram;
     phases = [];
-    interns = [];
+    program = [];
     examSchedules = [];
     certified = null;
     certifieds = [];
@@ -43,7 +43,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     @track RatingIntern = '';
     signOffValue = ''; // Holds the selected value
     @track searchKey = '';
-    @track searchResults = [...this.interns];
+    @track searchResults = [];
     @track internId = '';
     @track selectedIntern = [];
     projects = [];
@@ -73,10 +73,10 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     @wire(getTrainingProgramDetails, { trainingProgramId: '$recordId' })
     wiredTrainingProgram({ error, data }) {
         if (data) {
-            console.log('Training Program Data:', data);  // Log the data to check if interns are fetched
+            console.log('Training Program Data:', data);
             this.trainingProgram = data.trainingProgram;
             this.phases = data.phases;
-            this.interns = data.interns;
+            this.program = data.program;
             this.certificates = data.certificates;
             this.projects = data.projects;
             this.milestones = this.extractMilestones(data.phases);
@@ -87,9 +87,9 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
             // Create options for the intern filter combobox
             this.internOptions = [
                 { label: 'All Interns', value: '' },
-                ...data.interns.map(intern => ({
+                ...data.program.Interns__r.map(intern => ({
                     label: intern.Name, 
-                    value: intern.User__c
+                    value: intern.Id
                 }))
             ];
 
@@ -110,9 +110,9 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         this.searchKey = event.target.value.toLowerCase();
         console.log('Search Key:', this.searchKey);
         if (this.searchKey) {
-            this.searchResults = this.interns.filter(intern => {
+            this.searchResults = this.program.Interns__r.filter(intern => {
                 // Check if intern.User__r and Name are defined and contain searchKey
-                const nameMatches = intern.User__r && intern.Name && 
+                const nameMatches = intern.Id && intern.Name && 
                     intern.User__r.Name.toLowerCase().includes(this.searchKey );
     
                 return nameMatches;
@@ -123,13 +123,13 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         }
     }
     handleInputFocus() {
-        this.searchResults = [...this.interns]; // Show all interns when input is focused
+        this.searchResults = [...this.program.Interns__r];
         this.isfocus = true;
     }
     selectIntern(event) {
         this.selectedInternId = event.target.closest('li').dataset.id;
 
-        const selectedIntern = this.interns.find(intern => intern.User__c === this.selectedInternId);
+        const selectedIntern = this.program.Interns__r.find(intern => intern.Id === this.selectedInternId);
 
         if (selectedIntern) {
             // Replace the current selection with the newly selected phase
@@ -160,7 +160,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         }
     
         // Check if the selected intern matches the current selected intern
-        if (this.selectedIntern && this.selectedIntern.User__c === selectedInternId) {
+        if (this.selectedIntern && this.selectedIntern.Id === selectedInternId) {
             this.selectedIntern = null; // Clear the selected intern
             this.selectedInternId = ''; // Reset the selected intern ID
             this.isshow = false; // Update UI state
@@ -175,7 +175,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         let totalRating = 0;
     
         // Find the current intern
-        const currentUserIntern = this.interns.find(intern => intern.User__c === this.selectedInternId);
+        const currentUserIntern = this.program.Interns__r.find(intern => intern.Id === this.selectedInternId);
         if (!currentUserIntern) {
             this.showToast('warning', 'Please select a valid intern.', 'warning');
             return;
@@ -186,7 +186,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
             this.examSchedules.forEach(exam => {
                 if (exam.Assigned_To__c === this.selectedInternId 
                     && exam.Exam_Result__c === 'Passed' 
-                    && typeof exam.Completion__c === 'number') {
+                    && typeof exam.Completion__c === 30) {
                     totalRating += exam.Completion__c;
                 }
             });
@@ -245,7 +245,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     }
     // Getter to check if there are any interns available
     get hasInterns() {
-        return this.interns && this.interns.length > 0;
+        return this.program.Interns__r && this.program.Interns__r.length > 0;
     }
 
     // Getter for dynamic button variants
@@ -421,7 +421,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         this.searchKey = event.target.value.toLowerCase();
         console.log('Search Key:', this.searchKey);
         if (this.searchKey) {
-            this.searchResults = this.interns.filter(intern => {
+            this.searchResults = this.program.Interns__r.filter(intern => {
                 // Check if intern.User__r and Name are defined and contain searchKey
                 const nameMatches = intern.User__r && intern.Name && 
                     intern.User__r.Name.toLowerCase().includes(this.searchKey );
