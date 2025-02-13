@@ -28,10 +28,7 @@ public with sharing class TrainingProgramController {
             (SELECT Id, Name, (SELECT Id, Name FROM Certifieds__r) FROM Certificates__r)
             FROM Program__c WHERE Training__c = :trainingProgramId
         ];
-        
-        wrapper.certificates = [SELECT Id, Name,
-                          (SELECT Id, Name, User__c, Expiration_Date__c, Status__c, Issued_Date__c, Score__c, Issuing_Authority__c FROM Certifieds__r)
-                          FROM Certificate__c];
+
         
         // Fetch Exam Schedules related to the Training Program
         wrapper.examSchedules = [
@@ -39,6 +36,16 @@ public with sharing class TrainingProgramController {
                     Assigned_To__c, Assigned_To__r.Name, Training_Program__r.Name   
             FROM Exam_Schedule__c 
             WHERE Training_Program__c = :trainingProgramId
+        ];
+
+        wrapper.certificates = [
+            SELECT Id, Name, Required__c, Authority_By__c,
+                // (SELECT Id, Name, User__c, Expiration_Date__c, Status__c, Issued_Date__c, Score__c, Issuing_Authority__c FROM Certifieds__r),
+                (SELECT Id, Name, Certificate__c FROM Modules__r)
+            FROM Certificate__c
+            WHERE Program__c IN (
+                SELECT Id FROM Program__c WHERE Training__c = :trainingProgramId
+            )
         ];
 
         return wrapper;

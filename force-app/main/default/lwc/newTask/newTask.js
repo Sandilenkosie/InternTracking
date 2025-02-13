@@ -20,6 +20,8 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
 
     phases = [];
     program = {};
+    certificates = [];
+    modules = [];
 
     @wire(getTrainingProgramDetails, { trainingProgramId: '$recordId' })
     wiredTrainingProgram({ error, data }) {
@@ -28,13 +30,14 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
             this.trainingProgram = data.trainingProgram;
             this.phases = data.phases;
             this.program = data.program;
+             
+            this.certificates = data.certificates
 
         } else if (error) {
             console.error('Error fetching data:', error);  // Log the error if there's an issue
             this.error = error;
         }
     }
-
 
     handleSearch(event) {
         this.searchKey = event.target.value.toLowerCase();
@@ -73,30 +76,38 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
    }
 
 
-    handlePhaseSearch(event) {
-        this.searchphase = event.target.value.toLowerCase();
-        console.log('Search Key:', this.searchphase);
-        if (this.searchphase) {
-            this.searchResults = this.phases.filter(phase => {
-                const nameMatches = phase.Name.toLowerCase().includes(this.searchphase );
-    
-                console.log('Name Match:', phase.Name, nameMatches); // Debugging to check the filter logic
-    
-                return nameMatches;
-            });
-    
-            console.log('Filtered Results:', this.searchResults); // Debugging: Check the filtered results
-        } else {
-            this.searchResults = [];;
+   handlePhaseSearch(event) {
+    // Extract modules from certificates
+    let modules = []; // Initialize empty array
+    this.certificates.forEach(cert => {
+        if (cert.Modules__r) {
+            modules = [...modules, ...cert.Modules__r]; // Append modules from each certificate
         }
+    });
+    this.modules = modules; // Assign to component variable
+
+    this.searchphase = event.target.value.toLowerCase();
+    console.log('Search Key:', this.searchphase);
+
+    if (this.searchphase) {
+        this.searchResults = this.modules.filter(module => {
+            const nameMatches = module.Name.toLowerCase().includes(this.searchphase);
+            console.log('Name Match:', module.Name, nameMatches);
+            return nameMatches;
+        });
+
+        console.log('Filtered Results:', this.searchResults);
+    } else {
+        this.searchResults = [];
     }
+}
+
 
     selectPhase(event) {
         this.phaseId = event.target.closest('li').dataset.id;
-        const selectedPhase = this.phases.find(phase => phase.Id === this.phaseId);
+        const selectedPhase = this.modules.find(module => module.Id === this.phaseId);
     
         if (selectedPhase) {
-            // Replace the current selection with the newly selected phase
             this.selectedPhase = selectedPhase;
         }
 
@@ -108,7 +119,6 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
     removeSelectedPhase(event) {
         const button = event.target.closest('button'); // Ensure we get the closest button
         const phaseId = button ? button.dataset.id : null;
-
 
         if (phaseId && this.selectedPhase && this.selectedPhase.Id === phaseId) {
             this.selectedPhase = null;
