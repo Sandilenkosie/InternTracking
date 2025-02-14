@@ -147,14 +147,18 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     get isCertificates() { 
         return this.currentPage === 1; 
     }
-    get isInterns() { 
+    get isModules() { 
         return this.currentPage === 2; 
     }
-    get isOnboardings() { 
+    get isInterns() { 
         return this.currentPage === 3; 
         }
-    get isTraining() { return this.currentPage === 4; }
-    get isModules() { return this.currentPage === 5; }
+    get isOnboardings() { 
+        return this.currentPage === 4; 
+    }
+    get isReview() { 
+        return this.currentPage === 5; 
+    }
 
     updateStepClasses() {
         const currentStep = this.progress / 25;
@@ -241,6 +245,11 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
   
     connectedCallback() {
         document.addEventListener('click', this.handleClickOutside);
+
+        this.certificates = JSON.parse(localStorage.getItem('certificates')) || [];
+        this.modules = JSON.parse(localStorage.getItem('modules')) || [];
+        this.onboarding = JSON.parse(localStorage.getItem('onboarding')) || [];
+        this.selectedUsers = JSON.parse(localStorage.getItem('selectedUsers')) || [];
     }
   
     disconnectedCallback() {
@@ -367,7 +376,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
                 input.setCustomValidity('');
             }
     
-            if(this.currentPage === 2){
+            if(this.currentPage === 3){
                 
                 if (!this.userId) {
                     input.setCustomValidity('This field is required.');
@@ -387,7 +396,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     certificateChanges(event) {
         const field = event.target.name;
         const index = event.target.dataset.index;
-        const rowId = event.target.dataset.id;
         const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
 
 
@@ -396,10 +404,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
             [field]: value,
         };
 
-        // Update program fields if the program exists
-        if (this.program && this.program.Id === rowId) {
-            this.program = { ...this.program, [field]: value };
-        }
         localStorage.setItem('certificates', JSON.stringify(this.tempCertificates));
 
     }
@@ -512,8 +516,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         const modules = JSON.parse(localStorage.getItem('modules')) || [];
         const onboarding = JSON.parse(localStorage.getItem('onboarding')) || [];
         const selectedUsers = JSON.parse(localStorage.getItem('selectedUsers')) || [];
-
-
         // Prepare data for API calls
         const assignedTo = selectedUsers.map(user => user.Id);
     
@@ -661,24 +663,26 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     
 
     selectCertificate(event) {
+        const rowIndex = event.target.closest('li').dataset.rowIndex;
         const certificateId = event.target.closest('li').dataset.id;
         const selectedCertificate = this.tempCertificates.find(certificate => certificate.id.toString() === certificateId);
     
         if (selectedCertificate) {
-            this.selectedCertificate = selectedCertificate;
-            this.tempModules = this.tempModules.map(module => ({
-                ...module,
+            this.tempModules[rowIndex] = {
+                ...this.tempModules[rowIndex],
                 certName: selectedCertificate.certName,
-            }));
-    
+            };
             localStorage.setItem('modules', JSON.stringify(this.tempModules));
         }
     
+        this.isfocus = true;
+        this.isshow = false; 
         this.searchKey = '';
         this.searchResults = [];
-        this.isshow = true;
-        this.isfocus = false;
     }
+    
+    
+    
 
     removeselected(event) {
         const button = event.target.closest('button');
