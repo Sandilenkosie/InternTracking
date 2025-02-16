@@ -147,14 +147,18 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     get isCertificates() { 
         return this.currentPage === 1; 
     }
-    get isInterns() { 
+    get isModules() { 
         return this.currentPage === 2; 
     }
-    get isOnboardings() { 
+    get isInterns() { 
         return this.currentPage === 3; 
         }
-    get isTraining() { return this.currentPage === 4; }
-    get isModules() { return this.currentPage === 5; }
+    get isOnboardings() { 
+        return this.currentPage === 4; 
+    }
+    get isReview() { 
+        return this.currentPage === 5; 
+    }
 
     updateStepClasses() {
         const currentStep = this.progress / 25;
@@ -241,9 +245,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
 
     connectedCallback() {
         document.addEventListener('click', this.handleClickOutside);
-        if (!this.tempModules || this.tempModules.length === 0) {
-            this.addModule();
-        }
     }
   
     disconnectedCallback() {
@@ -370,7 +371,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
                 input.setCustomValidity('');
             }
     
-            if(this.currentPage === 2){
+            if(this.currentPage === 3){
                 
                 if (!this.userId) {
                     input.setCustomValidity('This field is required.');
@@ -390,7 +391,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     certificateChanges(event) {
         const field = event.target.name;
         const index = event.target.dataset.index;
-        const rowId = event.target.dataset.id;
         const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
 
 
@@ -399,10 +399,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
             [field]: value,
         };
 
-        // Update program fields if the program exists
-        if (this.program && this.program.Id === rowId) {
-            this.program = { ...this.program, [field]: value };
-        }
         localStorage.setItem('certificates', JSON.stringify(this.tempCertificates));
 
     }
@@ -510,8 +506,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         const modules = JSON.parse(localStorage.getItem('modules')) || [];
         const onboarding = JSON.parse(localStorage.getItem('onboarding')) || [];
         const selectedUsers = JSON.parse(localStorage.getItem('selectedUsers')) || [];
-
-
         // Prepare data for API calls
         const assignedTo = selectedUsers.map(user => user.Id);
     
@@ -696,40 +690,36 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     }
     
     selectCertificate(event) {
-        const rowId = event.target.closest('li').dataset.row; 
         const certificateId = event.target.closest('li').dataset.id;
     
         const selectedCertificate = this.tempCertificates.find(cert => cert.id.toString() === certificateId);
     
-        const rowIndex = this.rowData.findIndex(row => row.id === parseInt(rowId));
-        if (rowIndex !== -1 && selectedCertificate) {
-            this.rowData[rowIndex].selectedCertificate = selectedCertificate;
-    
-            this.tempModules[rowIndex].certName = selectedCertificate.certName;
+        if (selectedCertificate) {
+            this.selectedCertificate = selectedCertificate;
+            this.tempModules = this.tempModules.map(module => ({
+                ...module,
+                certName: selectedCertificate.certName,
+            }));
     
             localStorage.setItem('modules', JSON.stringify(this.tempModules));
         }
     
-        if (rowIndex !== -1) {
-            this.rowData[rowIndex].searchKey = ''; // Clear search input for the row
-            this.rowData[rowIndex].searchResults = [];
-        }
-        this.rowData[rowIndex].isFocus = false;
-        this.rowData[rowIndex].isShow = true;
-    
+        this.searchKey = '';
+        this.searchResults = [];
+        this.isshow = true;
+        this.isfocus = false;
     }
-    
-    
-    removeSelected(event) {
-        const rowId = event.target.dataset.row;
-    
-        const rowIndex = this.rowData.findIndex(row => row.id === parseInt(rowId));
-        if (rowIndex !== -1) {
-            this.rowData[rowIndex].selectedCertificate = null;
 
-        }
-        this.rowData[rowIndex].isFocus = false;
-        this.rowData[rowIndex].isShow = false;
+    removeselected(event) {
+        const button = event.target.closest('button');
+        const certificateId = button ? button.dataset.id : null;
+        
+
+        if (certificateId && this.selectedCertificate && this.selectedCertificate.id === certificateId) {
+            this.selectedCertificate = null;
+            this.isshow = false;
+            this.isfocus = false;
+        } 
     }
 
     @track searchAccount = '';

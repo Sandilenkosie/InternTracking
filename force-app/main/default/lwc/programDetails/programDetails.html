@@ -167,7 +167,7 @@
                             </div>
                             <div class="slds-grid slds-wrap">
                               <span class="slds-truncate" title={intern.Name}>{intern.Name}</span>
-                              <!-- <span class="slds-truncate slds-col_bump-left" title={intern.Training_Program__r.Name}>{intern.Training_Program__r.Name}</span> -->
+                              <!-- <span class="slds-truncate slds-col_bump-left" title={intern.program.Name}>{intern.program.Name}</span> -->
                             </div>
                           </a>
                         </li>
@@ -750,13 +750,29 @@
                   <button class="slds-button slds-button_icon slds-modal__close" onclick={closeModel}>
                       <lightning-icon class="slds-button__icon slds-button__icon_large" icon-name="utility:close" size="small"></lightning-icon>
                   </button>
-                  <div class="slds-modal__header">
-                      <h1 id="header43" class="slds-text-heading_medium">Modal header</h1>
-                  </div>
+                  <template if:true={isCertificates}>
+                    <div class="slds-modal__header">
+                        <h1 class="slds-text-heading_medium">New Certificates</h1>
+                    </div>
+                  </template>
+                  <template if:true={isModules}>
+                    <div class="slds-modal__header">
+                        <h1 class="slds-text-heading_medium">Add Modules</h1>
+                    </div>
+                  </template>
+                  <template if:true={isInterns}>
+                    <div class="slds-modal__header">
+                        <h1 class="slds-text-heading_medium">New Interns</h1>
+                    </div>
+                  </template>
+                  <template if:true={isOnboardings}>
+                    <div class="slds-modal__header">
+                        <h1 class="slds-text-heading_medium">Add Onboarding</h1>
+                    </div>
+                  </template>
                   <div class="slds-modal__content slds-grow slds-p-around_medium" id="modal-content-id-1">
 
                     <template if:true={isCertificates}>
-
                       <template for:each={tempCertificates} for:item="cert" for:index="index">
                         <div key={cert.id} class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
                           <!-- Certificate Name Input -->
@@ -769,7 +785,6 @@
                               required
                               onchange={certificateChanges}>
                             </lightning-input>
-                            <p>{cert.certName}</p>
                           </div>
                     
                           <!-- Authority By Combobox -->
@@ -806,7 +821,144 @@
                           class="slds-button_neutral slds-col">
                         </lightning-button>
                     </template>
-
+                    <template if:true={isModules}>
+                      <template for:each={tempModules} for:item="module" for:index="index">
+                        <div key={module.id} class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
+                          <!-- Certificate Name Input -->
+                          <div class="slds-col slds-size_5-of-12 slds-p-horizontal_x-small">
+                            <lightning-input 
+                              label="Module Name" 
+                              name="moduleName" 
+                              value={module.moduleName} 
+                              data-index={index} 
+                              required
+                              onchange={moduleChanges}>
+                            </lightning-input>
+                          </div>
+                          <div class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
+                            <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
+                              <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <div class="slds-combobox-group slds-has-selection">
+                                
+                                        <div class="slds-combobox_container slds-combobox-addon_end">
+                                        <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
+                                            <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                                <!-- Input Field -->
+                                                <template if:false={isshow}>
+                                                <lightning-input
+                                                    label="Certificete (s)"
+                                                    type="search"
+                                                    placeholder="Search Certificete..."
+                                                    onchange={handleSearch}
+                                                    onfocus={handleInputFocus}
+                                                    value={searchKey}
+                                                ></lightning-input>
+                                                </template>
+                                            </div>
+                                            
+                                            <!-- Search Results Dropdown -->
+                                            <template if:true={isfocus}>
+                                                <template if:true={searchResults}>
+                                                    <div class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
+                                                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                          <template if:true={searchKey}>
+                                                            <li role="presentation" class="slds-listbox__item">
+                                                              <div aria-selected="true" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_term slds-has-focus" role="option">
+                                                                <span class="slds-media__figure slds-listbox__option-icon">
+                                                                  <span class="slds-icon_container slds-icon-utility-search" title="Search for term: ">
+                                                                      <lightning-icon icon-name="utility:search" size="x-small" class="slds-icon slds-icon_x-small slds-icon-text-default"></lightning-icon>
+                                                                  </span>
+                                                                </span>
+                                                                <span class="slds-media__body">
+                                                                  <span class="slds-listbox__option-text slds-listbox__option-text_entity">{searchKey}</span>
+                                                                </span>
+                                                              </div>
+                                                            </li>
+                                                          </template>
+                                                            <template for:each={searchResults} for:item="cert">
+                                                                <li key={cert.id} onclick={selectCertificate} data-id={cert.id} role="presentation" class="slds-listbox__item">
+                                                                    <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
+                                                                        <span class="slds-media__figure slds-listbox__option-icon">
+                                                                            <span class="slds-icon_container slds-icon-standard-account">
+                                                                                <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                                            </span>
+                                                                        </span>
+                                                                        <span class="slds-media__body">
+                                                                            <span class="slds-listbox__option-text slds-listbox__option-text_entity">{cert.certName}</span>
+                                                                          <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">Author • {cert.Authority_By__c}</span>
+                                                                        </span>
+                                                                    </div>
+                                                                </li>
+                                                            </template>
+                                                        </ul>
+                                                    </div>
+                                                </template>
+                                            </template>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <template if:true={isshow}>
+                                      <template if:true={selectedCertificate}>
+                                        <div class="slds-form-element">
+                                            <label class="slds-form-element__label" for="combobox-id-5">Certificate</label>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-combobox_container slds-has-selection">
+                                                    <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                                                        <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right" role="none">
+                                                            <span class="slds-icon_container slds-icon-standard-account slds-combobox__input-entity-icon" title="Account">
+                                                                <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                            </span>
+                                                            <div role="combobox" tabindex="0" class="slds-input_faux slds-combobox__input slds-combobox__input-value" aria-labelledby="combobox-label-id-68" aria-controls="listbox-id-5" aria-expanded="false" aria-haspopup="listbox">
+                                                                <span class="slds-truncate">{selectedCertificate.certName}</span>
+                                                            </div>
+                                                            <!-- Remove Button -->
+                                                            <button 
+                                                                class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" 
+                                                                data-id={selectedCertificate.id} 
+                                                                onclick={removeSelected} 
+                                                                title="Remove"
+                                                            >
+                                                                <lightning-icon 
+                                                                    icon-name="utility:close" 
+                                                                    size="x-small" 
+                                                                    alternative-text="Remove">
+                                                                </lightning-icon>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                      </template>
+                                    </template>
+                                </div>
+                            </div>
+                            </div>
+                          </div>
+                    
+                          <!-- Delete Button -->
+                          <div class="slds-col slds-size_2-of-12 slds-p-horizontal_x-small slds-flex slds-align-center">
+                            <lightning-button-icon 
+                              icon-name="utility:delete" 
+                              variant="border-filled" 
+                              alternative-text="Delete Row" 
+                              class="slds-button" 
+                              data-id={module.id} 
+                              onclick={deleteRow}>
+                            </lightning-button-icon>
+                          </div>
+                        </div>
+                      </template>
+                        <lightning-button 
+                          label="Row"
+                          icon-name="utility:add"
+                          icon-position="left"
+                          variant="neutral"
+                          onclick={addModule}
+                          class="slds-button_neutral slds-col">
+                        </lightning-button>
+                    </template>
                     <template if:true={isInterns}>
                       <div class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
                         <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
@@ -907,7 +1059,6 @@
                     <template if:true={isOnboardings}>
                       <div aria-describedby="dialog-body-id-110" aria-labelledby="dialog-heading-id-1" class="slds-modal__content slds-p-around_medium ">
                         <div class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
-                          <!-- Certificate Name Input -->
                           <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
                             <lightning-input label="Onboarding Name" name="onboardName" value={onboarding.onboardName} onchange={OnboardingChanges} ></lightning-input>
                           </div>
@@ -1237,129 +1388,143 @@
                       <p>Almost there! Step 3</p>
                     </template>
                     <template if:true={isModules}>
-                      <template for:each={rowData} for:item="row">
-                          <div key={row.id} class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
-                              <!-- Module Name Input -->
-                              <div class="slds-col slds-size_5-of-12 slds-p-horizontal_x-small">
-                                  <lightning-input 
-                                      label="Module Name" 
-                                      name="moduleName" 
-                                      value={row.moduleName} 
-                                      data-row={row.id}
-                                      required
-                                      onchange={moduleChanges}>
-                                  </lightning-input>
-                              </div>
-                              
-                              <!-- Certificate Search Input -->
-                              <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
-                                  <div class="slds-form-element">
-                                      <div class="slds-form-element__control">
-                                          <div class="slds-combobox-group slds-has-selection">
-                                              <div class="slds-combobox_container slds-combobox-addon_end">
-                                                  <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
-                                                      <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
-                                                          <!-- Search Input -->
-                                                          <template if:false={row.isShow}>
-                                                              <lightning-input
-                                                                  label="Certificete (s)"
-                                                                  type="search"
-                                                                  data-row={row.id}
-                                                                  value={row.searchKey} 
-                                                                  onchange={handleSearch}
-                                                                  placeholder="Search Certificete..."
-                                                                  onfocus={handleInputFocus}
-                                                              ></lightning-input>
-                                                          </template>
-                                                      </div>
-                                                      
-                                                      <!-- Search Results Dropdown -->
-                                                      <template if:true={row.isFocus}>
-                                                        <div class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0">
-                                                            <ul class="slds-listbox slds-listbox_vertical" role="presentation">
-                                                                <template for:each={row.searchResults} for:item="cert">
-                                                                    <li key={cert.id} onclick={selectCertificate} data-id={cert.id} data-row={row.id} role="presentation" class="slds-listbox__item">
-                                                                        <div class="slds-media slds-listbox__option slds-listbox__option_entity">
-                                                                            <span class="slds-media__figure slds-listbox__option-icon">
-                                                                                <span class="slds-icon_container slds-icon-standard-account">
-                                                                                    <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
-                                                                                </span>
-                                                                            </span>
-                                                                            <span class="slds-media__body">
-                                                                                <span class="slds-listbox__option-text slds-listbox__option-text_entity">{cert.certName}</span>
-                                                                                <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">Author • {cert.Authority_By__c}</span>
-                                                                            </span>
-                                                                        </div>
-                                                                    </li>
-                                                                </template>
-                                                            </ul>
-                                                        </div>
-                                                      </template>
-                                                      <template if:true={row.isShow}>
-                                                        <template if:true={row.selectedCertificate}>
-                                                          <div class="slds-form-element">
-                                                              <label class="slds-form-element__label" for="combobox-id-5">Certificate</label>
-                                                              <div class="slds-form-element__control">
-                                                                  <div class="slds-combobox_container slds-has-selection">
-                                                                      <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
-                                                                          <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right" role="none">
-                                                                              <span class="slds-icon_container slds-icon-standard-account slds-combobox__input-entity-icon" title="Account">
-                                                                                  <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
-                                                                              </span>
-                                                                              <div role="combobox" tabindex="0" class="slds-input_faux slds-combobox__input slds-combobox__input-value" aria-labelledby="combobox-label-id-68" aria-controls="listbox-id-5" aria-expanded="false" aria-haspopup="listbox">
-                                                                                  <span class="slds-truncate">{row.selectedCertificate.certName}</span>
-                                                                              </div>
-                                                                              <!-- Remove Button -->
-                                                                              <button 
-                                                                                  class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" 
-                                                                                  data-row={row.id}
-                                                                                  onclick={removeSelected} 
-                                                                                  title="Remove"
-                                                                              >
-                                                                                  <lightning-icon 
-                                                                                      icon-name="utility:close" 
-                                                                                      size="x-small" 
-                                                                                      alternative-text="Remove">
-                                                                                  </lightning-icon>
-                                                                              </button>
-                                                                          </div>
-                                                                      </div>
-                                                                  </div>
-                                                              </div>
-                                                          </div>
-                                                        </template>
-                                                      </template>
-                                                  </div>
-                                              </div>
-                                          </div>
-
-                                      </div>
-                                  </div>
-                              </div>
-                              
-                              <!-- Delete Button -->
-                              <div class="slds-col slds-size_2-of-12 slds-p-horizontal_x-small slds-flex slds-align-center">
-                                  <lightning-button-icon 
-                                      icon-name="utility:delete" 
-                                      variant="border-filled" 
-                                      alternative-text="Delete Row" 
-                                      class="slds-button" 
-                                      onclick={deleteRow}>
-                                  </lightning-button-icon>
-                              </div>
+                      <template for:each={tempModules} for:item="module" for:index="index">
+                        <div key={module.id} class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
+                          <!-- Certificate Name Input -->
+                          <div class="slds-col slds-size_5-of-12 slds-p-horizontal_x-small">
+                            <lightning-input 
+                              label="Module Name" 
+                              name="moduleName" 
+                              value={module.moduleName} 
+                              data-index={index} 
+                              required
+                              onchange={moduleChanges}>
+                            </lightning-input>
                           </div>
+                          <div class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
+                            <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
+                              <div class="slds-form-element">
+                                <div class="slds-form-element__control">
+                                    <div class="slds-combobox-group slds-has-selection">
+                                
+                                        <div class="slds-combobox_container slds-combobox-addon_end">
+                                        <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
+                                            <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                                <!-- Input Field -->
+                                                <template if:false={isshow}>
+                                                <lightning-input
+                                                    label="Certificete (s)"
+                                                    type="search"
+                                                    placeholder="Search Certificete..."
+                                                    onchange={handleSearch}
+                                                    onfocus={handleInputFocus}
+                                                    value={searchKey}
+                                                ></lightning-input>
+                                                </template>
+                                            </div>
+                                            
+                                            <!-- Search Results Dropdown -->
+                                            <template if:true={isfocus}>
+                                                <template if:true={searchResults}>
+                                                    <div class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
+                                                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                          <template if:true={searchKey}>
+                                                            <li role="presentation" class="slds-listbox__item">
+                                                              <div aria-selected="true" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_term slds-has-focus" role="option">
+                                                                <span class="slds-media__figure slds-listbox__option-icon">
+                                                                  <span class="slds-icon_container slds-icon-utility-search" title="Search for term: ">
+                                                                      <lightning-icon icon-name="utility:search" size="x-small" class="slds-icon slds-icon_x-small slds-icon-text-default"></lightning-icon>
+                                                                  </span>
+                                                                </span>
+                                                                <span class="slds-media__body">
+                                                                  <span class="slds-listbox__option-text slds-listbox__option-text_entity">{searchKey}</span>
+                                                                </span>
+                                                              </div>
+                                                            </li>
+                                                          </template>
+                                                            <template for:each={searchResults} for:item="cert">
+                                                                <li key={cert.id} onclick={selectCertificate} data-id={cert.id} role="presentation" class="slds-listbox__item">
+                                                                    <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
+                                                                        <span class="slds-media__figure slds-listbox__option-icon">
+                                                                            <span class="slds-icon_container slds-icon-standard-account">
+                                                                                <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                                            </span>
+                                                                        </span>
+                                                                        <span class="slds-media__body">
+                                                                            <span class="slds-listbox__option-text slds-listbox__option-text_entity">{cert.certName}</span>
+                                                                          <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">Author • {cert.Authority_By__c}</span>
+                                                                        </span>
+                                                                    </div>
+                                                                </li>
+                                                            </template>
+                                                        </ul>
+                                                    </div>
+                                                </template>
+                                            </template>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <template if:true={isshow}>
+                                      <template if:true={selectedCertificate}>
+                                        <div class="slds-form-element">
+                                            <label class="slds-form-element__label" for="combobox-id-5">Certificate</label>
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-combobox_container slds-has-selection">
+                                                    <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
+                                                        <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right" role="none">
+                                                            <span class="slds-icon_container slds-icon-standard-account slds-combobox__input-entity-icon" title="Account">
+                                                                <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
+                                                            </span>
+                                                            <div role="combobox" tabindex="0" class="slds-input_faux slds-combobox__input slds-combobox__input-value" aria-labelledby="combobox-label-id-68" aria-controls="listbox-id-5" aria-expanded="false" aria-haspopup="listbox">
+                                                                <span class="slds-truncate">{selectedCertificate.certName}</span>
+                                                            </div>
+                                                            <!-- Remove Button -->
+                                                            <button 
+                                                                class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" 
+                                                                data-id={selectedCertificate.id} 
+                                                                onclick={removeSelected} 
+                                                                title="Remove"
+                                                            >
+                                                                <lightning-icon 
+                                                                    icon-name="utility:close" 
+                                                                    size="x-small" 
+                                                                    alternative-text="Remove">
+                                                                </lightning-icon>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                      </template>
+                                    </template>
+                                </div>
+                            </div>
+                            </div>
+                          </div>
+                    
+                          <!-- Delete Button -->
+                          <div class="slds-col slds-size_2-of-12 slds-p-horizontal_x-small slds-flex slds-align-center">
+                            <lightning-button-icon 
+                              icon-name="utility:delete" 
+                              variant="border-filled" 
+                              alternative-text="Delete Row" 
+                              class="slds-button" 
+                              data-id={module.id} 
+                              onclick={deleteRow}>
+                            </lightning-button-icon>
+                          </div>
+                        </div>
                       </template>
-                  
-                      <lightning-button 
+                        <lightning-button 
                           label="Row"
                           icon-name="utility:add"
                           icon-position="left"
                           variant="neutral"
                           onclick={addModule}
                           class="slds-button_neutral slds-col">
-                      </lightning-button>
-                  </template>
-                  
+                        </lightning-button>
+                    </template>
                   </div>
                   
                   <div class="slds-modal__footer slds-grid slds-grid_align-spread">
@@ -1415,8 +1580,8 @@
                         </button>
                       </template>
 
-                        <button class="slds-button slds-button_brand" onclick={handleProgressNext} if:false={isModules}>Next</button>
-                        <lightning-button label="Submit" onclick={handleSubmit} if:true={isModules} variant="brand"></lightning-button>
+                        <button class="slds-button slds-button_brand" onclick={handleProgressNext} if:false={isReview}>Next</button>
+                        <lightning-button label="Submit" onclick={handleSubmit} if:true={isReview} variant="brand"></lightning-button>
                         
 
                   </div>
