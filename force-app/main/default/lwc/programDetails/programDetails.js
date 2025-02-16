@@ -9,7 +9,6 @@ import createInterns from '@salesforce/apex/ProgramController.createInterns';
 import getOnboardingRecordType from '@salesforce/apex/ProgramController.getOnboardingRecordType';
 import { createRecord } from 'lightning/uiRecordApi';
 import ONBOARDING_OBJECT from '@salesforce/schema/Onboarding__c';
-import Certificate__c from '@salesforce/schema/Certified__ChangeEvent.Certificate__c';
 
 
 export default class ProgramDetails extends NavigationMixin(LightningElement) {
@@ -59,6 +58,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     // InputShow
     @track isAssetSelected = false;
     @track isContractSelected = false;
+    @track rowData = [];
     @track isEducationSelected = false;
 
     @track selectedInterns = [];
@@ -238,9 +238,12 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     get dropdownClass() {
       return this.dropdownOpen ? 'slds-popover slds-nubbin_top-left slds-dynamic-menu slds-show' : 'slds-popover slds-nubbin_top-left slds-dynamic-menu slds-hide';
     }
-  
+
     connectedCallback() {
         document.addEventListener('click', this.handleClickOutside);
+        if (!this.tempModules || this.tempModules.length === 0) {
+            this.addModule();
+        }
     }
   
     disconnectedCallback() {
@@ -278,7 +281,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
 
     handleButtonClick() {
         this.tempCertificates= [{ id: Date.now()}];
-        this.tempModules= [{ id: Date.now(), moduleName: '', Certificate__c: ''}];
+        this.tempModules= [{ id: Date.now()}];
         this.tempOnboarding= { id: Date.now()};
         this.tempAssets = [{ id: Date.now()}];
         this.isModalProgram = true;
@@ -404,19 +407,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
 
     }
 
-    moduleChanges(event) {
-        const field = event.target.name;
-        const index = event.target.dataset.index;
-        const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-
-        this.tempModules[index] = {
-            ...this.tempModules[index],
-            [field]: value,
-        };
-
-        localStorage.setItem('modules', JSON.stringify(this.tempModules));
-    }
-
     OnboardingChanges(event) {
         const field = event.target.name;
         const rowId = event.target.dataset.id;
@@ -435,9 +425,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
             .then(result => {
                 this.recordTypeId = result;
             })
-            .catch(error => {
-                this.errorMessage = ('Error fetching record type:', error);
-            });
         }
         if (field === 'Type__c'){
             this.isContractSelected = value === 'Contract';
@@ -445,19 +432,13 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
             .then(result => {
                 this.recordTypeId = result;
             })
-            .catch(error => {
-                this.errorMessage = ('Error fetching record type:', error);
-            });
         }
         if(field === 'Type__c'){
-            this.isEducationSelected = value === 'Education Backgroup';
+            this.isEducationSelected = value === 'Education Background';
             getOnboardingRecordType({ recordTypeName: 'Education_Records' }) 
             .then(result => {
                 this.recordTypeId = result;
             })
-            .catch(error => {
-                this.errorMessage = ('Error fetching record type:', error);
-            });
         }
     }
 
@@ -474,14 +455,31 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
 
     // Add a new Module row dynamically
     addModule() {
+        // Create a new module object with a unique id
         const newModule = { 
             id: Date.now(), 
             moduleName: '', 
-            Certificate__c: '', 
+            certName: '', 
+            Certificate__c: '',
         };
+
+        // Add the new module to tempModules
         this.tempModules = [...this.tempModules, newModule];
 
+        // Initialize rowData for the new module with independent search state
+        const newRowData = {
+            id: newModule.id,
+            searchKey: '',
+            searchResults: [],
+            selectedCertificate: null,
+            isFocus: false,
+            isShow: false,
+        };
+
+        // Add the new row data to rowData, ensuring we don't overwrite existing data
+        this.rowData = [...this.rowData, newRowData];
     }
+
 
     // Delete a row based on the ID
     deleteRow(event) {
@@ -575,6 +573,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
             this.refreshPage();
             this.closeModel();
             this._editingStop();
+            location.reload();
 
             localStorage.clear();
         })
@@ -633,63 +632,104 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         }
     }
 
-    searchKey = '';
-    searchResults = [];
-    certificateId = '';
-    selectedCertificate = '';
+    // Handle changes to module fields
+    moduleChanges(event) {
+        const field = event.target.name;
+        const rowId = event.target.dataset.row;
+    
+        // Find the correct module by ID
+        const rowIndex = this.rowData.findIndex(row => row.id === parseInt(rowId));
+        if (rowIndex === -1) {
+            console.error("Module not found for rowId:", rowId);
+            return;
+        }
+    
+        const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+    
+        // Update tempModules safely
+        this.tempModules[rowIndex] = {
+            ...this.tempModules[rowIndex],
+            [field]: value,
+        };
+    
+        // Save updated modules to localStorage
+        localStorage.setItem('modules', JSON.stringify(this.tempModules));
+    }
+    
+
+    
     handleSearch(event) {
-        this.searchKey = event.target.value.toLowerCase();
-        console.log('Search Key:', this.searchKey);
+        const rowId = event.target.dataset.row;
+        console.log("rowId: ", rowId);
+        const searchKey = event.target.value.toLowerCase();
     
-        if (this.searchKey) {
+        // Update the searchKey for the specific row
+        const rowIndex = this.rowData.findIndex(row => row.id === parseInt(rowId));
+
+        console.log("rowIndex: ", rowIndex);
+        if (rowIndex !== -1) {
+            this.rowData[rowIndex].searchKey = searchKey;
+        }
     
-            // Filter certificates based on search key
-            this.searchResults = this.tempCertificates.filter(certificate => {
-                return certificate.certName.toLowerCase().includes(this.searchKey);
-            });
-    
-            console.log('Filtered Results:', this.searchResults);
+        // Filter certificates based on the search key for the row
+        if (searchKey) {
+            this.rowData[rowIndex].searchResults = this.tempCertificates.filter(certificate =>
+                certificate.certName.toLowerCase().includes(searchKey)
+            );
+            console.log(JSON.stringify(this.rowData[rowIndex].searchResults));
         } else {
-            this.searchResults = [];
+            this.rowData[rowIndex].searchResults = [];
+            this.rowData[rowIndex].isFocus = false;
+            this.rowData[rowIndex].isShow = false; 
         }
     }
+    
+    // Focus handler for individual rows
+    handleInputFocus(event) {
+        const rowId = event.target.dataset.row;
+        const rowIndex = this.rowData.findIndex(row => row.id === parseInt(rowId));
+        if (rowIndex !== -1) {
+            this.rowData[rowIndex].searchResults = [...this.tempCertificates]
+        }
+        this.rowData[rowIndex].isFocus = true;
 
-    handleInputFocus() {
-        this.searchResults = [...this.tempCertificates];
-        this.isfocus = true;
     }
     
-
     selectCertificate(event) {
+        const rowId = event.target.closest('li').dataset.row; 
         const certificateId = event.target.closest('li').dataset.id;
-        const selectedCertificate = this.tempCertificates.find(certificate => certificate.id.toString() === certificateId);
     
-        if (selectedCertificate) {
-            this.selectedCertificate = selectedCertificate;
-            this.tempModules = this.tempModules.map(module => ({
-                ...module,
-                certName: selectedCertificate.certName,
-            }));
+        const selectedCertificate = this.tempCertificates.find(cert => cert.id.toString() === certificateId);
+    
+        const rowIndex = this.rowData.findIndex(row => row.id === parseInt(rowId));
+        if (rowIndex !== -1 && selectedCertificate) {
+            this.rowData[rowIndex].selectedCertificate = selectedCertificate;
+    
+            this.tempModules[rowIndex].certName = selectedCertificate.certName;
     
             localStorage.setItem('modules', JSON.stringify(this.tempModules));
         }
     
-        this.searchKey = '';
-        this.searchResults = [];
-        this.isshow = true;
-        this.isfocus = false;
+        if (rowIndex !== -1) {
+            this.rowData[rowIndex].searchKey = ''; // Clear search input for the row
+            this.rowData[rowIndex].searchResults = [];
+        }
+        this.rowData[rowIndex].isFocus = false;
+        this.rowData[rowIndex].isShow = true;
+    
     }
+    
+    
+    removeSelected(event) {
+        const rowId = event.target.dataset.row;
+    
+        const rowIndex = this.rowData.findIndex(row => row.id === parseInt(rowId));
+        if (rowIndex !== -1) {
+            this.rowData[rowIndex].selectedCertificate = null;
 
-    removeselected(event) {
-        const button = event.target.closest('button');
-        const certificateId = button ? button.dataset.id : null;
-        
-
-        if (certificateId && this.selectedCertificate && this.selectedCertificate.id === certificateId) {
-            this.selectedCertificate = null;
-            this.isshow = false;
-            this.isfocus = false;
-        } 
+        }
+        this.rowData[rowIndex].isFocus = false;
+        this.rowData[rowIndex].isShow = false;
     }
 
     @track searchAccount = '';
