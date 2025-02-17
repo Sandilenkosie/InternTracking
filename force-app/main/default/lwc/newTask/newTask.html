@@ -57,7 +57,7 @@
                                             <span class="slds-icon_container slds-icon-standard-account slds-pill__icon_container" title="Account">
                                                 <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
                                             </span>
-                                            <span class="slds-pill__label" title="Dickenson plc">{intern.Name}</span>
+                                            <span class="slds-pill__label" title={intern.User__r.Name}>{intern.User__r.Name}</span>
                                         <span class="slds-icon_container slds-pill__remove" title="Remove">
                                             <button 
                                                 class="slds-button slds-button_icon slds-button_icon slds-pill__remove" 
@@ -101,9 +101,9 @@
                           <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
                             <template if:false={isshow}>
                                 <lightning-input
-                                    label="Phase"
+                                    label="Module"
                                     type="search"
-                                    placeholder="Search..."
+                                    placeholder="Search Modules..."
                                     onchange={handlePhaseSearch}
                                     required
                                     value={searchPhase}
@@ -137,7 +137,7 @@
                             <template if:true={isshow}>
                                 <template if:true={selectedPhase}>
                                     <div class="slds-form-element">
-                                        <label class="slds-form-element__label" for="combobox-id-5" id="combobox-label-id-68">Phase</label>
+                                        <label class="slds-form-element__label" for="combobox-id-5" id="combobox-label-id-68">Module</label>
                                         <div class="slds-form-element__control">
                                             <div class="slds-combobox_container slds-has-selection">
                                                 <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
@@ -182,13 +182,6 @@
                     type="date"
                     required
                     data-id="dueDate"
-                    class="slds-m-bottom_small"
-                ></lightning-input>
-                <lightning-input
-                    label="Completion (%)"
-                    type="number"
-                    required
-                    data-id="completion"
                     class="slds-m-bottom_small"
                 ></lightning-input>
                 <lightning-input 

@@ -388,7 +388,7 @@
                                 <lightning-combobox
                                     label="Intern Stages"
                                     type="search"
-                                    placeholder="Search..."
+                                    placeholder="Search Stage..."
                                     data-id="stages"
                                     required
                                     options={StageOptions}
@@ -556,89 +556,7 @@
                             </button>
                           </h3>
                           <div class="slds-section__content">
-                            <template if:true={certified}>
-                                <div class="slds-form" role="list">
-                                    <div class="slds-form__row">
-                                        <!-- Expiration Date -->
-                                        <div class="slds-form__item" role="listitem">
-                                            <div class="slds-form-element slds-form-element_stacked slds-hint-parent">
-                                                <span class="slds-form-element__label">Expiration Date</span>
-                                                <div class="slds-form-element__control">
-                                                    <template if:true={isEditing}>
-                                                        <lightning-input type="date" value={certified.Expiration_Date__c} data-id="expireDate"></lightning-input>
-                                                    </template>
-                                                    <template if:false={isEditing}>
-                                                        <div class="slds-form-element__static">{certified.Expiration_Date__c}</div>
-             
-                                                    </template>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <!-- Status -->
-                                        <div class="slds-form__item" role="listitem">
-                                            <div class="slds-form-element slds-form-element_stacked slds-hint-parent">
-                                                <span class="slds-form-element__label">Status</span>
-                                                <div class="slds-form-element__control">
-                                                    <template if:true={isEditing}>
-                                                        <lightning-combobox value={certified.Status__c} options={statusOptions} data-id="status"></lightning-combobox>
-                                                    </template>
-                                                    <template if:false={isEditing}>
-                                                        <div class="slds-form-element__static">{certified.Status__c}</div>
-                         
-                                                    </template>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- Issued Date -->
-                                        <div class="slds-form__item" role="listitem">
-                                            <div class="slds-form-element slds-form-element_stacked slds-hint-parent">
-                                                <span class="slds-form-element__label">Issued Date</span>
-                                                <div class="slds-form-element__control">
-                                                    <template if:true={isEditing}>
-                                                        <lightning-input type="date" value={certified.Issued_Date__c} data-id="issuedDate"></lightning-input>
-                                                    </template>
-                                                    <template if:false={isEditing}>
-                                                        <div class="slds-form-element__static">{certified.Issued_Date__c}</div>
-                               
-                                                    </template>
-                                                </div>
-                                            </div>
-                                        </div>
-                  
-                                        <div class="slds-form__item" role="listitem">
-                                            <div class="slds-form-element slds-form-element_stacked slds-hint-parent">
-                                                <span class="slds-form-element__label">Score</span>
-                                                <div class="slds-form-element__control">
-                                                    <template if:true={isEditing}>
-                                                        <lightning-input type="number" value={certified.Score__c} data-id="score"></lightning-input>
-                                                    </template>
-                                                    <template if:false={isEditing}>
-                                                        <div class="slds-form-element__static">{certified.Score__c}</div>
-                                  
-                                                    </template>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- Issuing Authority -->
-                                        <div class="slds-form__item" role="listitem">
-                                            <div class="slds-form-element slds-form-element_stacked slds-hint-parent">
-                                                <span class="slds-form-element__label">Issuing Authority</span>
-                                                <div class="slds-form-element__control">
-                                                    <template if:true={isEditing}>
-                                                        <lightning-input type="text" value={certified.Issuing_Authority__c} data-id="author"></lightning-input>
-                                                    </template>
-                                                    <template if:false={isEditing}>
-                                                        <div class="slds-form-element__static">{certified.Issuing_Authority__c}</div>
-                                   
-                                                    </template>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </template>
-                            
-                            <template if:false={certified}>
+                            <template if:true={isCertified}>
                                 <div class="slds-form" role="list">
                                     <div class="slds-form__row">
                                         <div class="slds-form__item" role="listitem">
@@ -649,10 +567,12 @@
                                                         <lightning-input 
                                                             type="date" 
                                                             data-id="expireDate"
+                                                            value="certified.Expiration_Date__c"
                                                             >
                                                         </lightning-input>
                                                     </template>
                                                     <template if:false={isEditing}>
+                                                        <div class="slds-form-element__static">{certified.Expiration_Date__c}</div>
                                                         <button class="slds-button slds-button_icon" onclick={editProject}>
                                                             <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
                                                         </button>
@@ -670,13 +590,14 @@
                                                 <template if:true={isEditing}>
                                                     <lightning-combobox 
                                                         type="text" 
-                                                        value={statusOptions} 
+                                                        value="certified.Status__c"
                                                         options={statusOptions}
                                                         data-id="status"
                                                         >
                                                     </lightning-combobox>
                                                 </template>
                                                 <template if:false={isEditing}>
+                                                    <div class="slds-form-element__static">{certified.Status__c}</div>
                                                     <button class="slds-button slds-button_icon" onclick={editProject}>
                                                         <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
                                                     </button>
@@ -693,10 +614,12 @@
                                                     <lightning-input 
                                                         type="date" 
                                                         data-id="issuedDate"
+                                                        value="certified.Issued_Date__c"
                                                         >
                                                     </lightning-input>
                                                 </template>
                                                 <template if:false={isEditing}>
+                                                    <div class="slds-form-element__static">{certified.Issued_Date__c}</div>
                                                     <button class="slds-button slds-button_icon" onclick={editProject}>
                                                         <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
                                                     </button>
@@ -714,10 +637,12 @@
                                                         <lightning-input 
                                                             type="number" 
                                                             data-id="score"
+                                                            value="certified.Score__c"
                                                             >
                                                         </lightning-input>
                                                     </template>
                                                     <template if:false={isEditing}>
+                                                        <div class="slds-form-element__static">{certified.Score__c}</div>
                                                         <button class="slds-button slds-button_icon" onclick={editProject}>
                                                             <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
                                                         </button>
@@ -734,10 +659,12 @@
                                                     <lightning-input 
                                                         type="text" 
                                                         data-id="author"
+                                                        value="certified.Issuing_Authority__c"
                                                         >
                                                     </lightning-input>
                                                 </template>
                                                 <template if:false={isEditing}>
+                                                    <div class="slds-form-element__static">{certified.Issuing_Authority__c}</div>
                                                     <button class="slds-button slds-button_icon" onclick={editProject}>
                                                         <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
                                                     </button>
@@ -748,13 +675,12 @@
                                     </div>
                                 </div>
                             </template>
-                            
                           </div>
                         </div>
                     </div>
                     <div class="slds-modal__footer">
                         <button class="slds-button slds-button_neutral" onclick={closeModal}>Close</button>
-                        <template if:false={certified}>
+                        <template if:true={isEditing}>
                             <button class="slds-button slds-button_brand" onclick={updateCertificate}>Save</button>
                         </template>
                     </div>

@@ -3,12 +3,12 @@ public with sharing class TaskFilterController {
     @AuraEnabled(cacheable=true)
     public static List<Tasks__c> getTasks(String phaseId, String status, String assignedToId) {
         // Base query to retrieve relevant fields
-        String query = 'SELECT Id, Name, Status__c, Phase__c, Phase__r.Name, Start_Date__c, Due_Date__c, Assigned_To__c, Completion__c, Description__c ' +
-                       'FROM Tasks__c WHERE Phase__c != NULL';
+        String query = 'SELECT Id, Name, Status__c, Module__c, Module__r.Name, Start_Date__c, Due_Date__c, Assigned_To__c, Completion__c, Description__c ' +
+                       'FROM Tasks__c WHERE Module__c != NULL';
         
         // Add filters based on input parameters
         if (phaseId != 'All') {
-            query += ' AND Phase__c = :phaseId';
+            query += ' AND Module__c = :phaseId';
         }
         if (status != 'All') {
             query += ' AND Status__c = :status';
@@ -22,8 +22,8 @@ public with sharing class TaskFilterController {
     }
 
     @AuraEnabled(cacheable=true)
-    public static List<Phase__c> getPhases() {
-        return [SELECT Id, Name FROM Phase__c];
+    public static List<Module__c> getPhases() {
+        return [SELECT Id, Name FROM Module__c];
     }
 
     // Method to get all available phases
@@ -70,7 +70,7 @@ public with sharing class TaskFilterController {
     
     @AuraEnabled(cacheable=true)
     public static List<Tasks__c> editTasks() {
-        return [SELECT Id, Name, Phase__c, Phase__r.Name FROM Tasks__c];
+        return [SELECT Id, Name, Module__c, Module__r.Name FROM Tasks__c];
     }
     
     @AuraEnabled

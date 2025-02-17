@@ -12,7 +12,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     phases = [];
     program = [];
     examSchedules = [];
-    certified = null;
+    certified = {};
     certifieds = [];
     certificates = [];
     filteredSchedules = [];
@@ -46,6 +46,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     @track searchResults = [];
     @track internId = '';
     @track selectedIntern = [];
+    @track modules = [];
     projects = [];
     @track isshow = false;
     @track isfocus = false;
@@ -74,29 +75,23 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     wiredTrainingProgram({ error, data }) {
         if (data) {
             console.log('Training Program Data:', data);
+            let modules = []; 
+
             this.trainingProgram = data.trainingProgram;
-            this.phases = data.phases;
             this.program = data.program;
             this.certificates = data.certificates;
             this.projects = data.projects;
-            this.milestones = this.extractMilestones(data.phases);
+            // this.milestones = this.extractMilestones();
             this.examSchedules = data.examSchedules;
             this.filteredSchedules = data.examSchedules;
 
 
-            // Create options for the intern filter combobox
-            this.internOptions = [
-                { label: 'All Interns', value: '' },
-                ...data.program.Interns__r.map(intern => ({
-                    label: intern.Name, 
-                    value: intern.Id
-                }))
-            ];
-
-            this.phaseOptions = [{ label: '--None--', value: '' },
-                                ...data.phases.map(phase => ({ 
-                                    label: phase.Name, value: phase.Id }))
-                                ];
+            this.certificates.forEach(cert => {
+                if (cert.Modules__r) {
+                    modules = [...modules, ...cert.Modules__r]; 
+                }
+            });
+            this.modules = data.modules;
 
             // Apply Week filter by default after fetching data
             this.handleWeekFilter();
@@ -138,7 +133,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
             // Re-apply the filter based on selected intern and current period
             this.applyFilter(this.getStartOfWeek(new Date()), this.getEndOfWeek(new Date()), this.selectedFilter);
             this.calculatePerformanceRating();
-            if (this.performanceRatingFormatted === 100 && !this.selectedIntern.Goals_Achieved__c) {
+            if (this.performanceRatingFormatted === 60 && !this.selectedIntern.Goals_Achieved__c) {
                 this.openModal();
             }
 
@@ -170,7 +165,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         }
     }
     
-
+    currentUserIntern = '';
     calculatePerformanceRating() {
         let totalRating = 0;
     
@@ -180,34 +175,18 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
             this.showToast('warning', 'Please select a valid intern.', 'warning');
             return;
         }
-    
+        this.currentUserIntern = currentUserIntern;
         // Validate and calculate performance from exams
         if (Array.isArray(this.examSchedules)) {
             this.examSchedules.forEach(exam => {
-                if (exam.Assigned_To__c === this.selectedInternId 
+                if (exam.Assigned_To__c === currentUserIntern.User__c
                     && exam.Exam_Result__c === 'Passed' 
-                    && typeof exam.Completion__c === 30) {
-                    totalRating += exam.Completion__c;
+                    && typeof exam.Completion__c === 'number') {
+                    totalRating += 30;
                 }
             });
         }
 
-
-    
-        // Validate and calculate performance from tasks in phases
-        if (Array.isArray(this.phases)) {
-            this.phases.forEach(phase => {
-                if (Array.isArray(phase.Tasks1__r)) {
-                    phase.Tasks1__r.forEach(task => {
-                        if (task.Assigned_To__c === this.selectedInternId 
-                            && task.Status__c === 'Completed' 
-                            && typeof task.Completion__c === 'number') {
-                            totalRating += task.Completion__c;
-                        }
-                    });
-                }
-            });
-        }
     
         // Normalize performance rating to a maximum of 100
         this.performanceRatingFormatted = Math.min(Math.round(totalRating), 100);
@@ -226,23 +205,31 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     }
 
         
-    extractMilestones(phases) {
-        let milestones = [];
-        phases.forEach(phase => {
-            if (Array.isArray(phase.Tasks1__r)) {  // Check if Tasks1__r is defined and is an array
-                phase.Tasks1__r.forEach(task => {
-                    if (task.Milestone__c) {
-                        milestones.push({
-                            Id: task.Id,
-                            Name: task.Name,
-                            Due_Date__c: task.Due_Date__c,
-                        });
-                    }
-                });
-            }
-        });
-        return milestones;
-    }
+    // extractMilestones() {
+    //     let milestones = [];
+    
+    //     if (Array.isArray(this.modules)) {
+    //         this.modules.forEach(module => {
+    //             if (module.Tasks__r && Array.isArray(module.Tasks__r)) {  
+    //                 module.Tasks__r.forEach(task => {
+    //                     if (task.Milestone__c) {
+    //                         milestones.push({
+    //                             Id: task.Id,
+    //                             Name: task.Name,
+    //                             Due_Date__c: task.Due_Date__c 
+    //                         });
+    //                     }
+    //                 });
+    //             }
+    //         });
+    //     } else {
+    //         console.error('modules is undefined or not an array', this.modules);
+    //     }
+    
+    //     return milestones;
+    // }
+    
+    
     // Getter to check if there are any interns available
     get hasInterns() {
         return this.program.Interns__r && this.program.Interns__r.length > 0;
@@ -265,7 +252,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     }
 
     handleMilestone() {
-        this.isMilestoneOpen = true; // Updated method name
+        this.isMilestoneOpen = true;
     }
 
     handleCloseModal() {
@@ -408,14 +395,12 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         ongoingStart.setDate(nextPeriodEnd.getDate() + 1);
         this.ongoingPeriodRange = `(Due After ${this.formatDate(ongoingStart)})`;
     }
-    
 
     // Format date for display
     formatDate(date) {
         const options = { month: 'short', day: 'numeric' };
         return date.toLocaleDateString('en-US', options);
     }
-
 
     handleSearch(event) {
         this.searchKey = event.target.value.toLowerCase();
@@ -447,8 +432,6 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         this.showModalCerti = false
     }
 
-
-
     // Save updatePerfomances
     updatePerfomances() {
         const internId = this.selectedIntern.Id;
@@ -456,7 +439,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         const rating = this.template.querySelector('[data-id="rating"]').value;
         const stages = this.template.querySelector('[data-id="stages"]').value;
         const note = this.template.querySelector('[data-id="note"]').value;
-        const trainingProgress = this.performanceRatingFormatted
+        const trainingProgress = this.performanceRatingFormatted;
 
 
         savePerformanceRatingApex({
@@ -473,7 +456,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
             })
             .catch(error => {
                 const errorMessage = error.body ? error.body.message : 'Unknown error occurred';
-                this.showToast('Error', 'Error saving Performances: ','error');
+                this.showToast('Error', 'Error saving Performances: ', errorMessage);
             });
     }
 
@@ -489,6 +472,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
             }
         });
     }
+    @track isCertified = false;
 
     handleView(event) {
         const scheduleId = event.target.dataset.id;
@@ -497,15 +481,12 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         this.selectedSchedule = this.filteredSchedules.find(schedule => schedule.Id === scheduleId);
     
         if (this.selectedSchedule) {
-            // Find the associated certificate
             const certificate = this.certificates.find(certificate => certificate.Id === this.selectedSchedule.Certificate__c);
-    
-            if (certificate && certificate.Certifieds__r) {
-                // Find the certified user
-                this.certified = certificate.Certifieds__r.find(certified => certified.User__c === this.selectedSchedule.Assigned_To__c);
-            } else {
-                this.certified = null;
-            }
+                
+            console.log("certified: ", this.selectedSchedule.Exam_Result__c);
+            // Check if certified exists before accessing its properties
+            this.isCertified = this.selectedSchedule ? this.selectedSchedule.Exam_Result__c === "Passed" : false;
+   
         } else {
             console.error('Schedule not found for ID:', scheduleId);
             this.certified = null;
@@ -514,9 +495,6 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         // Open the modal view
         this.isModalView = true;
     }
-    
-    
-    
     
     
     updateCertificate() {

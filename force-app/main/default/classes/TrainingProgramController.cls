@@ -13,14 +13,16 @@ public with sharing class TrainingProgramController {
         ];
 
         // Fetch Phases related to the Training Program
-        wrapper.phases = [
-            SELECT Id, Name, Status__c,
-                (SELECT Id, Name, Completion__c, Assigned_To__c,Assigned_To__r.Name, Description__c, Milestone__c, Due_Date__c, On_Hold_Reason__c, 
-                    Sign_off_status__c, Start_Date__c, Status__c 
-                FROM Tasks1__r) 
-            FROM Phase__c 
-            WHERE Training_Program__c = :trainingProgramId
-        ]; 
+        // wrapper.modules = [
+        //     SELECT Id, Name, Certificate__c,
+        //         (SELECT Id, Name, Completion__c, Assigned_To__c,Assigned_To__r.Name, Description__c, Milestone__c, Due_Date__c, On_Hold_Reason__c, 
+        //             Sign_off_status__c, Start_Date__c, Status__c 
+        //         FROM Tasks__r) 
+        //     FROM Phase__c 
+        //     WHERE Program__c IN (
+        //         SELECT Id FROM Program__c WHERE Training__c = :trainingProgramId
+        //     )
+        // ]; 
         
         wrapper.program = [
             SELECT Id, Name, Department__c, Program_Type__c, Start_Date__c, Duration__c, Training__c,
@@ -41,7 +43,7 @@ public with sharing class TrainingProgramController {
         wrapper.certificates = [
             SELECT Id, Name, Required__c, Authority_By__c,
                 // (SELECT Id, Name, User__c, Expiration_Date__c, Status__c, Issued_Date__c, Score__c, Issuing_Authority__c FROM Certifieds__r),
-                (SELECT Id, Name, Certificate__c FROM Modules__r)
+                (SELECT Id, Name, Certificate__c, (SELECT Id, Name, Milestone__c FROM Tasks__r) FROM Modules__r)
             FROM Certificate__c
             WHERE Program__c IN (
                 SELECT Id FROM Program__c WHERE Training__c = :trainingProgramId
@@ -78,20 +80,20 @@ public with sharing class TrainingProgramController {
         }
     }
     @AuraEnabled
-    public static void addNewTask(Id phaseId, String taskName, Date dueDate, Integer completion, List<Id> assignedTo, Date startDate, Boolean milestone) {
+    public static void addNewTask(Id phaseId, String taskName, Date dueDate, List<Id> assignedTo, Date startDate, Boolean milestone) {
         try {
                 List<Tasks__c> newTasks = new List<Tasks__c>();  // Declare the list to hold tasks
                 
                 for (Id userId : assignedTo) {
                     // Create new task object for each user
                     Tasks__c task = new Tasks__c(
-                        Phase__c = phaseId,
+                        Module__c = phaseId,
                         Subject__c = taskName,
                         Name = taskName,
                         Due_Date__c = dueDate,
                         Status__c = 'Not Started',
                         Priority__c = 'Normal',
-                        Completion__c = completion,
+                        // Completion__c = completion,
                         Start_Date__c = startDate,
                         Assigned_To__c = userId, 
                         On_Hold_Reason__c = '',
@@ -168,7 +170,7 @@ public with sharing class TrainingProgramController {
     // Wrapper class to hold the results
     public class TrainingProgramWrapper {
         @AuraEnabled public Training_Program__c trainingProgram;
-        @AuraEnabled public List<Phase__c> phases;
+        // @AuraEnabled public List<Phase__c> phases;
         @AuraEnabled public List<Exam_Schedule__c> examSchedules;
         @AuraEnabled public Program__c program;
         @AuraEnabled public List<Certificate__c> certificates;

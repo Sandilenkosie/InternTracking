@@ -21,7 +21,7 @@ export default class TrainingProgramFilter extends NavigationMixin(LightningElem
     
     @track isLoading = false;
     columns = [
-        { label: 'Phase', fieldName: 'phaseName', type: 'text' },
+        { label: 'Module', fieldName: 'phaseName', type: 'text' },
         { label: 'Name', fieldName: 'taskName' },
         { label: 'Status', fieldName: 'status' },
         { label: '% Completion', fieldName: 'completion' },
@@ -106,7 +106,7 @@ export default class TrainingProgramFilter extends NavigationMixin(LightningElem
             this.tasks = result.map(task => ({
                 taskId: task.Id,
                 taskName: task.Name,
-                phaseName: task.Phase__r.Name,
+                phaseName: task.Module__r.Name,
                 status: task.Status__c,
                 completion: task.Completion__c,
                 startDate: task.Start_Date__c,

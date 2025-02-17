@@ -18,6 +18,8 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     @track errorMessage = '';
     @track popoverStyle = '';
 
+    @track rowData = [];
+
     @track currentPage = 1;
     @track program = {}; 
     @track intern = {}; 
@@ -246,10 +248,13 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     connectedCallback() {
         document.addEventListener('click', this.handleClickOutside);
 
-        this.certificates = JSON.parse(localStorage.getItem('certificates')) || [];
-        this.modules = JSON.parse(localStorage.getItem('modules')) || [];
-        this.onboarding = JSON.parse(localStorage.getItem('onboarding')) || [];
-        this.selectedUsers = JSON.parse(localStorage.getItem('selectedUsers')) || [];
+        if (!this.tempModules || this.tempModules.length === 0) {
+            this.addModule();
+        }
+
+        if (!this.tempCertificates || this.tempCertificates.length === 0) {
+            this.addCertificate();
+        }
     }
   
     disconnectedCallback() {
@@ -286,10 +291,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     }
 
     handleButtonClick() {
-        this.tempCertificates= [{ id: Date.now()}];
-        this.tempModules= [{ id: Date.now(), moduleName: '', Certificate__c: ''}];
-        this.tempOnboarding= { id: Date.now()};
-        this.tempAssets = [{ id: Date.now()}];
         this.isModalProgram = true;
     }
 
@@ -410,16 +411,34 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
 
     moduleChanges(event) {
         const field = event.target.name;
-        const index = event.target.dataset.index;
+        const rowId = parseInt(event.target.dataset.index, 10); // Ensure it's a number
+        if (isNaN(rowId)) {
+            console.error("Invalid rowId:", rowId);
+            return;
+        }
+    
+        // Find the correct module by ID
+        const moduleIndex = this.tempModules.findIndex(module => module.id === rowId);
+        if (moduleIndex === -1) {
+            console.error("Module not found for rowId:", rowId);
+            return;
+        }
+    
         const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-
-        this.tempModules[index] = {
-            ...this.tempModules[index],
-            [field]: value,
-        };
-
+    
+        // Update rowData safely
+        const rowIndex = this.tempModules.findIndex(row => row.id === rowId);
+        if (rowIndex !== -1) {
+            this.tempModules[rowIndex] = {
+                ...this.tempModules[rowIndex],
+                [field]: value,
+            };
+        }
+    
+        // Save updated modules to localStorage
         localStorage.setItem('modules', JSON.stringify(this.tempModules));
     }
+    
 
     OnboardingChanges(event) {
         const field = event.target.name;
@@ -439,9 +458,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
             .then(result => {
                 this.recordTypeId = result;
             })
-            .catch(error => {
-                this.errorMessage = ('Error fetching record type:', error);
-            });
+
         }
         if (field === 'Type__c'){
             this.isContractSelected = value === 'Contract';
@@ -449,20 +466,37 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
             .then(result => {
                 this.recordTypeId = result;
             })
-            .catch(error => {
-                this.errorMessage = ('Error fetching record type:', error);
-            });
         }
         if(field === 'Type__c'){
-            this.isEducationSelected = value === 'Education Backgroup';
+            this.isEducationSelected = value === 'Education Background';
             getOnboardingRecordType({ recordTypeName: 'Education_Records' }) 
             .then(result => {
                 this.recordTypeId = result;
             })
-            .catch(error => {
-                this.errorMessage = ('Error fetching record type:', error);
-            });
         }
+    }
+
+    // Add a new Module row dynamically
+    addModule() {
+        const newModule = { 
+            id: Date.now(), 
+            moduleName: '', 
+            certName: '', 
+            Certificate__c: '',
+        };
+
+        this.tempModules = [...this.tempModules, newModule];
+
+        const newRowData = {
+            id: newModule.id,
+            searchKey: '',
+            searchResults: [],
+            selectedCertificate: null,
+            isFocus: false,
+            isShow: false,
+        };
+
+        this.rowData = [...this.rowData, newRowData];
     }
 
     // Add a new certificate row dynamically
@@ -476,16 +510,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
 
     }
 
-    // Add a new Module row dynamically
-    addModule() {
-        const newModule = { 
-            id: Date.now(), 
-            moduleName: '', 
-            Certificate__c: '', 
-        };
-        this.tempModules = [...this.tempModules, newModule];
-
-    }
 
     // Delete a row based on the ID
     deleteRow(event) {
@@ -505,8 +529,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         // Clear error message if deletion was successful
         this.errorMessage = '';
     }
-    
-    
 
     handleSubmit() {
         this.errorMessage = '';
@@ -577,6 +599,8 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
             this.refreshPage();
             this.closeModel();
             this._editingStop();
+            location.reload();
+
 
             localStorage.clear();
         })
@@ -588,7 +612,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
             this.isLoading = false;
         });
     }
-    
 
     _handleSearch(event) {
         this._searchKey = event.target.value.toLowerCase();
@@ -625,7 +648,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         this._isshow = true;
         this._isfocus = false;
     }
-    
 
     _removeSelected(event) {
         this.userId = event.target.closest('button').dataset.id;
@@ -635,54 +657,59 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         }
     }
 
-    searchKey = '';
-    searchResults = [];
-    certificateId = '';
-    selectedCertificate = '';
     handleSearch(event) {
-        this.searchKey = event.target.value.toLowerCase();
-        console.log('Search Key:', this.searchKey);
+        const rowId = event.target.dataset.row;
+        const searchKey = event.target.value.toLowerCase();
     
-        if (this.searchKey) {
+        // Update the searchKey for the specific row
+        const rowIndex = this.rowData.findIndex(row => row.id === parseInt(rowId));
+
+        if (rowIndex !== -1) {
+            this.rowData[rowIndex].searchKey = searchKey;
+        }
     
-            // Filter certificates based on search key
-            this.searchResults = this.tempCertificates.filter(certificate => {
-                return certificate.certName.toLowerCase().includes(this.searchKey);
-            });
-    
-            console.log('Filtered Results:', this.searchResults);
+        // Filter certificates based on the search key for the row
+        if (searchKey) {
+            this.rowData[rowIndex].searchResults = this.tempCertificates.filter(certificate =>
+                certificate.certName.toLowerCase().includes(searchKey)
+            );
+            console.log(JSON.stringify(this.rowData[rowIndex].searchResults));
         } else {
-            this.searchResults = [];
+            this.rowData[rowIndex].searchResults = [];
+            this.rowData[rowIndex].isFocus = false;
+            this.rowData[rowIndex].isShow = false; 
         }
     }
+    
+    // Focus handler for individual rows
+    handleInputFocus(event) {
+        const rowId = event.target.dataset.row;
+        const rowIndex = this.rowData.findIndex(row => row.id === parseInt(rowId));
+        if (rowIndex !== -1) {
+            this.rowData[rowIndex].searchResults = [...this.tempCertificates]
+        }
+        this.rowData[rowIndex].isFocus = true;
 
-    handleInputFocus() {
-        this.searchResults = [...this.tempCertificates];
-        this.isfocus = true;
     }
     
-
     selectCertificate(event) {
-        const rowIndex = event.target.closest('li').dataset.rowIndex;
+        const rowId = event.target.closest('li').dataset.row;
         const certificateId = event.target.closest('li').dataset.id;
-        const selectedCertificate = this.tempCertificates.find(certificate => certificate.id.toString() === certificateId);
     
-        if (selectedCertificate) {
-            this.tempModules[rowIndex] = {
-                ...this.tempModules[rowIndex],
-                certName: selectedCertificate.certName,
-            };
-            localStorage.setItem('modules', JSON.stringify(this.tempModules));
+        const selectedCertificate = this.tempCertificates.find(cert => cert.id.toString() === certificateId);
+        const rowIndex = this.rowData.findIndex(row => row.id === parseInt(rowId));
+    
+        if (rowIndex !== -1 && selectedCertificate) {
+            this.rowData[rowIndex].selectedCertificate = selectedCertificate;
+            this.tempModules[rowIndex].certName = selectedCertificate.certName;
+    
+            // Clear search input for the row
+            this.rowData[rowIndex].searchKey = '';
+            this.rowData[rowIndex].searchResults = [];
+            this.rowData[rowIndex].isFocus = false;
+            this.rowData[rowIndex].isShow = true;
         }
-    
-        this.isfocus = true;
-        this.isshow = false; 
-        this.searchKey = '';
-        this.searchResults = [];
     }
-    
-    
-    
 
     removeselected(event) {
         const button = event.target.closest('button');

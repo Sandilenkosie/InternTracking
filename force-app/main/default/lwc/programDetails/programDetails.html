@@ -822,7 +822,7 @@
                         </lightning-button>
                     </template>
                     <template if:true={isModules}>
-                      <template for:each={tempModules} for:item="module" for:index="index">
+                      <template for:each={rowData} for:item="module">
                         <div key={module.id} class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
                           <!-- Certificate Name Input -->
                           <div class="slds-col slds-size_5-of-12 slds-p-horizontal_x-small">
@@ -845,24 +845,25 @@
                                         <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
                                             <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
                                                 <!-- Input Field -->
-                                                <template if:false={isshow}>
+                                                <template if:false={module.isShow}>
                                                 <lightning-input
                                                     label="Certificete (s)"
                                                     type="search"
                                                     placeholder="Search Certificete..."
+                                                    data-row={module.id}
                                                     onchange={handleSearch}
                                                     onfocus={handleInputFocus}
-                                                    value={searchKey}
+                                                    value={module.searchKey}
                                                 ></lightning-input>
                                                 </template>
                                             </div>
                                             
                                             <!-- Search Results Dropdown -->
-                                            <template if:true={isfocus}>
-                                                <template if:true={searchResults}>
+                                            <template if:true={module.isFocus}>
+                                                <template if:true={module.searchResults}>
                                                     <div class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
                                                         <ul class="slds-listbox slds-listbox_vertical" role="presentation">
-                                                          <template if:true={searchKey}>
+                                                          <template if:true={module.searchKey}>
                                                             <li role="presentation" class="slds-listbox__item">
                                                               <div aria-selected="true" class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_term slds-has-focus" role="option">
                                                                 <span class="slds-media__figure slds-listbox__option-icon">
@@ -871,13 +872,13 @@
                                                                   </span>
                                                                 </span>
                                                                 <span class="slds-media__body">
-                                                                  <span class="slds-listbox__option-text slds-listbox__option-text_entity">{searchKey}</span>
+                                                                  <span class="slds-listbox__option-text slds-listbox__option-text_entity">{module.searchKey}</span>
                                                                 </span>
                                                               </div>
                                                             </li>
                                                           </template>
-                                                            <template for:each={searchResults} for:item="cert">
-                                                                <li key={cert.id} onclick={selectCertificate} data-id={cert.id} role="presentation" class="slds-listbox__item">
+                                                            <template for:each={module.searchResults} for:item="cert">
+                                                                <li key={cert.id} onclick={selectCertificate} data-id={cert.id} data-row={module.id} role="presentation" class="slds-listbox__item">
                                                                     <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
                                                                         <span class="slds-media__figure slds-listbox__option-icon">
                                                                             <span class="slds-icon_container slds-icon-standard-account">
@@ -898,8 +899,8 @@
                                         </div>
                                         </div>
                                     </div>
-                                    <template if:true={isshow}>
-                                      <template if:true={selectedCertificate}>
+                                    <template if:true={module.isShow}>
+                                      <template if:true={module.selectedCertificate}>
                                         <div class="slds-form-element">
                                             <label class="slds-form-element__label" for="combobox-id-5">Certificate</label>
                                             <div class="slds-form-element__control">
@@ -910,12 +911,12 @@
                                                                 <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
                                                             </span>
                                                             <div role="combobox" tabindex="0" class="slds-input_faux slds-combobox__input slds-combobox__input-value" aria-labelledby="combobox-label-id-68" aria-controls="listbox-id-5" aria-expanded="false" aria-haspopup="listbox">
-                                                                <span class="slds-truncate">{selectedCertificate.certName}</span>
+                                                                <span class="slds-truncate">{module.selectedCertificate.certName}</span>
                                                             </div>
                                                             <!-- Remove Button -->
                                                             <button 
                                                                 class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" 
-                                                                data-id={selectedCertificate.id} 
+                                                                data-id={module.selectedCertificate.id} 
                                                                 onclick={removeSelected} 
                                                                 title="Remove"
                                                             >
