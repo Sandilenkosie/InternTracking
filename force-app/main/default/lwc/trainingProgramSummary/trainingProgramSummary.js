@@ -82,7 +82,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
             this.program = data.program;
             this.certificates = data.certificates;
             this.projects = data.projects;
-            this.milestones = this.extractMilestones(data.phases);
+            // this.milestones = this.extractMilestones();
             this.examSchedules = data.examSchedules;
             this.filteredSchedules = data.examSchedules;
 

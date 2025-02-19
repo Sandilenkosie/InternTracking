@@ -9,6 +9,7 @@ import createInterns from '@salesforce/apex/ProgramController.createInterns';
 import getOnboardingRecordType from '@salesforce/apex/ProgramController.getOnboardingRecordType';
 import { createRecord } from 'lightning/uiRecordApi';
 import ONBOARDING_OBJECT from '@salesforce/schema/Onboarding__c';
+import Certificate__c from '@salesforce/schema/Certified__ChangeEvent.Certificate__c';
 
 
 export default class ProgramDetails extends NavigationMixin(LightningElement) {
@@ -60,7 +61,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     // InputShow
     @track isAssetSelected = false;
     @track isContractSelected = false;
-    @track rowData = [];
     @track isEducationSelected = false;
 
     @track selectedInterns = [];
@@ -244,14 +244,17 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     get dropdownClass() {
       return this.dropdownOpen ? 'slds-popover slds-nubbin_top-left slds-dynamic-menu slds-show' : 'slds-popover slds-nubbin_top-left slds-dynamic-menu slds-hide';
     }
-
+  
     connectedCallback() {
         document.addEventListener('click', this.handleClickOutside);
 
-        this.certificates = JSON.parse(localStorage.getItem('certificates')) || [];
-        this.modules = JSON.parse(localStorage.getItem('modules')) || [];
-        this.onboarding = JSON.parse(localStorage.getItem('onboarding')) || [];
-        this.selectedUsers = JSON.parse(localStorage.getItem('selectedUsers')) || [];
+        if (!this.tempModules || this.tempModules.length === 0) {
+            this.addModule();
+        }
+
+        if (!this.tempCertificates || this.tempCertificates.length === 0) {
+            this.addCertificate();
+        }
     }
   
     disconnectedCallback() {
@@ -288,10 +291,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     }
 
     handleButtonClick() {
-        this.tempCertificates= [{ id: Date.now()}];
-        this.tempModules= [{ id: Date.now(), moduleName: '', Certificate__c: ''}];
-        this.tempOnboarding= { id: Date.now()};
-        this.tempAssets = [{ id: Date.now()}];
         this.isModalProgram = true;
     }
 
@@ -412,16 +411,23 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
 
     moduleChanges(event) {
         const field = event.target.name;
-        const index = event.target.dataset.index;
+        const rowId = event.target.dataset.row;
+    
         const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-
-        this.tempModules[index] = {
-            ...this.tempModules[index],
-            [field]: value,
-        };
-
+    
+        // Update rowData safely
+        const rowIndex = this.rowData.findIndex(row => row.id === parseInt(rowId));
+        if (rowIndex !== -1) {
+            this.tempModules[rowIndex] = {
+                ...this.tempModules[rowIndex],
+                [field]: value,
+            };
+        }
+    
+        // Save updated modules to localStorage
         localStorage.setItem('modules', JSON.stringify(this.tempModules));
     }
+    
 
     OnboardingChanges(event) {
         const field = event.target.name;
@@ -441,9 +447,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
             .then(result => {
                 this.recordTypeId = result;
             })
-            .catch(error => {
-                this.errorMessage = ('Error fetching record type:', error);
-            });
+
         }
         if (field === 'Type__c'){
             this.isContractSelected = value === 'Contract';
@@ -458,10 +462,30 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
             .then(result => {
                 this.recordTypeId = result;
             })
-            .catch(error => {
-                this.errorMessage = ('Error fetching record type:', error);
-            });
         }
+    }
+
+    // Add a new Module row dynamically
+    addModule() {
+        const newModule = { 
+            id: Date.now(), 
+            moduleName: '', 
+            certName: '', 
+            Certificate__c: '',
+        };
+
+        this.tempModules = [...this.tempModules, newModule];
+
+        const newRowData = {
+            id: newModule.id,
+            searchKey: '',
+            searchResults: [],
+            selectedCertificate: null,
+            isFocus: false,
+            isShow: false,
+        };
+
+        this.rowData = [...this.rowData, newRowData];
     }
 
     // Add a new certificate row dynamically
@@ -475,16 +499,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
 
     }
 
-    // Add a new Module row dynamically
-    addModule() {
-        const newModule = { 
-            id: Date.now(), 
-            moduleName: '', 
-            Certificate__c: '', 
-        };
-        this.tempModules = [...this.tempModules, newModule];
-
-    }
 
     // Delete a row based on the ID
     deleteRow(event) {
@@ -574,6 +588,8 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
             this.refreshPage();
             this.closeModel();
             this._editingStop();
+            location.reload();
+
 
             localStorage.clear();
         })
@@ -630,22 +646,23 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         }
     }
 
-    searchKey = '';
-    searchResults = [];
-    certificateId = '';
-    selectedCertificate = '';
     handleSearch(event) {
-        this.searchKey = event.target.value.toLowerCase();
-        console.log('Search Key:', this.searchKey);
+        const rowId = event.target.dataset.row;
+        const searchKey = event.target.value.toLowerCase();
     
-        if (this.searchKey) {
+        // Update the searchKey for the specific row
+        const rowIndex = this.rowData.findIndex(row => row.id === parseInt(rowId));
+
+        if (rowIndex !== -1) {
+            this.rowData[rowIndex].searchKey = searchKey;
+        }
     
-            // Filter certificates based on search key
-            this.searchResults = this.tempCertificates.filter(certificate => {
-                return certificate.certName.toLowerCase().includes(this.searchKey);
-            });
-    
-            console.log('Filtered Results:', this.searchResults);
+        // Filter certificates based on the search key for the row
+        if (searchKey) {
+            this.rowData[rowIndex].searchResults = this.tempCertificates.filter(certificate =>
+                certificate.certName.toLowerCase().includes(searchKey)
+            );
+            console.log(JSON.stringify(this.rowData[rowIndex].searchResults));
         } else {
             this.rowData[rowIndex].searchResults = [];
             this.rowData[rowIndex].isFocus = false;
@@ -665,27 +682,25 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     }
     
     selectCertificate(event) {
-        const rowIndex = event.target.closest('li').dataset.rowIndex;
+        const rowId = event.target.closest('li').dataset.row;
         const certificateId = event.target.closest('li').dataset.id;
-        const selectedCertificate = this.tempCertificates.find(certificate => certificate.id.toString() === certificateId);
     
-        if (selectedCertificate) {
-            this.tempModules[rowIndex] = {
-                ...this.tempModules[rowIndex],
-                certName: selectedCertificate.certName,
-            };
+        const selectedCertificate = this.tempCertificates.find(cert => cert.id.toString() === certificateId);
+        const rowIndex = this.rowData.findIndex(row => row.id === parseInt(rowId));
+    
+        if (rowIndex !== -1 && selectedCertificate) {
+            this.rowData[rowIndex].selectedCertificate = selectedCertificate;
+            this.tempModules[rowIndex].certName = selectedCertificate.certName;
+
             localStorage.setItem('modules', JSON.stringify(this.tempModules));
 
         }
-    
-        this.isfocus = true;
-        this.isshow = false; 
-        this.searchKey = '';
-        this.searchResults = [];
+        // Clear search input for the row
+        this.rowData[rowIndex].searchKey = '';
+        this.rowData[rowIndex].searchResults = [];
+        this.rowData[rowIndex].isFocus = false;
+        this.rowData[rowIndex].isShow = true;
     }
-    
-    
-    
 
     removeselected(event) {
         const button = event.target.closest('button');
