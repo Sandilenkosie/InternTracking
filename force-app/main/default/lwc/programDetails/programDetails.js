@@ -411,23 +411,12 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
 
     moduleChanges(event) {
         const field = event.target.name;
-        const rowId = parseInt(event.target.dataset.index, 10); // Ensure it's a number
-        if (isNaN(rowId)) {
-            console.error("Invalid rowId:", rowId);
-            return;
-        }
-    
-        // Find the correct module by ID
-        const moduleIndex = this.tempModules.findIndex(module => module.id === rowId);
-        if (moduleIndex === -1) {
-            console.error("Module not found for rowId:", rowId);
-            return;
-        }
+        const rowId = event.target.dataset.row;
     
         const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
     
         // Update rowData safely
-        const rowIndex = this.tempModules.findIndex(row => row.id === rowId);
+        const rowIndex = this.rowData.findIndex(row => row.id === parseInt(rowId));
         if (rowIndex !== -1) {
             this.tempModules[rowIndex] = {
                 ...this.tempModules[rowIndex],
@@ -702,13 +691,15 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         if (rowIndex !== -1 && selectedCertificate) {
             this.rowData[rowIndex].selectedCertificate = selectedCertificate;
             this.tempModules[rowIndex].certName = selectedCertificate.certName;
-    
-            // Clear search input for the row
-            this.rowData[rowIndex].searchKey = '';
-            this.rowData[rowIndex].searchResults = [];
-            this.rowData[rowIndex].isFocus = false;
-            this.rowData[rowIndex].isShow = true;
+
+            localStorage.setItem('modules', JSON.stringify(this.tempModules));
+
         }
+        // Clear search input for the row
+        this.rowData[rowIndex].searchKey = '';
+        this.rowData[rowIndex].searchResults = [];
+        this.rowData[rowIndex].isFocus = false;
+        this.rowData[rowIndex].isShow = true;
     }
 
     removeselected(event) {

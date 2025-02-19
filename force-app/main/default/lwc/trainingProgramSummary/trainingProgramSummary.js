@@ -24,6 +24,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     ongoingPeriodRange = '';
 
     @track selectedInternId = '';
+    @track currentUserIntern = '';
     @track selectedIntern = {};
     @track selectedInternUpdate = {}
     @track internOptions = [];
@@ -165,7 +166,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         }
     }
     
-    currentUserIntern = '';
+    
     calculatePerformanceRating() {
         let totalRating = 0;
     
@@ -324,7 +325,9 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         let filteredSchedules = this.examSchedules;
     
         if (this.selectedInternId) {
-            filteredSchedules = filteredSchedules.filter(schedule => schedule.Assigned_To__c === this.selectedInternId);
+            filteredSchedules = filteredSchedules.filter(schedule => schedule.Assigned_To__c === this.currentUserIntern.User__c);
+
+            console.log("List: ", JSON.stringify(filteredSchedules))
         }
     
         // Calculate next period start and end dates
@@ -400,24 +403,6 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     formatDate(date) {
         const options = { month: 'short', day: 'numeric' };
         return date.toLocaleDateString('en-US', options);
-    }
-
-    handleSearch(event) {
-        this.searchKey = event.target.value.toLowerCase();
-        console.log('Search Key:', this.searchKey);
-        if (this.searchKey) {
-            this.searchResults = this.program.Interns__r.filter(intern => {
-                // Check if intern.User__r and Name are defined and contain searchKey
-                const nameMatches = intern.User__r && intern.Name && 
-                    intern.User__r.Name.toLowerCase().includes(this.searchKey );
-    
-    
-                return nameMatches;
-            });
-    
-        } else {
-            this.searchResults = [];
-        }
     }
 
     // Open modal

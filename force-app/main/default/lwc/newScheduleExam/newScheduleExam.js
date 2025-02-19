@@ -5,7 +5,7 @@ import { CloseActionScreenEvent } from 'lightning/actions';
 import { getRecord } from 'lightning/uiRecordApi';
 import getTrainingProgramDetails from '@salesforce/apex/TrainingProgramController.getTrainingProgramDetails';
 import addNewschedule from '@salesforce/apex/TrainingProgramController.addNewschedule';
-import getTraining from '@salesforce/apex/TrainingProgramController.getTraining';
+
 
 const FIELDS = ['Training_Program__r.Name'];
 
