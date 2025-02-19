@@ -106,6 +106,8 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
     selectPhase(event) {
         this.phaseId = event.target.closest('li').dataset.id;
         const selectedPhase = this.modules.find(module => module.Id === this.phaseId);
+
+        console.log(selectedPhase.Id);
     
         if (selectedPhase) {
             this.selectedPhase = selectedPhase;
@@ -131,18 +133,19 @@ export default class NewTaskCreation extends NavigationMixin(LightningElement) {
         const taskName = this.template.querySelector('[data-id="taskName"]').value;
         const dueDate = this.template.querySelector('[data-id="dueDate"]').value;
         const startDate = this.template.querySelector('[data-id="startDate"]').value;
+        const completion = this.template.querySelector('[data-id="completion"]').value;
         const milestone = this.template.querySelector('[data-id="milestone"]').checked
         const assignedTo = this.selectedInterns.map(intern => intern.User__c);
-        const phaseId = this.selectedPhase.Id;
+        // const phaseId = this.selectedPhase.Id;
 
-        if (!taskName || !phaseId || !dueDate || !startDate || assignedTo.length === 0) {
+        if (!taskName || !phaseId || !dueDate || !startDate || !completion || assignedTo.length === 0) {
             this.showToast('Error', 'All fields are required.', 'error');
             return;
         }
 
         this.isLoading = true;
 
-        addNewTask({ taskName, phaseId, assignedTo, dueDate, startDate, milestone })
+        addNewTask({ taskName, phaseId, assignedTo, dueDate, completion, startDate, milestone })
             .then(() => {
                 this.showToast('Success', 'Task created successfully.', 'success');
                 this.handleCancel();
