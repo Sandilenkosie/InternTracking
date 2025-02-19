@@ -95,6 +95,7 @@ export default class ConsultantSummary extends NavigationMixin(LightningElement)
     // View modal for a selected consultant
     handleView(event) {
         const consultantId = event.target.dataset.id;
+
         this.selectedConsultant = this.consultants.find(consultant => consultant.Id === consultantId);
         this.interviews = this.selectedConsultant?.Interviewers__r || [];
         this.isModalView = true;

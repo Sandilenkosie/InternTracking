@@ -6,7 +6,6 @@ import { getRecord } from 'lightning/uiRecordApi';
 import getTrainingProgramDetails from '@salesforce/apex/TrainingProgramController.getTrainingProgramDetails';
 import addNewschedule from '@salesforce/apex/TrainingProgramController.addNewschedule';
 
-
 const FIELDS = ['Training_Program__r.Name'];
 
 export default class NewTaskCreation extends NavigationMixin(LightningElement) {

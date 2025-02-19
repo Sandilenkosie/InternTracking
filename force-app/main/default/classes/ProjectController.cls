@@ -31,7 +31,7 @@ public with sharing class ProjectController {
                    (SELECT Id, Name, Status__c, Date__c, Interview_Feedback__c 
                     FROM Interviewers__r)
             FROM Consultant__c
-            WHERE Project__c = :projectId
+            
         ];
 
         // Query for Clients associated with the Project
