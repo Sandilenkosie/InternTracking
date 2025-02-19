@@ -180,7 +180,7 @@
                                                                                     <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
                                                                                 </span>
                                                                                 <div role="combobox" tabindex="0" class="slds-input_faux slds-combobox__input slds-combobox__input-value" aria-labelledby="combobox-label-id-68" aria-controls="listbox-id-5" aria-expanded="false" aria-haspopup="listbox">
-                                                                                    <!-- <span class="slds-truncate">{selectedConsultant.Project__r.Name}</span> -->
+                                                                                    <span class="slds-truncate">{recordName}</span>
                                                                                 </div>
                                                      
                                                                             </div>
@@ -189,64 +189,9 @@
                                                                 </div>
                                                             </div>
                                                         </template>
-                                                        <template if:true={isEditingProject}>
-                                                            <lightning-input
-                                                                label="Project"
-                                                                type="search"
-                                                                placeholder="Search Project..."
-                                                                onchange={handleSearch}
-                                                                required
-                                                                value={searchKey}
-                                                            ></lightning-input>
-                                                        </template>
                                                     </template>
                                                 </div>
-                                                
-                                                <template if:true={searchKey}>
-                                                    <template if:true={searchResults}>
-                                                        <div id="listbox-id-2" class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
-                                                            <ul class="slds-listbox slds-listbox_vertical" role="presentation">
-                                                                <template for:each={searchResults} for:item="project">
-                                                                    <li key={project.Id} onclick={selectProject} data-id={project.Id} role="presentation" class="slds-listbox__item">
-                                                                        <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option">
-                                                                        <span class="slds-media__figure slds-listbox__option-icon">
-                                                                            <span class="slds-icon_container slds-icon-standard-account">
-                                                                                <lightning-icon icon-name="standard:account" size="small"></lightning-icon>
-                                                                            </span>
-                                                                        </span>
-                                                                        <span class="slds-media__body">
-                                                                            <span class="slds-listbox__option-text slds-listbox__option-text_entity">{project.Name}</span>
-                                                                            <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">Account • {project.Account__r.Name}</span>
-                                                                        </span>
-                                                                        </div>
-                                                                    </li>
-                                                                </template>
-                                                            </ul>
-                                                        </div>
-                                                    </template>
-                                                </template>
-                    
-                                                <template if:true={isshow}>
-                                                    <template if:true={selectedProject}>
-                                                        <div class="slds-form-element">
-                                                            <label class="slds-form-element__label" for="combobox-id-5" >Project</label>
-                                                            <div class="slds-form-element__control">
-                                                                <div class="slds-combobox_container slds-has-selection">
-                                                                    <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click">
-                                                                        <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_left-right" role="none">
-                                                                            <span class="slds-icon_container slds-icon-standard-account slds-combobox__input-entity-icon" title="Account">
-                                                                                <lightning-icon icon-name="standard:user" size="small"></lightning-icon>
-                                                                            </span>
-                                                                            <div role="combobox" tabindex="0" class="slds-input_faux slds-combobox__input slds-combobox__input-value" aria-labelledby="combobox-label-id-68" aria-controls="listbox-id-5" aria-expanded="false" aria-haspopup="listbox">
-                                                                                <span class="slds-truncate">{selectedProject.Name}</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </template>
-                                                </template>
+                                            
                                             </div>
                                           </div>
                                         </div>

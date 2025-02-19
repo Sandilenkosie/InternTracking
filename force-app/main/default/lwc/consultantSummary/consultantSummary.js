@@ -4,9 +4,13 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { CloseActionScreenEvent } from 'lightning/actions';
 import getProjectdetails from '@salesforce/apex/ProjectController.getProjectdetails';
 import saveConsultantAndInterview from '@salesforce/apex/ProjectController.saveConsultantAndInterview';
+import { getRecord } from 'lightning/uiRecordApi';
+
+const FIELDS = ['Project__r.Name'];
 
 export default class ConsultantSummary extends NavigationMixin(LightningElement) {
     @api recordId;
+    recordName;
     @track project = '';
     @track searchKey = '';
     @track projectId = '';
@@ -28,7 +32,7 @@ export default class ConsultantSummary extends NavigationMixin(LightningElement)
     ];
 
     // Fetch project details
-    @wire(getProjectdetails, { projectId: '$recordId' })
+    @wire(getProjectdetails, { projectId: '$recordId'})
     wiredConsultant({ error, data }) {
         if (data) {
             this.project = data.project;
@@ -36,6 +40,16 @@ export default class ConsultantSummary extends NavigationMixin(LightningElement)
             this.consultants = data.consultants;
         } else if (error) {
             console.error('Error fetching data:', error); 
+            this.error = error;
+        }
+    }
+
+    @wire(getRecord, { recordId: '$recordId', fields: FIELDS })
+    wiredRecord({ error, data }) {
+        if (data) {
+            this.recordName = data.fields.Name.value;
+        } else if (error) {
+            console.error('Error fetching data:', error);
             this.error = error;
         }
     }
@@ -123,7 +137,7 @@ export default class ConsultantSummary extends NavigationMixin(LightningElement)
     }
 
     handleSaveChanges() {
-        const projectId = this.selectedProject?.Id;
+        const projectId = this.recordId;
         const status = this.template.querySelector('[data-id="status"]').value;
         const feedback = this.template.querySelector('[data-id="feedback"]').value;
     

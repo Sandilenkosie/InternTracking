@@ -119,7 +119,7 @@ export default class interviewSchedules extends NavigationMixin(LightningElement
         const clientId = this.selectedClient.Id;
         const interviewName = this.template.querySelector('[data-id="interviewName"]').value;
         const scheduleDate = this.template.querySelector('[data-id="scheduleDate"]').value;
-        const assignedTo = this.selectedConsultants.map(consultant => consultant.User__c);
+        const assignedTo = this.selectedConsultants.map(consultant => consultant.Id);
 
         this.isLoading = true;
 
