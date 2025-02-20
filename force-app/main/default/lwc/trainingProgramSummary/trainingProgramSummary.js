@@ -171,16 +171,14 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         let totalRating = 0;
     
         // Find the current intern
-        const currentUserIntern = this.program.Interns__r.find(intern => intern.Id === this.selectedInternId);
-        if (!currentUserIntern) {
+        if (!this.selectedIntern) {
             this.showToast('warning', 'Please select a valid intern.', 'warning');
             return;
         }
-        this.currentUserIntern = currentUserIntern;
         // Validate and calculate performance from exams
         if (Array.isArray(this.examSchedules)) {
             this.examSchedules.forEach(exam => {
-                if (exam.Assigned_To__c === currentUserIntern.User__c
+                if (exam.Assigned_To__c === this.selectedIntern.User__c
                     && exam.Exam_Result__c === 'Passed' 
                     && typeof exam.Completion__c === 'number') {
                     totalRating += 30;
@@ -324,10 +322,8 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     
         let filteredSchedules = this.examSchedules;
     
-        if (this.selectedInternId) {
-            filteredSchedules = filteredSchedules.filter(schedule => schedule.Assigned_To__c === this.currentUserIntern.User__c);
-
-            console.log("List: ", JSON.stringify(filteredSchedules))
+        if (this.selectedIntern.User__c) {
+            filteredSchedules = filteredSchedules.filter(schedule => schedule.Assigned_To__c === this.selectedIntern.User__c);
         }
     
         // Calculate next period start and end dates
@@ -424,7 +420,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         const rating = this.template.querySelector('[data-id="rating"]').value;
         const stages = this.template.querySelector('[data-id="stages"]').value;
         const note = this.template.querySelector('[data-id="note"]').value;
-        const trainingProgress = this.performanceRatingFormatted;
+        // const trainingProgress = this.performanceRatingFormatted;
 
 
         savePerformanceRatingApex({
@@ -433,7 +429,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
             rating: rating,
             stages: stages,
             note: note,
-            trainingProgress: trainingProgress
+            // trainingProgress: trainingProgress
         })
             .then(() => {
                 this.showToast('Success', 'Goal Achieved updated successfully.', 'success');

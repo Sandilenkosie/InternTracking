@@ -11,7 +11,7 @@ export default class InternCertificates extends LightningElement {
     @wire(getInternDetails, { internId: '$recordId' })
     wiredInternDetails({ error, data }) {
         if (data) {
-            this.certificates = data.certificates;
+            this.certificates = data.certificates || null;
         } else if (error) {
             this.error = error;
         }

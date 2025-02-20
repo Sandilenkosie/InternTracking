@@ -67,7 +67,7 @@ public with sharing class TrainingProgramController {
             
             // Assuming there are fields for goalsAchieved and trainingProgress
             intern.Goals_Achieved__c = goalsAchieved;
-            intern.Training_Progress__c = trainingProgress;
+            // intern.Training_Progress__c = trainingProgress;
             intern.Performance_Rating__c = rating;
             intern.Stage__c = stages;
             intern.Evaluation_Notes__c = note;
