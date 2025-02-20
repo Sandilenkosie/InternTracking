@@ -462,16 +462,26 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         this.selectedSchedule = this.filteredSchedules.find(schedule => schedule.Id === scheduleId);
     
         if (this.selectedSchedule) {
-            const certificate = this.certificates.find(certificate => certificate.Id === this.selectedSchedule.Certificate__c);
-                
-            console.log("certified: ", this.selectedSchedule.Exam_Result__c);
-            // Check if certified exists before accessing its properties
-            this.isCertified = this.selectedSchedule ? this.selectedSchedule.Exam_Result__c === "Passed" : false;
-   
+            const certificate = this.certificates 
+                ? this.certificates.find(certificate => certificate.Id === this.selectedSchedule.Certificate__c) 
+                : null;
+        
+            if (certificate && certificate.Certifieds__r) {
+                this.certified = certificate.Certifieds__r.find(certified => certified.Certificate__c === certificate.Id);
+            } else {
+                this.certified = null; // Prevents undefined errors
+            }
+        
+            console.log("certified: ", JSON.stringify(certificate));
+            
+            // Ensure selectedSchedule exists before accessing Exam_Result__c
+            this.isCertified = this.selectedSchedule?.Exam_Result__c === "Passed";
         } else {
             console.error('Schedule not found for ID:', scheduleId);
             this.certified = null;
+            this.isCertified = false;
         }
+        
     
         // Open the modal view
         this.isModalView = true;

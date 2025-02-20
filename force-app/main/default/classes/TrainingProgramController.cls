@@ -42,7 +42,7 @@ public with sharing class TrainingProgramController {
 
         wrapper.certificates = [
             SELECT Id, Name, Required__c, Authority_By__c,
-                // (SELECT Id, Name, User__c, Expiration_Date__c, Status__c, Issued_Date__c, Score__c, Issuing_Authority__c FROM Certifieds__r),
+                (SELECT Id, Name, User__c, Expiration_Date__c, Status__c, Issued_Date__c, Score__c, Issuing_Authority__c FROM Certifieds__r),
                 (SELECT Id, Name, Certificate__c, (SELECT Id, Name, Milestone__c FROM Tasks__r) FROM Modules__r)
             FROM Certificate__c
             WHERE Program__c IN (
