@@ -59,7 +59,7 @@ public with sharing class ProgramController {
             FROM User 
             WHERE IsActive = true
             AND CreatedById = :UserInfo.getUserId()
-			// AND Profile.Name IN ('Intern')
+			AND Profile.Name IN ('Intern')
         ];
         
         wrapper.contacts = [
