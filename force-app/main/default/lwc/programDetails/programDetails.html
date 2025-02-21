@@ -141,6 +141,22 @@
                         </li>
                     </template>
                     </template>
+                    <template if:true={isModulesSelected}>
+                      <template for:each={modules} for:item="module">
+                        <li key={module.Id} class="slds-split-view__list-item" role="presentation" data-row={module.Id} onclick={handleRowModule}>
+                          <a href="#" role="option" class="slds-split-view__list-item-action slds-grow slds-has-flexi-truncate" tabindex="0">
+                            <div class="slds-grid slds-wrap">
+                              <span class="slds-truncate slds-text-body_regular slds-text-color_default" title={module.Name}>{module.Name}</span>
+                              <span class="slds-truncate slds-col_bump-left" title=""></span>
+                            </div>
+                            <div class="slds-grid slds-wrap">
+                              <span class="slds-truncate" title={module.Certificate__r.Name}>{module.Certificate__r.Name}.</span>
+                              <span class="slds-truncate slds-col_bump-left" title="Nurturing">--</span>
+                            </div>
+                          </a>
+                        </li>
+                      </template>
+                    </template>
                     <template if:true={isOnboardingSelected}>
                       <template for:each={onboardings} for:item="onboarding">
                         <li key={onboarding.Id} class="slds-split-view__list-item" role="presentation" data-row={onboarding.Id} onclick={handleRowOnboarding}>

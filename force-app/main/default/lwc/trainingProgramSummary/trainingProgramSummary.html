@@ -567,7 +567,7 @@
                                                         <lightning-input 
                                                             type="date" 
                                                             data-id="expireDate"
-                                                            value="certified.Expiration_Date__c"
+                                                            value={certified.Expiration_Date__c}
                                                             >
                                                         </lightning-input>
                                                     </template>
@@ -590,7 +590,7 @@
                                                 <template if:true={isEditing}>
                                                     <lightning-combobox 
                                                         type="text" 
-                                                        value="certified.Status__c"
+                                                        value={certified.Status__c}
                                                         options={statusOptions}
                                                         data-id="status"
                                                         >
@@ -614,7 +614,7 @@
                                                     <lightning-input 
                                                         type="date" 
                                                         data-id="issuedDate"
-                                                        value="certified.Issued_Date__c"
+                                                        value={certified.Issued_Date__c}
                                                         >
                                                     </lightning-input>
                                                 </template>
@@ -637,7 +637,7 @@
                                                         <lightning-input 
                                                             type="number" 
                                                             data-id="score"
-                                                            value="certified.Score__c"
+                                                            value={certified.Score__c}
                                                             >
                                                         </lightning-input>
                                                     </template>
@@ -659,7 +659,7 @@
                                                     <lightning-input 
                                                         type="text" 
                                                         data-id="author"
-                                                        value="certified.Issuing_Authority__c"
+                                                        value={certified.Issuing_Authority__c}
                                                         >
                                                     </lightning-input>
                                                 </template>

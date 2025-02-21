@@ -9,8 +9,6 @@ import createInterns from '@salesforce/apex/ProgramController.createInterns';
 import getOnboardingRecordType from '@salesforce/apex/ProgramController.getOnboardingRecordType';
 import { createRecord } from 'lightning/uiRecordApi';
 import ONBOARDING_OBJECT from '@salesforce/schema/Onboarding__c';
-import Certificate__c from '@salesforce/schema/Certified__ChangeEvent.Certificate__c';
-
 
 export default class ProgramDetails extends NavigationMixin(LightningElement) {
     @api recordId;
@@ -111,6 +109,15 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
             this.users = data.users;
             this.contacts = data.contacts;
 
+            let modules = [];
+            this.certificates.forEach(cert => {
+                if (cert.Modules__r) {
+                    modules = [...modules, ...cert.Modules__r]; 
+                }
+            });
+            this.modules = modules;
+            console.log(JSON.stringify(this.modules))
+
             this.checkCompletion();
         } else if (error) {
             this.error = error;
@@ -194,6 +201,12 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
                 value: 'Certificates',
                 iconName: 'standard:education',
                 hasData: this.program,
+            },
+            {
+                label: 'Modules',
+                value: 'Modules',
+                iconName: 'standard:books',
+                hasData: this.certificates && this.certificates.length > 0,
             },
             {
                 label: 'Interns',
@@ -281,6 +294,9 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     get isCertificatesSelected() {
         return this.selectedCategory === 'Certificates';
     }
+    get isModulesSelected() {
+        return this.selectedCategory === 'Modules';
+    }
 
     get isOnboardingSelected() {
         return this.selectedCategory === 'Onboardings';
@@ -300,6 +316,8 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         switch (this.selectedCategory) {
             case 'Certificates':
                 return this.certificates?.length || 0;
+            case 'Modules':
+                return this.modules?.length || 0;
             case 'Onboardings':
                 return this.onboardings?.length || 0;
             case 'Interns':
@@ -316,6 +334,19 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
             attributes: {
                 recordId: rowId,
                 objectApiName: 'Certificate__c', 
+                actionName: 'view'
+            }
+        });
+    }
+
+    handleRowModule(event) {
+        const rowId = event.currentTarget.dataset.row;
+    
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: {
+                recordId: rowId,
+                objectApiName: 'Module__c', 
                 actionName: 'view'
             }
         });
@@ -347,22 +378,22 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         });
     }
 
-    _editingStop() {
-        this.certificates = this.certificates.map((certificate) => {
-            return { ...certificate, isSelected: false };
-        });
+    // _editingStop() {
+    //     this.certificates = this.certificates.map((certificate) => {
+    //         return { ...certificate, isSelected: false };
+    //     });
 
-        this.assets = this.assets.map((asset) => {
-            return { ...asset, isSelected: false };
-        });
+    //     this.assets = this.assets.map((asset) => {
+    //         return { ...asset, isSelected: false };
+    //     });
         
 
-        this.interns = this.interns.map((intern) => {
-            return { ...intern, isSelected: false };
-        });
-        this.isEditing = false;
-        this.showProgram = true;
-    }
+    //     this.interns = this.interns.map((intern) => {
+    //         return { ...intern, isSelected: false };
+    //     });
+    //     this.isEditing = false;
+    //     this.showProgram = true;
+    // }
 
     validateStep() {
         let isValid = true;
