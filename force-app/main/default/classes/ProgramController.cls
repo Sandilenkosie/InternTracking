@@ -17,9 +17,10 @@ public with sharing class ProgramController {
         
         ProgramWrapper wrapper = new ProgramWrapper();
         wrapper.program = [
-            SELECT Id, Name, Department__c, Program_Type__c, Start_Date__c, Duration__c, Training__c,
-            (SELECT Id, Name, User__c, User__r.Name FROM Interns__r),
-            (SELECT Id, Name, Authority_By__c FROM Certificates__r)
+            SELECT Id, Name, 
+            (SELECT Id, Name, User__c FROM Interns__r),
+            (SELECT Id, NameFROM Certificates__r),
+            (SELECT Id, Name FROM Interns__r),
             FROM Program__c WHERE Id = :programId
         ];
         
@@ -59,7 +60,7 @@ public with sharing class ProgramController {
             FROM User 
             WHERE IsActive = true
             AND CreatedById = :UserInfo.getUserId()
-			AND Profile.Name IN ('Intern')
+			// AND Profile.Name IN ('Intern')
         ];
         
         wrapper.contacts = [
