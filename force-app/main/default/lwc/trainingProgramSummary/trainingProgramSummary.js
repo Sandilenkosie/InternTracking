@@ -134,7 +134,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
             // Re-apply the filter based on selected intern and current period
             this.applyFilter(this.getStartOfWeek(new Date()), this.getEndOfWeek(new Date()), this.selectedFilter);
             this.calculatePerformanceRating();
-            if (this.performanceRatingFormatted === 60 && !this.selectedIntern.Goals_Achieved__c) {
+            if (this.performanceRatingFormatted === 30 && !this.selectedIntern.Goals_Achieved__c) {
                 this.openModal();
             }
 
@@ -420,7 +420,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         const rating = this.template.querySelector('[data-id="rating"]').value;
         const stages = this.template.querySelector('[data-id="stages"]').value;
         const note = this.template.querySelector('[data-id="note"]').value;
-        // const trainingProgress = this.performanceRatingFormatted;
+        const trainingProgress = this.performanceRatingFormatted;
 
 
         savePerformanceRatingApex({
@@ -429,7 +429,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
             rating: rating,
             stages: stages,
             note: note,
-            // trainingProgress: trainingProgress
+            trainingProgress: trainingProgress
         })
             .then(() => {
                 this.showToast('Success', 'Goal Achieved updated successfully.', 'success');
@@ -437,7 +437,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
             })
             .catch(error => {
                 const errorMessage = error.body ? error.body.message : 'Unknown error occurred';
-                this.showToast('Error', 'Error saving Performances: ', errorMessage);
+                this.showToast('Error', 'Error saving Performances: ' + errorMessage, 'error');
             });
     }
 
