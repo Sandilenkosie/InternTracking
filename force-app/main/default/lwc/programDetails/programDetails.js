@@ -9,6 +9,7 @@ import createInterns from '@salesforce/apex/ProgramController.createInterns';
 import getOnboardingRecordType from '@salesforce/apex/ProgramController.getOnboardingRecordType';
 import { createRecord } from 'lightning/uiRecordApi';
 import ONBOARDING_OBJECT from '@salesforce/schema/Onboarding__c';
+import User__c from '@salesforce/schema/Certified__ChangeEvent.User__c';
 
 export default class ProgramDetails extends NavigationMixin(LightningElement) {
     @api recordId;
@@ -559,7 +560,10 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         const onboarding = JSON.parse(localStorage.getItem('onboarding')) || [];
         const selectedUsers = JSON.parse(localStorage.getItem('selectedUsers')) || [];
         // Prepare data for API calls
-        const assignedTo = selectedUsers.map(user => user.Id);
+        const assignedTo = selectedUsers.map(user => ({
+            Id: user.Id,
+            Name: user.Name,
+        }));
     
         const certificatesData = certificates.map(cert => ({
             Id: cert.Id || null,
@@ -570,7 +574,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         const onboardingData = {
             Name: onboarding.onboardName,
             Assigned_To__c: Array.isArray(assignedTo) && assignedTo.length > 0 
-                            ? assignedTo[0]
+                            ? assignedTo[0].Id
                             : null,
 
             Type__c: onboarding.Type__c,
@@ -607,7 +611,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
                         Certificate__c: matchingCertificate ? matchingCertificate.Id : null,
                     };
                 });
-                return createModules({ modules: modulesData });
+                return createModules({ modules: modulesData,assignedTo, programId: this.recordId });
             } else {
                 this.errorMessage = ('No certificates created');
             }
@@ -616,6 +620,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         .then(() => createRecord(recordInput))
         .then(() => {
             this.showToast('Success', 'All data saved successfully!', 'success');
+            this.dispatchEvent(new CustomEvent('success', { detail: 'All data saved successfully!' }));
             this.refreshPage();
             this.closeModel();
             this._editingStop();

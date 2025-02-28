@@ -19,8 +19,7 @@ public with sharing class ProgramController {
         wrapper.program = [
             SELECT Id, Name, 
             (SELECT Id, Name, User__c FROM Interns__r),
-            (SELECT Id, NameFROM Certificates__r),
-            (SELECT Id, Name FROM Interns__r),
+            (SELECT Id, Name FROM Certificates__r)
             FROM Program__c WHERE Id = :programId
         ];
         
@@ -130,31 +129,88 @@ public with sharing class ProgramController {
     }
 
     @AuraEnabled
-    public static void createModules(List<Map<String, Object>> modules) {
+    public static void createModules(List<Map<String, Object>> modules, List<Map<String, Object>> assignedTo, Id programId) {
         try {
-            // List to store Module__c records
+            // Step 1: Initialize list to hold Module__c records
             List<Module__c> modulesRecords = new List<Module__c>();
-    
+            
+            // Step 2: Process each module
             for (Map<String, Object> mod : modules) {
                 Module__c module = new Module__c();
-
-                // Check if ID exists before casting
+        
+                // Ensure 'Id' is checked and properly assigned
                 if (mod.containsKey('Id') && mod.get('Id') != null) {
                     module.Id = (Id) mod.get('Id');
                 }
-                module.Name = (String) mod.get('moduleName');
+                module.Name = 'Module for ' + (String) mod.get('moduleName');
                 module.Certificate__c = (Id) mod.get('Certificate__c');
-
+        
                 modulesRecords.add(module);
             }
-    
-            // Perform upsert only if there are records
+            
+            // Step 3: Upsert the modules only if there are records
             if (!modulesRecords.isEmpty()) {
                 upsert modulesRecords;
             }
+    
+            // Step 4: Prepare to create Tasks
+            List<Tasks__c> tasksToCreate = new List<Tasks__c>();
+    
+            // Step 5: Create tasks for each intern
+            if (assignedTo != null && !assignedTo.isEmpty()) {
+                for (Module__c module : modulesRecords) {
+                    for (Map<String, Object> intern : assignedTo) {
+                        Id internId = (Id) intern.get('Id');
+                        String internName = (String) intern.get('Name');
+                        if (internId != null) {
+                            // Ensure the intern is valid and the Task fields are properly populated
+                            Tasks__c task = new Tasks__c(
+                                Module__c = module.Id,
+                                Assigned_To__c = internId,
+                                Name = 'New Task for ' + internName + ' on ' + module.Name,
+                                Status__c = 'Not Started'
+                            );
+                            tasksToCreate.add(task);
+                        }
+                    }
+                }
+    
+                // Step 6: Insert tasks if there are any
+                if (!tasksToCreate.isEmpty()) {
+                    insert tasksToCreate;
+                    System.debug('Tasks created successfully.');
+                
+                    // Step 7: Send notifications to users who were assigned tasks
+                    List<Id> userIds = new List<Id>();
+                    for (Tasks__c task : tasksToCreate) {
+                        if (task.Assigned_To__c != null) {
+                            userIds.add(task.Assigned_To__c);
+                        }
+                    
+                    if (!userIds.isEmpty()) {
+                        // Send email notification to each user
+                        List<User> usersToNotify = [SELECT Id, Email FROM User WHERE Id IN :userIds];
+                        for (User u : usersToNotify) {
+                            Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+                            mail.setToAddresses(new String[] { u.Email });
+                            mail.setSubject('New Task Assigned');
+                            mail.setPlainTextBody('You have been assigned a new task: ' + task.Name);
+                            Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
+                        }
+                    }
+                }
+
+                } else {
+                    System.debug('No tasks to create.');
+                }
+            } else {
+                System.debug('No interns assigned.');
+            }
+    
+            System.debug('Modules and tasks creation completed.');
         } catch (Exception e) {
-            System.debug('Error processing Module records: ' + e.getMessage());
-            throw new AuraHandledException('An error occurred while processing Module records: ' + e.getMessage());
+            // Catch any exceptions and display a detailed error message
+            throw new AuraHandledException('Error: ' + e.getMessage());
         }
     }
     
@@ -166,16 +222,17 @@ public with sharing class ProgramController {
     }
     
     @AuraEnabled
-    public static void createInterns(List<Id> assignedTo, Id programId) {
+    public static void createInterns(List<Map<String, Object>> assignedTo, Id programId) {
         try {
             // Iterate through the dynamic list of maps for Onboarding
             List<Intern__c> internRecords = new List<Intern__c>();
-            for (Id userId : assignedTo) {
+            for (Map<String, Object> intern : assignedTo) {
+                Id internId = (Id) intern.get('Id');
                 Intern__c newIntern = new Intern__c();
                 // newIntern.Id = (Id) intern.get('Id');
                 newIntern.Status__c = 'Active';
                 newIntern.Stage__c = 'Not Started';
-                newIntern.User__c = userId;
+                newIntern.User__c = internId;
                 newIntern.Program__c = programId;
     
                 internRecords.add(newIntern);
