@@ -182,10 +182,13 @@ public with sharing class ProgramController {
                 
                     // Step 7: Send notifications to users who were assigned tasks
                     List<Id> userIds = new List<Id>();
+                    String emailBody = 'You have been assigned new tasks:\n\n';
                     for (Tasks__c task : tasksToCreate) {
                         if (task.Assigned_To__c != null) {
                             userIds.add(task.Assigned_To__c);
                         }
+                        emailBody += '• ' + task.Name + '\n';
+                    }
                     
                     if (!userIds.isEmpty()) {
                         // Send email notification to each user
@@ -194,9 +197,8 @@ public with sharing class ProgramController {
                             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
                             mail.setToAddresses(new String[] { u.Email });
                             mail.setSubject('New Task Assigned');
-                            mail.setPlainTextBody('You have been assigned a new task: ' + task.Name);
+                            mail.setPlainTextBody(emailBody);
                             Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
-                        }
                     }
                 }
 
