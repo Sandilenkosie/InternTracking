@@ -620,12 +620,10 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         .then(() => createRecord(recordInput))
         .then(() => {
             this.showToast('Success', 'All data saved successfully!', 'success');
+            location.reload();
             this.dispatchEvent(new CustomEvent('success', { detail: 'All data saved successfully!' }));
             this.refreshPage();
             this.closeModel();
-            this._editingStop();
-            location.reload();
-
 
             localStorage.clear();
         })
