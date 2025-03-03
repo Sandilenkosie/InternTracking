@@ -1246,19 +1246,19 @@
                               </div>
                   
                               <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
-                                  <lightning-input
+                                  <!-- <lightning-input
                                       label="Status"
                                       value={onboarding.Status__c}
                                       name="Status__c"
                                       required
                                       data-index={index}
                                       onchange={OnboardingChanges}>
-                                  </lightning-input>
+                                  </lightning-input> -->
                                   <lightning-input
-                                    label="Assigned Date"
+                                    label="Returned Date"
                                     type="date"
-                                    value={onboarding.Assigned_Date__c}
-                                    name="Assigned_Date__c"
+                                    value={onboarding.Returned_Date__c}
+                                    name="Returned_Date__c"
                                     required
                                     data-index={index}
                                     onchange={OnboardingChanges}>
@@ -1291,10 +1291,10 @@
                                   </lightning-textarea>
 
                                   <lightning-input
-                                    label="Assigned Date"
+                                    label="Returned Date"
                                     type="date"
-                                    value={onboarding.Assigned_Date__c}
-                                    name="Assigned_Date__c"
+                                    value={onboarding.Returned_Date__c}
+                                    name="Returned_Date__c"
                                     required
                                     data-index={index}
                                     onchange={OnboardingChanges}>

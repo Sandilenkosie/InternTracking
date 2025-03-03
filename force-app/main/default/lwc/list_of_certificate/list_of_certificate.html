@@ -47,4 +47,86 @@
             </div>
         </template>
     </template>
+
+    <template if:true={showOnboarding}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="header43" class="slds-modal slds-fade-in-open slds-modal_small">
+            <div class="slds-modal__container">
+                <button class="slds-button slds-button_icon slds-modal__close" onclick={closeModel}>
+                    <lightning-icon class="slds-button__icon slds-button__icon_large" icon-name="utility:close" size="small"></lightning-icon>
+                </button>
+                  <div class="slds-modal__header">
+                      <h1 class="slds-text-heading_medium">Onboardings needed to be Complete</h1>
+                  </div>
+
+                <div class="slds-modal__content slds-grow slds-p-around_medium" id="modal-content-id-1">
+                    <lightning-datatable
+                        data={onboardings}
+                        columns={columns}
+                        key-field="Id"
+                        onsort={handleSort}
+                        onrowaction={handleRowAction}
+                    ></lightning-datatable>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </template>
+
+    <template if:true={showOnboardingForm}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="header43" class="slds-modal slds-fade-in-open slds-modal_small">
+            <div class="slds-modal__container">
+                <button class="slds-button slds-button_icon slds-modal__close" onclick={closeModel}>
+                    <lightning-icon class="slds-button__icon slds-button__icon_large" icon-name="utility:close" size="small"></lightning-icon>
+                </button>
+                  <div class="slds-modal__header">
+                      <h1 class="slds-text-heading_medium">Complete Onboarding Form</h1>
+                  </div>
+                  <lightning-record-edit-form object-api-name="Onboarding__c"
+                    record-id={onboardingId}
+                    onsuccess={handleSuccess}
+                    onerror={handleError}>
+                        <div class="slds-modal__content slds-grow slds-p-around_medium">
+                            <!-- Display Validation Messages -->
+                            <lightning-messages></lightning-messages>
+
+                            <!-- 2-Column Grid Layout -->
+                            <div class="slds-grid slds-wrap">
+                                <!-- Left Column -->
+                                <div class="slds-size_1-of-2 slds-p-around_small">
+                                    <lightning-input-field field-name="Name" disabled></lightning-input-field>
+                                    <lightning-input-field field-name="Assigned_Date__c" disabled></lightning-input-field>
+                                    <lightning-input-field field-name="Description__c" disabled></lightning-input-field>
+                                </div>
+
+                                <!-- Right Column -->
+                                <div class="slds-size_1-of-2 slds-p-around_small">
+                                    <lightning-input-field field-name="Type__c" disabled></lightning-input-field>
+                                    <lightning-input-field field-name="Returned_Date__c" disabled></lightning-input-field>
+                                    <lightning-input-field field-name="Special_Terms__c" disabled></lightning-input-field>
+                                </div>
+
+                                <!-- Left Column -->
+                                <div class="slds-size_1-of-2 slds-p-around_small">
+                                    <lightning-input-field field-name="Start_Date__c" disabled></lightning-input-field>
+                                </div>
+                                <div class="slds-size_1-of-2 slds-p-around_small">
+                                    <lightning-input-field field-name="End_Date__c" disabled></lightning-input-field>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="slds-modal__footer slds-grid slds-grid_align-spread">
+                            <div class="slds-size_1-of-2 slds-p-around_small">
+                                <lightning-input-field field-name="Signature__c"></lightning-input-field>
+                            </div>
+                            <div class="slds-size_1-of-2 slds-p-around_small">
+                                <lightning-button label="Submit" type="submit" variant="brand"></lightning-button>
+                            </div>
+                        </div>
+                </lightning-record-edit-form>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </template>
+    
 </template>
