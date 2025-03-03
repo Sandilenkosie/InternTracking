@@ -9,8 +9,12 @@ export default class InternCertificates extends LightningElement {
     @track certificates = []; 
     @track onboardings = []; 
     @track onboardingId;
+    @track recordTypeId;
     @track showOnboarding = false;
     @track showOnboardingForm = false;
+
+    isContract = false;
+    isAssect = false;
 
     error;
     selectedIntern = '';
@@ -75,6 +79,11 @@ export default class InternCertificates extends LightningElement {
         const row = event.detail.row;
         const onboardingId = row.Id;
         this.onboardingId = onboardingId;
+        this.recordTypeId = row.RecordTypeId;
+
+        // Set flags based on RecordTypeId
+        this.isContract = (this.recordTypeId === 'Asset_Records');
+        this.isAssect = (this.recordTypeId === 'Contract_Records');
         this.showOnboarding = false;
         this.showOnboardingForm = true;
     }

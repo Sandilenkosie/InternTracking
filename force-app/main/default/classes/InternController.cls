@@ -25,7 +25,18 @@ public with sharing class InternController {
 
         // Fetch onboardings for the intern where the Assigned_To__c matches the current user
         wrapper.onboardings = [
-            SELECT Id, Name, Assigned_To__c, Assigned_Date__c, Returned_Date__c, Type__c, Status__c, Description__c, Special_Terms__c
+            SELECT Id, 
+            Name, 
+            Assigned_To__c, 
+            Assigned_Date__c, 
+            Returned_Date__c, 
+            Type__c, 
+            Status__c,
+            Description__c, 
+            Special_Terms__c,
+            Condition_Before__c,
+            Condition_After__c,
+            Serial_Number__c
             FROM Onboarding__c 
             WHERE Assigned_To__c = :UserInfo.getUserId()
         ];

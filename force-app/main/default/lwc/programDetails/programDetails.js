@@ -580,12 +580,13 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
             Type__c: onboarding.Type__c,
             Assigned_Date__c: new Date().toISOString().split('T')[0], // Get today's date in ISO format
             Returned_Date__c: onboarding.Returned_Date__c,
-            // Condition_Before__c: onboarding.Condition_Before__c,
+            Condition_Before__c: onboarding.Condition_Before__c,
+            Condition_After__c: onboarding.Condition_After__c,
             Contact__c: onboarding.Contact__c,
             Serial_Number__c: onboarding.Serial_Number__c,
             Status__c: onboarding.Status__c,
             Special_Terms__c: onboarding.Special_Terms__c,
-            Status__c: '--None--',
+            // Status__c: '--None--',
             Description__c: onboarding.Description__c,
             Program__c: this.recordId,
             RecordTypeId: this.recordTypeId

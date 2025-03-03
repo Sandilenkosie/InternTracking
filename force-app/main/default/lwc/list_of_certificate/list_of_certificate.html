@@ -82,37 +82,68 @@
                       <h1 class="slds-text-heading_medium">Complete Onboarding Form</h1>
                   </div>
                   <lightning-record-edit-form object-api-name="Onboarding__c"
-                    record-id={onboardingId}
-                    onsuccess={handleSuccess}
-                    onerror={handleError}>
+                                                record-id={onboardingId}
+                                                onsuccess={handleSuccess}
+                                                record-type-id={recordTypeId}
+                                                onerror={handleError}>
                         <div class="slds-modal__content slds-grow slds-p-around_medium">
                             <!-- Display Validation Messages -->
                             <lightning-messages></lightning-messages>
+                            <!-- <lightning-input-field field-name="RecordTypeId" disabled></lightning-input-field> -->
 
                             <!-- 2-Column Grid Layout -->
-                            <div class="slds-grid slds-wrap">
-                                <!-- Left Column -->
-                                <div class="slds-size_1-of-2 slds-p-around_small">
-                                    <lightning-input-field field-name="Name" disabled></lightning-input-field>
-                                    <lightning-input-field field-name="Assigned_Date__c" disabled></lightning-input-field>
-                                    <lightning-input-field field-name="Description__c" disabled></lightning-input-field>
-                                </div>
+                            <template if:true={isContract}>
+                                <div class="slds-grid slds-wrap">
+                                    
+                                    <!-- Left Column -->
+                                    <div class="slds-size_1-of-2 slds-p-around_small">
+                                        <lightning-input-field field-name="Name" disabled></lightning-input-field>
+                                        <lightning-input-field field-name="Assigned_Date__c" disabled></lightning-input-field>
+                                        <lightning-input-field field-name="Description__c" disabled></lightning-input-field>
+                                    </div>
 
-                                <!-- Right Column -->
-                                <div class="slds-size_1-of-2 slds-p-around_small">
-                                    <lightning-input-field field-name="Type__c" disabled></lightning-input-field>
-                                    <lightning-input-field field-name="Returned_Date__c" disabled></lightning-input-field>
-                                    <lightning-input-field field-name="Special_Terms__c" disabled></lightning-input-field>
-                                </div>
+                                    <!-- Right Column -->
+                                    <div class="slds-size_1-of-2 slds-p-around_small">
+                                        <lightning-input-field field-name="Type__c" disabled></lightning-input-field>
+                                        <lightning-input-field field-name="Returned_Date__c" disabled></lightning-input-field>
+                                        <lightning-input-field field-name="Special_Terms__c" disabled></lightning-input-field>
+                                    </div>
 
-                                <!-- Left Column -->
-                                <div class="slds-size_1-of-2 slds-p-around_small">
-                                    <lightning-input-field field-name="Start_Date__c" disabled></lightning-input-field>
+                                    <!-- Left Column -->
+                                    <div class="slds-size_1-of-2 slds-p-around_small">
+                                        <lightning-input-field field-name="Start_Date__c" disabled></lightning-input-field>
+                                    </div>
+                                    <div class="slds-size_1-of-2 slds-p-around_small">
+                                        <lightning-input-field field-name="End_Date__c" disabled></lightning-input-field>
+                                    </div>
                                 </div>
-                                <div class="slds-size_1-of-2 slds-p-around_small">
-                                    <lightning-input-field field-name="End_Date__c" disabled></lightning-input-field>
+                            </template>
+                            <template if:true={isAssect}>
+                                <div class="slds-grid slds-wrap">
+                                    
+                                    <!-- Left Column -->
+                                    <div class="slds-size_1-of-2 slds-p-around_small">
+                                        <lightning-input-field field-name="Name" disabled></lightning-input-field>
+                                        <lightning-input-field field-name="Assigned_Date__c" disabled></lightning-input-field>
+                                        <lightning-input-field field-name="Condition_Before__c" disabled></lightning-input-field>
+                                    </div>
+
+                                    <!-- Right Column -->
+                                    <div class="slds-size_1-of-2 slds-p-around_small">
+                                        <lightning-input-field field-name="Serial_Number__c" disabled></lightning-input-field>
+                                        <lightning-input-field field-name="Returned_Date__c" disabled></lightning-input-field>
+                                        <lightning-input-field field-name="Condition_After__c" disabled></lightning-input-field>
+                                    </div>
+
+                                    <!-- Left Column -->
+                                    <div class="slds-size_1-of-2 slds-p-around_small">
+                                        <lightning-input-field field-name="Start_Date__c" disabled></lightning-input-field>
+                                    </div>
+                                    <div class="slds-size_1-of-2 slds-p-around_small">
+                                        <lightning-input-field field-name="End_Date__c" disabled></lightning-input-field>
+                                    </div>
                                 </div>
-                            </div>
+                            </template>
                             
                         </div>
                         <div class="slds-modal__footer slds-grid slds-grid_align-spread">
