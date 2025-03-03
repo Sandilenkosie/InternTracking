@@ -36,7 +36,8 @@ public with sharing class InternController {
             Special_Terms__c,
             Condition_Before__c,
             Condition_After__c,
-            Serial_Number__c
+            Serial_Number__c,
+            RecordTypeId 
             FROM Onboarding__c 
             WHERE Assigned_To__c = :UserInfo.getUserId()
         ];
@@ -44,12 +45,38 @@ public with sharing class InternController {
         return wrapper;
     }
 
+    @AuraEnabled(cacheable=true)
+    public static Map<String, String> getOnboardingRecordType() {
+        Map<String, String> recordTypeMap = new Map<String, String>();
+        
+        // Query RecordType for Onboarding__c object by DeveloperName
+        List<RecordType> recordTypes = [
+            SELECT Id, DeveloperName FROM RecordType 
+            WHERE SObjectType = 'Onboarding__c' 
+            AND (DeveloperName = 'Contract_Records' OR DeveloperName = 'Asset_Records')
+        ];
+        
+        for (RecordType rt : recordTypes) {
+            recordTypeMap.put(rt.DeveloperName, rt.Id);
+        }
+        
+        return recordTypeMap;
+    }
 
     @AuraEnabled
     public static Boolean shouldShowOnboardingForm(Id onboardingId) {
         try {
             // Query for the Onboarding__c record
-            Onboarding__c onboardingRecord = [SELECT Id, Assigned_To__c, Signature__c FROM Onboarding__c WHERE Id = :onboardingId LIMIT 1];
+            Onboarding__c onboardingRecord = [SELECT Id, 
+                Name, 
+                Assigned_To__c, 
+                Assigned_Date__c, 
+                Type__c, 
+                Status__c,
+                Signature__c,
+                RecordTypeId
+                FROM Onboarding__c
+                WHERE Id = :onboardingId LIMIT 1];
 
             // Check if the onboarding record exists and if it matches the current user and the signature is null
             if (onboardingRecord != null && onboardingRecord.Assigned_To__c == UserInfo.getUserId() && onboardingRecord.Signature__c == null) {
@@ -62,4 +89,31 @@ public with sharing class InternController {
 
         return false;
     }
+
+    @AuraEnabled(cacheable=true)
+    public static List<Onboarding__c> getOnboardingWithSignature() {
+        List<Onboarding__c> onboardingList = new List<Onboarding__c>();
+
+        try {
+            // Query for Onboarding__c records with non-null Signature__c
+            onboardingList = [SELECT Id, 
+                                    Name, 
+                                    Assigned_To__c, 
+                                    Assigned_Date__c, 
+                                    Type__c, 
+                                    Status__c,
+                                    Signature__c,
+                                    RecordTypeId
+                            FROM Onboarding__c
+                            WHERE Assigned_To__c = :UserInfo.getUserId()
+                            AND Signature__c != null];
+
+        } catch (QueryException e) {
+            // Optional: You can add debug logging if needed
+            System.debug('Error: No onboarding records found with signature for the current user');
+        }
+
+        return onboardingList;
+    }
+
 }

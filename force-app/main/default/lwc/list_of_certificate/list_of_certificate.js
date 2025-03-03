@@ -2,7 +2,7 @@ import { LightningElement, api, track, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getInternDetails from '@salesforce/apex/InternController.getInternDetails';
 import shouldShowOnboardingForm from '@salesforce/apex/InternController.shouldShowOnboardingForm';
-
+import getOnboardingRecordType from '@salesforce/apex/InternController.getOnboardingRecordType';
 
 export default class InternCertificates extends LightningElement {
     @api recordId;
@@ -20,10 +20,11 @@ export default class InternCertificates extends LightningElement {
     selectedIntern = '';
 
     columns = [
+        // { label: 'Record Type', fieldName: 'RecordTypeId', type: 'text', hidden: true },
         { label: 'Onboarding Name', fieldName: 'Name', type: 'text' },
         // { label: 'Contact', fieldName: 'Contact__c', type: 'text' },
         { label: 'Assigned Date', fieldName: 'Assigned_Date__c', type: 'date' },
-        { label: 'Due Date', fieldName: 'Returned_Date__c', type: 'date' },
+        // { label: 'Due Date', fieldName: 'Returned_Date__c', type: 'date' },
         { label: 'Type', fieldName: 'Type__c', type: 'text' },
         { label: 'Status', fieldName: 'Status__c', type: 'text' },
         {
@@ -75,15 +76,26 @@ export default class InternCertificates extends LightningElement {
         }
     }
 
+    @wire(getOnboardingRecordType)
+    recordTypeMap;
+
     handleRowAction(event) {
         const row = event.detail.row;
         const onboardingId = row.Id;
         this.onboardingId = onboardingId;
         this.recordTypeId = row.RecordTypeId;
 
+        console.log('recordType Id: ',this.recordTypeId);
+
         // Set flags based on RecordTypeId
-        this.isContract = (this.recordTypeId === 'Asset_Records');
-        this.isAssect = (this.recordTypeId === 'Contract_Records');
+        if (this.recordTypeMap.data) {
+            console.log('RecordTypeMap Data:', this.recordTypeMap.data);
+            this.isContract = (this.recordTypeId === this.recordTypeMap.data['Contract_Records']);
+            this.isAsset = (this.recordTypeId === this.recordTypeMap.data['Asset_Records']);
+        }
+
+        console.log('Is Contract:', this.isContract);
+        console.log('Is Asset:', this.isAsset);
         this.showOnboarding = false;
         this.showOnboardingForm = true;
     }

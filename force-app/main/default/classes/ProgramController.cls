@@ -69,40 +69,6 @@ public with sharing class ProgramController {
   		 return wrapper;
     }
     
-    @AuraEnabled
-    public static void updateProgram(Map<String, Object> program) {
-        try {
-            // Validate that the program map contains an Id
-            if (!program.containsKey('Id') || String.isBlank((String) program.get('Id'))) {
-                throw new AuraHandledException('Program Id is required for updating.');
-            }
-    
-            // Retrieve the program record to update
-            Program__c prog = [
-                SELECT Id, Name, Department__c, Program_Type__c, Start_Date__c
-                FROM Program__c
-                WHERE Id = :((String) program.get('Id'))
-                LIMIT 1
-            ];
-    
-            // Update fields from the provided map
-            prog.Name = (String) program.get('Name');
-            prog.Department__c = (String) program.get('Department__c');
-            prog.Program_Type__c = (String) program.get('Program_Type__c');
-            prog.Start_Date__c = parseDate((String) program.get('Start_Date__c'));
-    
-            // Perform the update
-            update prog;
-    
-        } catch (QueryException qe) {
-            throw new AuraHandledException('Program record with the provided Id does not exist.');
-        } catch (DmlException de) {
-            throw new AuraHandledException('Error while updating the Program record: ' + de.getMessage());
-        } catch (Exception e) {
-            throw new AuraHandledException('Unexpected error: ' + e.getMessage());
-        }
-    }
-    
 
     @AuraEnabled
     public static List<Certificate__c> createCertificates(List<Map<String, Object>> certificates, Id programId) {
@@ -233,7 +199,7 @@ public with sharing class ProgramController {
                 Intern__c newIntern = new Intern__c();
                 // newIntern.Id = (Id) intern.get('Id');
                 newIntern.Status__c = 'Active';
-                newIntern.Stage__c = 'Not Started';
+                newIntern.Stage__c = 'Onboarding';
                 newIntern.User__c = internId;
                 newIntern.Program__c = programId;
     

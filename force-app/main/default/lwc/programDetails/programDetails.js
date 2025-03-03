@@ -9,10 +9,10 @@ import createInterns from '@salesforce/apex/ProgramController.createInterns';
 import getOnboardingRecordType from '@salesforce/apex/ProgramController.getOnboardingRecordType';
 import { createRecord } from 'lightning/uiRecordApi';
 import ONBOARDING_OBJECT from '@salesforce/schema/Onboarding__c';
-import User__c from '@salesforce/schema/Certified__ChangeEvent.User__c';
 
 export default class ProgramDetails extends NavigationMixin(LightningElement) {
     @api recordId;
+    @track recordTypeId;
 
     @track errorMessage = '';
     @track popoverStyle = '';
@@ -80,7 +80,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     @track typeOptions = [
         { label: 'Asset', value: 'Asset' },
         { label: 'Contract', value: 'Contract' },
-        { label: 'Education Background', value: 'Education Background' },
+        // { label: 'Education Background', value: 'Education Background' },
     ];
 
     @track progress = 0;
@@ -327,6 +327,12 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
                 return 0;
         }
     }
+
+    editProgram(){
+        this.isEditingProgram = true;
+    }
+
+
     handleRowCertificate(event) {
         const rowId = event.currentTarget.dataset.row;
     
@@ -472,30 +478,31 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
             localStorage.setItem('onboarding', JSON.stringify(this.tempOnboarding));
         }
     
-        // Handle Type__c logic
+        // Simplified Type__c logic
         if (field === 'Type__c') {
             this.isAssetSelected = value === 'Asset';
-            getOnboardingRecordType({ recordTypeName: 'Asset_Records' }) 
-            .then(result => {
-                this.recordTypeId = result;
-            })
-
-        }
-        if (field === 'Type__c'){
             this.isContractSelected = value === 'Contract';
-            getOnboardingRecordType({ recordTypeName: 'Contract_Records' }) 
-            .then(result => {
-                this.recordTypeId = result;
-            })
-        }
-        if(field === 'Type__c'){
-            this.isEducationSelected = value === 'Education Background';
-            getOnboardingRecordType({ recordTypeName: 'Education_Records' }) 
-            .then(result => {
-                this.recordTypeId = result;
-            })
+    
+            const recordTypeMap = {
+                'Asset': 'Asset Records',
+                'Contract': 'Contract Records'
+            };
+    
+            const recordTypeName = recordTypeMap[value];
+    
+            if (recordTypeName) {
+                getOnboardingRecordType({ recordTypeName })
+                    .then(result => {
+                        this.recordTypeId = result;
+                    })
+                    .catch(error => console.error("Error fetching Record Type:", error));
+            } else {
+                this.recordTypeId = null;  // Clear if no match
+            }
         }
     }
+    
+    
 
     // Add a new Module row dynamically
     addModule() {
@@ -530,7 +537,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         this.tempCertificates = [...this.tempCertificates, newCertificate];
 
     }
-
 
     // Delete a row based on the ID
     deleteRow(event) {
@@ -578,7 +584,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
                             : null,
         
             Type__c: onboarding.Type__c,
-            Assigned_Date__c: new Date().toISOString().split('T')[0], // Get today's date in ISO format
+            Assigned_Date__c: new Date().toISOString().split('T')[0],
             Returned_Date__c: onboarding.Returned_Date__c,
             Condition_Before__c: onboarding.Condition_Before__c,
             Condition_After__c: onboarding.Condition_After__c,
@@ -820,6 +826,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         this.isModalOnboarding = false;
         this.isModalIntern = false;
         this.isModalProgram = false;
+        this.isEditingProgram = false;
     }
 
     closePopOver(){

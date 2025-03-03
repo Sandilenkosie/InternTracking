@@ -197,99 +197,129 @@
 
         <div class="slds-col slds-size_1-of-9 slds-p-around_x-small">
           <div class="slds-tabs_default">
-              <!-- Program Tab Content -->
-              <template if:true={showProgram}>
+            <!-- Program Tab Content -->
+            <template if:true={showProgram}>
+              <template if:false={isEditingProgram}>
                 <div class="slds-tabs_default__content slds-show" role="tabpanel" aria-labelledby="tab-default-1__item">
                     <div class="slds-form" role="list">
+                      <lightning-record-view-form record-id={recordId} object-api-name="Program__c">
+                        <div class="slds-form__row">
+                          <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                <div class="slds-form-element__control">
+                                    <div class="slds-form-element__static">
+                                      <lightning-output-field field-name="Name"></lightning-output-field>
+                                    </div>
+                                    <button class="slds-button slds-button_icon" title="Edit: Program Name" onclick={editProgram}>
+                                        <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
+                                    </button>
+                                </div>
+                            </div>
+                          </div>
+          
+                          <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                <div class="slds-form-element__control">
+                                    <div class="slds-form-element__static">
+                                      <lightning-output-field field-name="Program_Type__c"></lightning-output-field>
+                                    </div>
+                                    <button class="slds-button slds-button_icon" title="Edit: Program Type" onclick={editProgram}>
+                                        <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
+                                    </button>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+            
                         <div class="slds-form__row">
                             <div class="slds-form__item" role="listitem">
-                                <template if:true={isEditingProgram}>
-                                  <div class="slds-form-element slds-form-element_stacked ">
-                                      <lightning-input label="Program Name" name="Name" data-id={program.Id} value={program.Name} onchange={handleObjectChanges}></lightning-input>
-                                  </div>
-                                </template>
-                                <template if:false={isEditingProgram}>
-                                  <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
-                                    <span class="slds-form-element__label">
-                                    <abbr class="slds-required" title="required">* </abbr>Program Name</span>
-                                    <div class="slds-form-element__control">
-                                      <div class="slds-form-element__static">{program.Name}</div>
-                                      <button class="slds-button slds-button_icon" title="Edit: Program Name" onclick={_editProgram}>
+                              <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                  <div class="slds-form-element__control">
+                                      <div class="slds-form-element__static">
+                                        <lightning-output-field field-name="Training__c"></lightning-output-field>
+                                      </div>
+                                      <button class="slds-button slds-button_icon" title="Edit: Department" onclick={editProgram}>
                                           <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
                                       </button>
-                                    </div>
                                   </div>
-                                </template>
-                            </div>
-
-                            <div class="slds-form__item" role="listitem">
-                              <template if:true={isEditingProgram}>
-                                <div class="slds-form-element slds-form-element_stacked">
-                                    <lightning-combobox label="Program Type" options={programtypeOptions} data-id={program.Id} name="Program_Type__c" value={program.Program_Type__c} onchange={handleObjectChanges}></lightning-combobox>
-                                </div>
-                              </template>
-                              <template if:false={isEditingProgram}>
-                                <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
-                                  <span class="slds-form-element__label">
-                                  <abbr class="slds-required" title="required">* </abbr>Program Type</span>
-                                  <div class="slds-form-element__control">
-                                    <div class="slds-form-element__static">{program.Program_Type__c}</div>
-                                    <button class="slds-button slds-button_icon" title="Edit: Program Type" onclick={_editProgram}>
-                                        <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
-                                    </button>
-                                  </div>
-                                </div>
-                              </template>
-                            </div>
-                        </div>
-                        <div class="slds-form__row">
-                            <div class="slds-form__item" role="listitem">
-                              <template if:true={isEditingProgram}>
-                                <div class="slds-form-element slds-form-element_stacked">
-                                  <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
-                                    <lightning-input label="Department" name="Department__c" data-id={program.Id} value={program.Department__c} onchange={handleObjectChanges}></lightning-input>
-                                  </div>
-                                </div>
-                              </template>
-                              <template if:false={isEditingProgram}>
-                                <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
-                                  <span class="slds-form-element__label">
-                                  <abbr class="slds-required" title="required">* </abbr>Department</span>
-                                  <div class="slds-form-element__control">
-                                    <div class="slds-form-element__static">{program.Department__c}</div>
-                                    <button class="slds-button slds-button_icon" title="Edit: Department" onclick={_editProgram}>
-                                        <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
-                                    </button>
-                                  </div>
-                                </div>
-                              </template>
-                          </div>
-                          <div class="slds-form__item" role="listitem">
-                            <template if:true={isEditingProgram}>
-                              <div class="slds-form-element slds-form-element_stacked ">
-                                <label class="slds-form-element__label" for="stacked-form-element-id-03">Start Date</label>
-                                <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
-                                  <lightning-input label="Start Date" type="date" name="Start_Date__c" data-id={program.Id} value={program.Start_Date__c} onchange={handleObjectChanges} ></lightning-input>
-                                </div>
                               </div>
-                            </template>
-                            <template if:false={isEditingProgram}>
+                            </div>
+            
+                            <div class="slds-form__item" role="listitem">
                               <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
-                                <span class="slds-form-element__label">
-                                <abbr class="slds-required" title="required">* </abbr>Start date</span>
-                                <div class="slds-form-element__control">
-                                  <div class="slds-form-element__static">{program.Start_Date__c}</div>
-                                  <button class="slds-button slds-button_icon" title="Edit: Start Date" onclick={_editProgram}>
-                                      <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
-                                  </button>
-                                </div>
+                                  <div class="slds-form-element__control">
+                                      <div class="slds-form-element__static">
+                                        <lightning-output-field field-name="Start_Date__c"></lightning-output-field>
+                                      </div>
+                                      <button class="slds-button slds-button_icon" title="Edit: Start Date" onclick={editProgram}>
+                                          <lightning-icon icon-name="utility:edit" size="x-small"></lightning-icon>
+                                      </button>
+                                  </div>
                               </div>
-                            </template>
+                            </div>
                         </div>
-                        </div>
+                      </lightning-record-view-form>
                     </div>
                 </div>
+              </template>
+          
+              <template if:true={isEditingProgram}>
+                <div class="slds-tabs_default__content slds-show" role="tabpanel" aria-labelledby="tab-default-1__item">
+                  <div class="slds-form" role="list">
+                    <lightning-record-edit-form object-api-name="Program__c" record-id={recordId} onsuccess={handleSuccess} onerror={handleError}>
+                      <div class="slds-form__row">
+                        <div class="slds-form__item" role="listitem">
+                          <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                              <div class="slds-form-element__control">
+                                  <div class="slds-form-element__static">
+                                    <lightning-input-field field-name="Name"></lightning-input-field>
+                                  </div>
+                              </div>
+                          </div>
+                        </div>
+        
+                        <div class="slds-form__item" role="listitem">
+                          <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                              <div class="slds-form-element__control">
+                                  <div class="slds-form-element__static">
+                                    <lightning-input-field field-name="Program_Type__c"></lightning-input-field>
+                                  </div>
+                              </div>
+                          </div>
+                        </div>
+                      </div>
+          
+                      <div class="slds-form__row">
+                          <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                <div class="slds-form-element__control">
+                                    <div class="slds-form-element__static">
+                                      <lightning-input-field field-name="Training__c"></lightning-input-field>
+                                    </div>
+                                </div>
+                            </div>
+                          </div>
+          
+                          <div class="slds-form__item" role="listitem">
+                            <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                <div class="slds-form-element__control">
+                                    <div class="slds-form-element__static">
+                                      <lightning-input-field field-name="Start_Date__c"></lightning-input-field>
+                                    </div>
+                                </div>
+                            </div>
+                          </div>
+                      </div>
+                      <div class="slds-docked-form-footer">
+                        <button type="button" class="slds-button slds-button_neutral" onclick={closeModel}>Cancel</button>
+                        <button type="submit" class="slds-button slds-button_brand">Save</button>
+                      </div>
+                    </lightning-record-edit-form>
+                  </div>
+                </div>
+              </template>
             </template>
+            
     
                 <!-- Certificate Tab Content -->
                 <template if:true={isCertificatesSelected}>
@@ -1245,7 +1275,7 @@
                                   </div>
                               </div>
                   
-                              <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small">
+                              <!-- <div class="slds-col slds-size_4-of-13 slds-p-horizontal_x-small"> -->
                                   <!-- <lightning-input
                                       label="Status"
                                       value={onboarding.Status__c}
@@ -1254,7 +1284,7 @@
                                       data-index={index}
                                       onchange={OnboardingChanges}>
                                   </lightning-input> -->
-                                  <lightning-input
+                                  <!-- <lightning-input
                                     label="Returned Date"
                                     type="date"
                                     value={onboarding.Returned_Date__c}
@@ -1262,7 +1292,7 @@
                                     required
                                     data-index={index}
                                     onchange={OnboardingChanges}>
-                                </lightning-input>
+                                </lightning-input> -->
                               </div>
                   
                               <!-- Delete Button -->
@@ -1276,7 +1306,7 @@
                                       onclick={deleteRow}>
                                   </lightning-button-icon>
                               </div> -->
-                          </div>
+                          <!-- </div> -->
                         </template>
                         <template if:true={isContractSelected}>
                           <div class="slds-grid slds-gutters slds-align_absolute-center slds-m-bottom_x-small">
@@ -1473,13 +1503,6 @@
           </section>
           <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
         </template>
-
-        <div class="slds-docked-form-footer">
-          <template if:true={isEditing}>
-            <button type="button" class="slds-button slds-button_neutral" onclick={handingClose}>Cancel</button>
-            <button type="button" class="slds-button slds-button_brand" onclick={handleSubmit}>Save</button>
-          </template>
-        </div>
     </div>
   </div>
 </template>
