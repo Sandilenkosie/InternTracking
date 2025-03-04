@@ -14,7 +14,7 @@ public with sharing class InternController {
 
         // Fetch related certificates
         wrapper.certificates = [
-            SELECT Id, Certificate__r.Name, Expiration_Date__c, Status__c, Issued_Date__c, Score__c, Issuing_Authority__c
+            SELECT Id, Name, Certificate__r.Name, Expiration_Date__c, Status__c, Issued_Date__c, Score__c, Issuing_Authority__c
             FROM Certified__c
             WHERE User__c IN (
                 SELECT User__c 

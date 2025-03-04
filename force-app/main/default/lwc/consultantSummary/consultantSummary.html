@@ -205,6 +205,40 @@
                             <h3 class="slds-section__title">
                               <button aria-controls="expando-unique-id" aria-expanded="true" class="slds-button slds-section__title-action">
                                 <lightning-icon icon-name="utility:chevrondown" size="x-small"></lightning-icon>
+                                <span class="slds-truncate" title="Section Title">Training Perfomance</span>
+                              </button>
+                            </h3>
+                            <div class="slds-section__content" >
+                                <div class="slds-form" role="list">
+                                    <div class="slds-form__row">
+                                      <div class="slds-form__item" role="listitem">
+                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                          <span class="slds-form-element__label">
+                                            Performance Rating</span>
+                                          <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">
+
+                                              {selectedConsultant.Performance_Rating__c}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="slds-form__item" role="listitem">
+                                        <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
+                                          <span class="slds-form-element__label">Evaluation Notes</span>
+                                          <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static"> {selectedConsultant.Evaluation_Notes__c}</div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                            </div>
+                          </div>
+                          <div class="slds-section slds-is-open">
+                            <h3 class="slds-section__title">
+                              <button aria-controls="expando-unique-id" aria-expanded="true" class="slds-button slds-section__title-action">
+                                <lightning-icon icon-name="utility:chevrondown" size="x-small"></lightning-icon>
                                 <span class="slds-truncate" title="Section Title">Interviews List</span>
                               </button>
                             </h3>
@@ -219,10 +253,7 @@
                                                             <abbr class="slds-required" title="required">* </abbr>Interview Name</span>
                                                         <div class="slds-form-element__control">
                                                             <div class="slds-form-element__static">
-                                                                <span class="slds-avatar slds-avatar_x-small slds-avatar_circle slds-m-right_xx-small">
-                                                                    <lightning-icon icon-name="utility:change_owner" size="x-small"></lightning-icon>
-                                                                </span>
-                                                                <a href="#">{interview.Name}</a>
+                                                                {interview.Name}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -300,7 +331,9 @@
                     </div>
                     <!-- Modal Footer -->
                     <footer class="slds-modal__footer">
-                        <button class="slds-button slds-button_brand" onclick={handleSaveChanges}>Save</button>
+                        <template if:true={isEditingProject}>
+                            <button class="slds-button slds-button_brand" onclick={handleSaveChanges}>Save</button>
+                        </template>
                         <button class="slds-button slds-button_neutral" onclick={closeModal}>Close</button>
                     </footer>
                 </div>

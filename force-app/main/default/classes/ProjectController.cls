@@ -27,7 +27,7 @@ public with sharing class ProjectController {
 
         // Query for Consultants associated with the Project
         wrapper.consultants = [
-            SELECT Id, Name, User__c, User__r.Name, Gender__c, Date_of_Birth__c, ID_Number__c,Project__c, Project__r.Name,
+            SELECT Id, Name, User__c, User__r.Name, Gender__c, Date_of_Birth__c, ID_Number__c,Project__c, Project__r.Name, Evaluation_Notes__c, Performance_Rating__c,
                    (SELECT Id, Name, Status__c, Date__c, Interview_Feedback__c 
                     FROM Interviewers__r)
             FROM Consultant__c
