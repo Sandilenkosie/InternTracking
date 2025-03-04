@@ -134,7 +134,13 @@ public with sharing class ProgramController {
                                 Module__c = module.Id,
                                 Assigned_To__c = internId,
                                 Name = 'New Task for ' + internName + ' on ' + module.Name,
-                                Status__c = 'Not Started'
+                                Subject__c = 'New Task for ' + internName + ' on ' + module.Name,
+                                Status__c = 'In Progress',
+                                Priority__c = 'Normal',
+                                Start_Date__c = Date.today(),
+                                Due_Date__c = Date.today().addDays(7),
+                                On_Hold_Reason__c = ''
+                                // Milestone__c = milestone
                             );
                             tasksToCreate.add(task);
                         }

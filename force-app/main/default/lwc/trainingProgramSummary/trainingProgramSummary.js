@@ -77,6 +77,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         if (data) {
             console.log('Training Program Data:', data);
             let modules = []; 
+            let certifieds = []; 
 
             this.trainingProgram = data.trainingProgram;
             this.program = data.program;
@@ -88,11 +89,12 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
 
 
             this.certificates.forEach(cert => {
-                if (cert.Modules__r) {
                     modules = [...modules, ...cert.Modules__r]; 
-                }
+                    certifieds = [...certifieds, cert.Certifieds__r];
             });
-            this.modules = data.modules;
+            this.modules = modules;
+            this.certifieds = certifieds;
+            console.log('modules Data:', JSON.stringify(this.certifieds));
 
             // Apply Week filter by default after fetching data
             this.handleWeekFilter();
@@ -170,22 +172,50 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
     calculatePerformanceRating() {
         let totalRating = 0;
     
-        // Find the current intern
-        if (!this.selectedIntern) {
+        // Find the current intern's User__c
+        const currentUser = this.selectedIntern ? this.selectedIntern.User__c : null;
+    
+        if (!currentUser) {
             this.showToast('warning', 'Please select a valid intern.', 'warning');
             return;
         }
-        // Validate and calculate performance from exams
+    
+        // Calculate performance from exams
         if (Array.isArray(this.examSchedules)) {
             this.examSchedules.forEach(exam => {
-                if (exam.Assigned_To__c === this.selectedIntern.User__c
+                if (exam.Assigned_To__c === currentUser
                     && exam.Exam_Result__c === 'Passed' 
                     && typeof exam.Completion__c === 'number') {
-                    totalRating += 30;
+                    totalRating += 30;  // Exams contribute 30% to the rating
                 }
             });
         }
-
+    
+        // Calculate task completion percentage for modules
+        if (Array.isArray(this.modules)) {
+            this.modules.forEach(module => {
+                let totalTasks = 0;
+                let completedTasks = 0;
+    
+                if (Array.isArray(module.Tasks__r )) {
+                    const userTasks = module.Tasks__r.filter(task => task.Assigned_To__c === currentUser);
+                    totalTasks = userTasks.length;
+    
+                    userTasks.forEach(task => {
+                        // Check for 'Completed' status
+                        if (task.Status__c === 'Completed') {  
+                            completedTasks++;
+                        }
+                    });
+    
+                    if (totalTasks > 0) {
+                        const completionPercentage = (completedTasks / totalTasks) * 100;
+                        module.Completion__c = completionPercentage.toFixed(2);  // Update Completion__c locally
+                        totalRating += (completionPercentage / 100) * 40;  // Proportion of 40%
+                    }
+                }
+            });
+        }
     
         // Normalize performance rating to a maximum of 100
         this.performanceRatingFormatted = Math.min(Math.round(totalRating), 100);
@@ -194,10 +224,9 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
         if (this.performanceRatingFormatted === 0) {
             this.showToast('info', 'No performance data available for the selected intern.', 'info');
         } else {
-            this.showToast('success', `Performance rating calculated: ${this.performanceRatingFormatted}`, 'success');
+            this.showToast('success', `Performance rating calculated: ${this.performanceRatingFormatted}%`, 'success');
         }
     }
-    
 
     handleCloseModal() {
         this.showModalCerti = false;
@@ -472,7 +501,7 @@ export default class TrainingProgramSummary extends NavigationMixin(LightningEle
                 this.certified = null; // Prevents undefined errors
             }
         
-            console.log("certified: ", JSON.stringify(certificate));
+            console.log("certified: ", JSON.stringify(this.certified));
             
             // Ensure selectedSchedule exists before accessing Exam_Result__c
             this.isCertified = this.selectedSchedule?.Exam_Result__c === "Passed";

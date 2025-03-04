@@ -11,17 +11,20 @@
                     <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open" id="primary-combobox-id-4">
                         <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
                             <!-- Input Field -->
-                            <lightning-input
-                                label="Assigned To"
-                                type="search"
-                                placeholder="Search..."
-                                onchange={handleSearch}
-                                value={searchKey}
-                            ></lightning-input>
+                            <template if:false={isshow}>
+                                <lightning-input
+                                    label="Assigned To"
+                                    type="search"
+                                    placeholder="Search..."
+                                    onchange={handleSearch}
+                                    onfocus={handleInputFocus}
+                                    value={searchKey}
+                                ></lightning-input>
+                            </template>
                         </div>
                         
                     <!-- Search Results Dropdown -->
-                    <template if:true={searchKey}>
+                    <template if:true={isfocus}>
                         <template if:true={searchResults}>
                             <div id="listbox-id-4" class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
                                 <ul class="slds-listbox slds-listbox_vertical" role="presentation">
@@ -57,7 +60,7 @@
                     </div>
                     </div>
                 </div>
-                <template if:true={assignedToId}>
+                <template if:true={isshow}>
                     <template if:true={selectedConsultants}>
                         <div class="slds-listbox_selection-group">
                             <ul class="slds-listbox slds-listbox_horizontal" aria-label="Selected Options:">
@@ -106,19 +109,20 @@
                       <div class="slds-combobox_container">
                         <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open">
                           <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
-                            <template if:false={isshow}>
+                            <template if:false={_isshow}>
                                 <lightning-input
                                     label="Client"
                                     type="search"
                                     placeholder="Search..."
                                     onchange={_handleSearch}
+                                    onfocus={_handleInputFocus}
                                     required
                                     value={_searchKey}
                                 ></lightning-input>
                             </template>
                           </div>
                           
-                            <template if:true={_searchKey}>
+                            <template if:true={_isfocus}>
                                 <template if:true={_searchResults}>
                                     <div id="listbox-id-2" class="slds-dropdown slds-dropdown_length-with-icon-7 slds-dropdown_fluid" role="listbox" tabindex="0" aria-busy="false">
                                         <ul class="slds-listbox slds-listbox_vertical" role="presentation">
@@ -131,8 +135,8 @@
                                                         </span>
                                                     </span>
                                                     <span class="slds-media__body">
-                                                        <!-- <span class="slds-listbox__option-text slds-listbox__option-text_entity">{client.Name}</span> -->
-                                                        <!-- <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">Account • {client.Account__r.Name}</span> -->
+                                                        <span class="slds-listbox__option-text slds-listbox__option-text_entity">{client.Name}</span>
+                                                        <span class="slds-listbox__option-meta slds-listbox__option-meta_entity">Account • {client.Account}</span>
                                                     </span>
                                                     </div>
                                                 </li>
@@ -142,7 +146,7 @@
                                 </template>
                             </template>
 
-                            <template if:true={isshow}>
+                            <template if:true={_isshow}>
                                 <template if:true={selectedClient}>
                                     <div class="slds-form-element">
                                         <label class="slds-form-element__label" for="combobox-id-5" id="combobox-label-id-68">Client</label>

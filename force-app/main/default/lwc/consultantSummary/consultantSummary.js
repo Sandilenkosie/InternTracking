@@ -138,37 +138,45 @@ export default class ConsultantSummary extends NavigationMixin(LightningElement)
 
     handleSaveChanges() {
         const projectId = this.recordId;
-        const status = this.template.querySelector('[data-id="status"]').value;
-        const feedback = this.template.querySelector('[data-id="feedback"]').value;
-    
+        const statusField = this.template.querySelector('[data-id="status"]');
+        const feedbackField = this.template.querySelector('[data-id="feedback"]');
+        
+        const status = statusField ? statusField.value.trim() : '';
+        const feedback = feedbackField ? feedbackField.value.trim() : '';
+        
         // Validate the data before calling Apex
         if (!projectId || !status || !feedback) {
             this.showToast('Error', 'Please fill in all fields', 'error');
             return;
         }
     
-        // Assuming you need to loop through interviews and save data for each one
-        const interviewsToSave = this.interviews || [];  // List of interviews to save
+        // Ensure interviews is an array
+        const interviewsToSave = Array.isArray(this.interviews) ? this.interviews : [];
     
         // Prepare the interviews data array to pass to Apex
-        const interviewsData = interviewsToSave.map(interview => {
-            return {
-                Id: interview.Id,         // Assuming each interview has an Id field
-                Status__c: status,            // Status to save
-                Interview_Feedback__c: feedback         // Feedback to save
-            };
-        });
+        const interviewsData = interviewsToSave.map(interview => ({
+            Id: interview.Id,                      // Assuming each interview has an Id field
+            Status__c: status,                     // Status to save
+            Interview_Feedback__c: feedback,       // Feedback to save
+            Consultant__c: interview.Consultant__c  // Include Consultant__c to find User__c
+        }));
     
         // Call Apex to save data
-        saveConsultantAndInterview({ projectId, interviewsData })
-            .then(() => {
-                this.showToast('Success', 'Data saved successfully!', 'success');
-                this.isEditingProject = false;
-            })
-            .catch(error => {
-                this.showToast('Error', error.body?.message || 'An error occurred', 'error');
-            });
+        saveConsultantAndInterview({ 
+            projectId: projectId, 
+            interviewsData: JSON.stringify(interviewsData)  // Convert to JSON string for Apex
+        })
+        .then(() => {
+            this.showToast('Success', 'Data saved successfully!', 'success');
+            this.isEditingProject = false;
+        })
+        .catch(error => {
+            const errorMessage = error.body?.message || error.message || 'An error occurred';
+            this.showToast('Error', errorMessage, 'error');
+        });
     }
+    
+    
     
     
 

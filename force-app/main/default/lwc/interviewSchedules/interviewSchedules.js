@@ -12,6 +12,7 @@ export default class interviewSchedules extends NavigationMixin(LightningElement
     @track searchKey = '';
     @track _searchKey = '';
     @track assignedToId = '';
+
     @track clientId = '';
     @track selectedConsultants = [];
     @track searchResults = [];
@@ -19,6 +20,9 @@ export default class interviewSchedules extends NavigationMixin(LightningElement
     @track isLoading = false;
     @track selectedClient = '';
     @track isshow = false;
+    @track _isshow = false;
+    @track isfocus = false;
+    @track _isfocus = false;
 
 
     consultants = [];
@@ -55,6 +59,10 @@ export default class interviewSchedules extends NavigationMixin(LightningElement
             this.searchResults = [];
         }
     }
+    handleInputFocus() {
+        this.searchResults = [...this.consultants];
+        this.isfocus = true;
+    }
 
     selectConsultant(event) {
          this.assignedToId = event.target.closest('li').dataset.id;
@@ -66,11 +74,15 @@ export default class interviewSchedules extends NavigationMixin(LightningElement
 
         this.searchKey = '';
         this.searchResults = [];
+        this.isshow = true;
+        this.isfocus = false;
     }
 
     removeselectedConsultant(event) {
         this.assignedToId = event.target.closest('button').dataset.id;
         this.selectedConsultants = this.selectedConsultants.filter(consultant => consultant.Id !== this.assignedToId);
+        this.isshow = false;
+        this.isfocus = false;
     }
 
     _handleSearch(event) {
@@ -90,6 +102,12 @@ export default class interviewSchedules extends NavigationMixin(LightningElement
             this._searchResults = [];
         }
     }
+    
+
+    _handleInputFocus() {
+        this._searchResults = [...this.clients];
+        this._isfocus = true;
+    }
 
     selectClient(event) {
         this.clientId = event.target.closest('li').dataset.id;
@@ -101,7 +119,8 @@ export default class interviewSchedules extends NavigationMixin(LightningElement
 
        this._searchKey = '';
        this._searchResults = [];
-       this.isshow = true;
+       this._isshow = true;
+       this._isfocus = false;
    }
 
     _removeSelected(event) {
@@ -110,7 +129,8 @@ export default class interviewSchedules extends NavigationMixin(LightningElement
 
         if (clientId && this.selectedClient && this.selectedClient.Id === clientId) {
             this.selectedClient = null;
-            this.isshow = false;
+            this._isshow = false;
+            this._isfocus = false;
         } 
     }
 

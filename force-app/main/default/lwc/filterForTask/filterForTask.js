@@ -22,9 +22,7 @@ export default class TrainingProgramFilter extends NavigationMixin(LightningElem
     @track isLoading = false;
     columns = [
         { label: 'Module', fieldName: 'phaseName', type: 'text' },
-        { label: 'Name', fieldName: 'taskName' },
         { label: 'Status', fieldName: 'status' },
-        { label: '% Completion', fieldName: 'completion' },
         { label: 'Start Date', fieldName: 'startDate', type: 'date' },
         { label: 'Due Date', fieldName: 'dueDate', type: 'date' },
         {
@@ -108,7 +106,6 @@ export default class TrainingProgramFilter extends NavigationMixin(LightningElem
                 taskName: task.Name,
                 phaseName: task.Module__r.Name,
                 status: task.Status__c,
-                completion: task.Completion__c,
                 startDate: task.Start_Date__c,
                 dueDate: task.Due_Date__c
             }));

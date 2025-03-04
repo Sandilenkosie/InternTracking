@@ -211,7 +211,7 @@
                             <div class="slds-section__content">
                                 <template if:true={interviews}>
                                     <template for:each={processedInterviews} for:item="interview">
-                                        <div key={interview.Id} class="slds-form" role="list">
+                                        <div key={interview.Id} data-id={interview.Id} class="slds-form" role="list">
                                             <div class="slds-form__row">
                                                 <div class="slds-form__item" role="listitem">
                                                     <div class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent">
