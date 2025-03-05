@@ -821,7 +821,6 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         this.tempCertificates= [];
         this.tempOnboarding = {};
         this.tempInterns = [];
-        this._editingStop();
         this.isModalCertificate = false;
         this.isModalOnboarding = false;
         this.isModalIntern = false;
