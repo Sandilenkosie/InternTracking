@@ -1,40 +1,39 @@
 <template>
-    <template if:true={onboardingList}>
-        <div class="slds-tabs_default__content slds-show" role="tabpanel" aria-labelledby="tab-default-1__item">
-            <div class="slds-form" role="list">
-                <table class="slds-table slds-table_bordered slds-table_striped">
-                    <thead>
-                        <tr>
-                            <th class="slds-text-title_caps">Name</th>
-                            <th class="slds-text-title_caps">Assigned Date</th>
-                            <th class="slds-text-title_caps">Type</th>
-                            <th class="slds-text-title_caps">Status</th>
+    <div class="slds-tabs_default__content slds-show" role="tabpanel" aria-labelledby="tab-default-1__item">
+        <div class="slds-form" role="list">
+            <table class="slds-table slds-table_bordered slds-table_striped">
+                <thead>
+                    <tr>
+                        <th class="slds-text-title_caps">Name</th>
+                        <th class="slds-text-title_caps">Assigned Date</th>
+                        <th class="slds-text-title_caps">Type</th>
+                        <th class="slds-text-title_caps">Status</th>
+                        <th class="slds-text-title_caps">RecordId: {selectedInternId}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template for:each={onboardings} for:item="onboarding">
+                        <tr key={onboarding.Id}>
+                            <td>
+                                <lightning-formatted-text value={onboarding.Name}></lightning-formatted-text>
+                            </td>
+                            <td>
+                                <lightning-formatted-text value={onboarding.Assigned_Date__c}></lightning-formatted-text>
+                            </td>
+                            <td>
+                                <lightning-formatted-text value={onboarding.Type__c}></lightning-formatted-text>
+                            </td>
+                            <td>
+                                <lightning-formatted-text value={onboarding.Status__c}></lightning-formatted-text>
+                            </td>
+                            <td>
+                                <lightning-button label="Download as PDF" onclick={downloadPDF}></lightning-button>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <template for:each={onboardingList} for:item="onboarding">
-                            <tr key={onboarding.Id}>
-                                <td>
-                                    <lightning-formatted-text value={onboarding.Name}></lightning-formatted-text>
-                                </td>
-                                <td>
-                                    <lightning-formatted-text value={onboarding.Assigned_Date__c}></lightning-formatted-text>
-                                </td>
-                                <td>
-                                    <lightning-formatted-text value={onboarding.Type__c}></lightning-formatted-text>
-                                </td>
-                                <td>
-                                    <lightning-formatted-text value={onboarding.Status__c}></lightning-formatted-text>
-                                </td>
-                                <td>
-                                    <lightning-button label="Download as PDF" onclick={downloadPDF}></lightning-button>
-                                </td>
-                            </tr>
-                        </template>
-                    </tbody>
-                </table>
-            </div>
+                    </template>
+                </tbody>
+            </table>
         </div>
-    </template>
+    </div>
     
 </template>

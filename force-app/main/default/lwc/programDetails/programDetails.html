@@ -89,7 +89,7 @@
                         </div>
                       </div>
                     </div>
-                    
+                    <template if:true={isSystemAdmin}>
                       <div class="slds-no-flex slds-grid">
                           <lightning-button 
                             label="New"
@@ -100,7 +100,7 @@
                             class="slds-button">
                           </lightning-button>
                       </div>
-                   
+                    </template>
                   </div>
                   <div class="slds-grid slds-grid_vertical-align-center">
                     <p class="slds-text-body_small slds-text-color_weak">{totalItems} items • Updated just now</p>

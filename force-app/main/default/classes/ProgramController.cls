@@ -220,6 +220,11 @@ public with sharing class ProgramController {
             throw new AuraHandledException('An error occurred while processing Intern records: ' + e.getMessage());
         }
     }
+
+    @AuraEnabled(cacheable=true)
+    public static String getProfileName() {
+        return [SELECT Profile.Name FROM User WHERE Id = :UserInfo.getUserId()].Profile.Name;
+    }
     
 
     private static Date parseDate(String dateStr) {

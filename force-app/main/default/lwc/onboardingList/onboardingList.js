@@ -1,22 +1,37 @@
-import { LightningElement, track, wire } from 'lwc';
-import getOnboardingWithSignature from '@salesforce/apex/InternController.getOnboardingWithSignature';
+import { LightningElement, api, track, wire } from 'lwc';
+import getInternDetails from '@salesforce/apex/InternController.getInternDetails';
 import jsPDF from '@salesforce/resourceUrl/jspdf';
 import jsPDF_AutoTable from '@salesforce/resourceUrl/jsPDFAutoTable';
 import { loadScript } from 'lightning/platformResourceLoader';
+import { refreshApex } from '@salesforce/apex';
 
 export default class OnboardingList extends LightningElement {
-    @track onboardingList = [];
+    @api recordId;
+    @track onboardings = [];
     jsPDFInitialized = false;
+    wiredOnboardingResult;
+    selectedInternId;
 
-    @wire(getOnboardingWithSignature)
-    wiredOnboarding({ error, data }) {
+    // Wire method to get onboarding records
+    @wire(getInternDetails, { internId: '$recordId' })
+    wiredOnboarding(result) {
+        this.wiredOnboardingResult = result;
+        const { error, data } = result;
         if (data) {
-            this.onboardingList = data;
+            this.onboardings = data.onboardings;
+            console.log('RecordId', this.recordId);
+
         } else if (error) {
             console.error('Error retrieving onboarding records', error);
         }
     }
 
+    // Method to refresh data
+    handleRefresh() {
+        refreshApex(this.wiredOnboardingResult);
+    }
+
+    // Rendered callback to load jsPDF libraries
     renderedCallback() {
         if (this.jsPDFInitialized) {
             return;
@@ -25,14 +40,15 @@ export default class OnboardingList extends LightningElement {
             loadScript(this, jsPDF),
             loadScript(this, jsPDF_AutoTable)
         ])
-        .then(() => {
-            this.jsPDFInitialized = true;
-        })
-        .catch(error => {
-            console.error('Error loading jsPDF libraries', error);
-        });
+            .then(() => {
+                this.jsPDFInitialized = true;
+            })
+            .catch(error => {
+                console.error('Error loading jsPDF libraries', error);
+            });
     }
 
+    // Method to download PDF
     downloadPDF() {
         if (!this.jsPDFInitialized) {
             console.error('jsPDF not initialized');
@@ -53,7 +69,7 @@ export default class OnboardingList extends LightningElement {
 
         // Define table headers and rows
         const headers = [["Name", "Assigned Date", "Type", "Status"]];
-        const rows = this.onboardingList.map(onboarding => [
+        const rows = this.onboardings.map(onboarding => [
             onboarding.Name || '',
             onboarding.Assigned_Date__c || '',
             onboarding.Type__c || '',

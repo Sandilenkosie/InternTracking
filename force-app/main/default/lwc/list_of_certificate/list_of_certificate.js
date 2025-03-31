@@ -41,7 +41,6 @@ export default class InternCertificates extends LightningElement {
 
     @wire(getInternDetails, { internId: '$recordId' })
     wiredInternDetails({ error, data }) {
-        console.log('records:', data);
         if (data) {
             this.certificates = data.certificates || null;
             this.onboardings = data.onboardings;
@@ -51,6 +50,7 @@ export default class InternCertificates extends LightningElement {
             this.error = error;
         }
     }
+    
 
     checkOnboardingConditions() {
         // Check if onboardings array exists and has elements

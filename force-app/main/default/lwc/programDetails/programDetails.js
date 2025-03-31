@@ -1,7 +1,9 @@
 import { LightningElement, api, track, wire } from 'lwc';
+import getProfileName from '@salesforce/apex/ProgramController.getProfileName';
 import { NavigationMixin } from 'lightning/navigation';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getProgramDetails from '@salesforce/apex/ProgramController.getProgramDetails';
+
 import createCertificates from '@salesforce/apex/ProgramController.createCertificates';
 import createModules from '@salesforce/apex/ProgramController.createModules';
 import createInterns from '@salesforce/apex/ProgramController.createInterns';
@@ -10,9 +12,11 @@ import getOnboardingRecordType from '@salesforce/apex/ProgramController.getOnboa
 import { createRecord } from 'lightning/uiRecordApi';
 import ONBOARDING_OBJECT from '@salesforce/schema/Onboarding__c';
 
+
 export default class ProgramDetails extends NavigationMixin(LightningElement) {
     @api recordId;
     @track recordTypeId;
+    @track isSystemAdmin = false;
 
     @track errorMessage = '';
     @track popoverStyle = '';
@@ -130,6 +134,15 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         this.isCompleted = this.certificates.length > 0 && this.onboardings.length > 0 && this.interns.length > 0;
         if (!this.isCompleted) {
             this.showToast('Incomplete Program', 'Please complete Certificates, Interns, and Onboarding by pressing "New +" button.', 'error');
+        }
+    }
+
+    @wire(getProfileName)
+    wiredProfileName({ error, data }) {
+        if (data) {
+            this.isSystemAdmin = (data === 'System Administrator');
+        } else if (error) {
+            console.error('Error fetching profile name:', error);
         }
     }
     

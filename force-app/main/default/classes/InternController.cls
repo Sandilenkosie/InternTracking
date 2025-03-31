@@ -39,7 +39,11 @@ public with sharing class InternController {
             Serial_Number__c,
             RecordTypeId 
             FROM Onboarding__c 
-            WHERE Assigned_To__c = :UserInfo.getUserId()
+            WHERE Assigned_To__c IN (
+                SELECT User__c 
+                FROM Intern__c 
+                WHERE Id = :internId
+            ) AND Signature__c != NULL
         ];
         
         return wrapper;
@@ -88,32 +92,6 @@ public with sharing class InternController {
         }
 
         return false;
-    }
-
-    @AuraEnabled(cacheable=true)
-    public static List<Onboarding__c> getOnboardingWithSignature() {
-        List<Onboarding__c> onboardingList = new List<Onboarding__c>();
-
-        try {
-            // Query for Onboarding__c records with non-null Signature__c
-            onboardingList = [SELECT Id, 
-                                    Name, 
-                                    Assigned_To__c, 
-                                    Assigned_Date__c, 
-                                    Type__c, 
-                                    Status__c,
-                                    Signature__c,
-                                    RecordTypeId
-                            FROM Onboarding__c
-                            WHERE Assigned_To__c = :UserInfo.getUserId()
-                            AND Signature__c != null];
-
-        } catch (QueryException e) {
-            // Optional: You can add debug logging if needed
-            System.debug('Error: No onboarding records found with signature for the current user');
-        }
-
-        return onboardingList;
     }
 
 }
