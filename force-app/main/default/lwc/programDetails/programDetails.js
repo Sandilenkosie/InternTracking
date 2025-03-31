@@ -10,6 +10,7 @@ import createInterns from '@salesforce/apex/ProgramController.createInterns';
 
 import getOnboardingRecordType from '@salesforce/apex/ProgramController.getOnboardingRecordType';
 import { createRecord } from 'lightning/uiRecordApi';
+import { refreshApex } from '@salesforce/apex';
 import ONBOARDING_OBJECT from '@salesforce/schema/Onboarding__c';
 
 
@@ -53,7 +54,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     isEditingProgram = false;
     editingRowId = null;
     isEditing = false;
-    isLoading = false;
+    @track isLoading = true;
     showProgram = true;
     error;
 
@@ -101,10 +102,13 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     tempOnboarding= {};
     tempAssets= [];
     isCompleted = false;
+    wiredProgramResult;
 
     // Fetch program details from the Apex controller
     @wire(getProgramDetails, { programId: '$recordId' })
-    wiredProgramDetails({ error, data }) {
+    wiredProgramDetails(result) {
+        this.wiredProgramResult = result;
+        const { error, data } = result;
         if (data) {
             this.program = data.program;
             this.certificates = data.certificates
@@ -127,6 +131,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         } else if (error) {
             this.error = error;
         }
+        this.isLoading = false;
         this.updateCategoryData();
     }
 
@@ -157,6 +162,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         }else{
             this.errorMessage = 'Please fill in all required fields correctly.';
         }
+        this.isLoading = false;
     }
 
     handleProgressPrev() {
@@ -165,6 +171,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
             this.currentPage--
             this.updateStepClasses();
         }
+        this.isLoading = false;
     }
 
     get isCertificates() { 
@@ -569,6 +576,7 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
         // Clear error message if deletion was successful
         this.errorMessage = '';
     }
+    
 
     handleSubmit() {
         this.errorMessage = '';
@@ -844,16 +852,10 @@ export default class ProgramDetails extends NavigationMixin(LightningElement) {
     closePopOver(){
         this.errorMessage = null;
     }
-    refreshPage() {
-        // Reloads the current page by navigating to it again
-        this[NavigationMixin.Navigate]({
-            type: 'standard__recordPage',
-            attributes: {
-                recordId: this.recordId,   // Record ID of the current page
-                objectApiName: 'Program__c',  // Object name of the current record
-                actionName: 'view'         // Action to perform (view)
-            }
-        });
+    // Method to refresh data
+    handleRefresh() {
+        refreshApex(this.wiredProgramResult);
+        this.isLoading = false;
     }
 
     // Display a toast message for success or error
